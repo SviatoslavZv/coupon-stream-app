@@ -6,3 +6,13 @@ export interface Store {
   offerCount: number;
   bestOffer: string;
 }
+
+export interface Coupon {
+  id: string;
+  type: "code" | "sale";
+  discountLabel: string;
+  title: string;
+  code?: string;
+  description: string;
+  expiresAt: string;
+}
