@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import type { Store } from "@/types";
 
+
 export default function StoreCard({ store }: { store: Store }) {
   return (
     <Link
