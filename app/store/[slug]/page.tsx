@@ -1,6 +1,5 @@
 import { notFound } from "next/navigation";
-import { mockStores } from "@/lib/mock-stores";
-import { mockCoupons } from "@/lib/mock-coupons";
+import { getStoreWithCoupons } from "@/lib/coupons";
 import CouponItem from "@/components/store/CouponItem";
 import Image from "next/image";
 
@@ -11,13 +10,13 @@ export default async function StorePage({
 }) {
     const { slug } = await params;
 
-    const store = mockStores.find((s) => s.slug === slug);
+    const result = await getStoreWithCoupons(slug);
 
-    if (!store) {
+    if (!result) {
         notFound();
     }
 
-    const coupons = mockCoupons[slug] ?? [];
+    const { store, coupons } = result;
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-10">

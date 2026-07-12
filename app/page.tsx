@@ -1,7 +1,9 @@
 import StoreCard from "@/components/store/StoreCard";
-import { mockStores } from "@/lib/mock-stores";
+import { getStores } from "@/lib/stores";
 
-export default function Home() {
+export default async function Home() {
+  const stores = await getStores();
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <h1 className="font-display text-3xl font-black text-ink">
@@ -12,7 +14,7 @@ export default function Home() {
       </p>
 
       <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {mockStores.map((store) => (
+        {stores.map((store) => (
           <StoreCard key={store.slug} store={store} />
         ))}
       </div>
