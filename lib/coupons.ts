@@ -1,6 +1,6 @@
 // lib/coupons.ts
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Store, Coupon } from "@/types";
 
 interface CouponRow {
@@ -36,6 +36,8 @@ export async function getStoreWithCoupons(slug: string): Promise<{
   store: Pick<Store, "slug" | "name" | "logoUrl">;
   coupons: Coupon[];
 } | null> {
+  const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("stores")
     .select(

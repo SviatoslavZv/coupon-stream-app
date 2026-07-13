@@ -1,6 +1,6 @@
 // lib/stores.ts
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import type { Store } from "@/types";
 
 interface StoreRow {
@@ -21,6 +21,8 @@ function mapStoreFromDb(row: StoreRow): Store {
 }
 
 export async function getStores(): Promise<Store[]> {
+  const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("stores")
     .select("slug, name, logo_url, coupons(discount_label)");

@@ -1,6 +1,6 @@
 // lib/redirect.ts
 
-import { supabase } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 
 interface StoreRedirectRow {
   id: string;
@@ -11,6 +11,8 @@ interface StoreRedirectRow {
 export async function getStoreRedirectUrl(
   slug: string
 ): Promise<{ storeId: string; url: string } | null> {
+  const supabase = await createClient();
+
   const { data, error } = await supabase
     .from("stores")
     .select("id, affiliate_link, website_url")
@@ -36,6 +38,8 @@ export async function getStoreRedirectUrl(
 }
 
 export async function recordClick(storeId: string): Promise<void> {
+  const supabase = await createClient();
+
   const { error } = await supabase.from("clicks").insert({ store_id: storeId });
 
   if (error) {
