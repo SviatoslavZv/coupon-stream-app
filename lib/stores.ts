@@ -31,3 +31,11 @@ export async function getStores(): Promise<Store[]> {
 
   return (data as StoreRow[]).map(mapStoreFromDb);
 }
+
+export async function getTopStores(limit: number): Promise<Store[]> {
+  const stores = await getStores();
+
+  return [...stores]
+    .sort((a, b) => b.offerCount - a.offerCount)
+    .slice(0, limit);
+}

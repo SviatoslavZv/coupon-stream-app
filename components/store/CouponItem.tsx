@@ -3,7 +3,13 @@
 import { useState } from "react";
 import type { Coupon } from "@/types";
 
-export default function CouponItem({ coupon }: { coupon: Coupon }) {
+export default function CouponItem({
+    coupon,
+    storeSlug,
+}: {
+    coupon: Coupon;
+    storeSlug: string;
+}) {
     const [isRevealed, setIsRevealed] = useState(false);
     const [isCopied, setIsCopied] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
@@ -17,14 +23,12 @@ export default function CouponItem({ coupon }: { coupon: Coupon }) {
                 setIsCopied(true);
                 setTimeout(() => setIsCopied(false), 2000);
             } catch {
-                // Clipboard write failed (e.g. unsupported browser or permissions) —
-                // the code is still visible on the button, so the user can copy it manually.
+                // Clipboard write failed — the code is still visible on the button,
+                // so the user can copy it manually.
             }
         }
 
-        // TODO: once real affiliate links exist (post-Supabase), also open
-        // `/api/go/${storeSlug}` in a new tab here, so the click both copies
-        // the code AND routes the user through our affiliate link.
+        window.open(`/api/go/${storeSlug}`, "_blank");
     };
 
     return (
@@ -52,9 +56,14 @@ export default function CouponItem({ coupon }: { coupon: Coupon }) {
                             {isCopied ? "Copied!" : isRevealed ? coupon.code : "Show Code"}
                         </button>
                     ) : (
-                        <button className="rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white transition hover:bg-ink/90">
+
+                        <a href={`/api/go/${storeSlug}`}
+                            target="_blank"
+                            rel="noopener"
+                            className="inline-block rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
+                        >
                             Get Deal
-                        </button>
+                        </a>
                     )}
                 </div>
             </div>

@@ -1,8 +1,8 @@
-import StoreCard from "@/components/store/StoreCard";
-import { getStores } from "@/lib/stores";
+import StoreGrid from "@/components/store/StoreGrid";
+import { getTopStores } from "@/lib/stores";
 
 export default async function Home() {
-  const stores = await getStores();
+  const stores = await getTopStores(6);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
@@ -13,11 +13,7 @@ export default async function Home() {
         Verified promo codes and deals, updated daily.
       </p>
 
-      <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {stores.map((store) => (
-          <StoreCard key={store.slug} store={store} />
-        ))}
-      </div>
+      <StoreGrid stores={stores} />
     </div>
   );
 }

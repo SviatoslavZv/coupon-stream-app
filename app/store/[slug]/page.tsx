@@ -43,7 +43,7 @@ export default async function StorePage({
             {coupons.length > 0 ? (
                 <div className="flex flex-col gap-4">
                     {coupons.map((coupon) => (
-                        <CouponItem key={coupon.id} coupon={coupon} />
+                        <CouponItem key={coupon.id} coupon={coupon} storeSlug={slug} />
                     ))}
                 </div>
             ) : (

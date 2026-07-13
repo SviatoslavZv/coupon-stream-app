@@ -1,6 +1,4 @@
-// app/stores/page.tsx
-
-import StoreCard from "@/components/store/StoreCard";
+import StoreGrid from "@/components/store/StoreGrid";
 import { getStores } from "@/lib/stores";
 
 export default async function StoresPage() {
@@ -15,11 +13,7 @@ export default async function StoresPage() {
                 Browse every store with active promo codes and deals.
             </p>
 
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {stores.map((store) => (
-                    <StoreCard key={store.slug} store={store} />
-                ))}
-            </div>
+            <StoreGrid stores={stores} />
         </div>
     );
 }
