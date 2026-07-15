@@ -21,14 +21,16 @@ export default function CouponItem({
             try {
                 await navigator.clipboard.writeText(coupon.code);
                 setIsCopied(true);
-                setTimeout(() => setIsCopied(false), 2000);
+                setTimeout(() => setIsCopied(false), 900);
             } catch {
                 // Clipboard write failed — the code is still visible on the button,
                 // so the user can copy it manually.
             }
         }
 
-        window.open(`/api/go/${storeSlug}`, "_blank");
+        setTimeout(() => {
+            window.open(`/api/go/${storeSlug}`, "_blank");
+        }, 1800);
     };
 
     return (
