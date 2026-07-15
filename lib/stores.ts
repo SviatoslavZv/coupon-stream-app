@@ -41,3 +41,24 @@ export async function getTopStores(limit: number): Promise<Store[]> {
     .sort((a, b) => b.offerCount - a.offerCount)
     .slice(0, limit);
 }
+
+
+export interface StoreOption {
+  id: string;
+  name: string;
+}
+
+export async function getStoreOptions(): Promise<StoreOption[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("stores")
+    .select("id, name")
+    .order("name");
+
+  if (error) {
+    throw new Error(`Failed to fetch store options: ${error.message}`);
+  }
+
+  return data as StoreOption[];
+}
