@@ -34,3 +34,51 @@ export async function createCoupon(formData: FormData) {
   revalidatePath("/admin");
   redirect("/admin");
 }
+
+
+export async function updateCoupon(formData: FormData) {
+  const id = formData.get("id") as string;
+  const storeId = formData.get("storeId") as string;
+  const type = formData.get("type") as string;
+  const discountLabel = formData.get("discountLabel") as string;
+  const title = formData.get("title") as string;
+  const code = formData.get("code") as string;
+  const description = formData.get("description") as string;
+  const expiresAt = formData.get("expiresAt") as string;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("coupons")
+    .update({
+      store_id: storeId,
+      type,
+      discount_label: discountLabel,
+      title,
+      code: code || null,
+      description,
+      expires_at: expiresAt,
+    })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(`Failed to update coupon: ${error.message}`);
+  }
+
+  revalidatePath("/admin");
+  redirect("/admin");
+}
+
+export async function deleteCoupon(formData: FormData) {
+  const id = formData.get("id") as string;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("coupons").delete().eq("id", id);
+
+  if (error) {
+    throw new Error(`Failed to delete coupon: ${error.message}`);
+  }
+
+  revalidatePath("/admin");
+}
