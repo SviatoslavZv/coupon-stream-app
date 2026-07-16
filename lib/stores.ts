@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import type { Store } from "@/types";
 
 interface StoreRow {
+  id: string;
   slug: string;
   name: string;
   logo_url: string;
@@ -12,6 +13,7 @@ interface StoreRow {
 
 function mapStoreFromDb(row: StoreRow): Store {
   return {
+    id: row.id,
     slug: row.slug,
     name: row.name,
     logoUrl: row.logo_url,
@@ -25,7 +27,7 @@ export async function getStores(): Promise<Store[]> {
 
   const { data, error } = await supabase
     .from("stores")
-    .select("slug, name, logo_url, coupons(discount_label)");
+    .select("id, slug, name, logo_url, coupons(discount_label)");
 
   if (error) {
     throw new Error(`Failed to fetch stores: ${error.message}`);
@@ -61,4 +63,52 @@ export async function getStoreOptions(): Promise<StoreOption[]> {
   }
 
   return data as StoreOption[];
+}
+
+
+export interface AdminStoreRow {
+  id: string;
+  slug: string;
+  name: string;
+  logoUrl: string;
+  affiliateLink: string | null;
+  websiteUrl: string | null;
+}
+
+interface StoreByIdDbRow {
+  id: string;
+  slug: string;
+  name: string;
+  logo_url: string;
+  affiliate_link: string | null;
+  website_url: string | null;
+}
+
+export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("stores")
+    .select("id, slug, name, logo_url, affiliate_link, website_url")
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to fetch store: ${error.message}`);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const row = data as StoreByIdDbRow;
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    name: row.name,
+    logoUrl: row.logo_url,
+    affiliateLink: row.affiliate_link,
+    websiteUrl: row.website_url,
+  };
 }

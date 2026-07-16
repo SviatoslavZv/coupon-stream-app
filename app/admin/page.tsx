@@ -2,7 +2,9 @@ import Link from "next/link";
 import { getStores } from "@/lib/stores";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
 import { deleteCoupon } from "@/lib/actions/coupons";
+import { deleteStore } from "@/lib/actions/stores";
 import LogoutButton from "@/components/admin/LogoutButton";
+import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 
 export default async function AdminDashboard() {
     const [stores, coupons] = await Promise.all([
@@ -19,6 +21,16 @@ export default async function AdminDashboard() {
                 <LogoutButton />
             </div>
 
+            <div className="mb-4 flex items-center justify-between">
+                <h2 className="font-display text-xl font-black text-ink">Stores</h2>
+                <Link
+                    href="/admin/stores/new"
+                    className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
+                >
+                    + Add Store
+                </Link>
+            </div>
+
             <div className="mb-10 overflow-hidden rounded-2xl border border-line bg-white">
                 <table className="w-full text-left text-sm">
                     <thead className="border-b border-line bg-paper">
@@ -26,6 +38,7 @@ export default async function AdminDashboard() {
                             <th className="px-5 py-3 font-medium text-ink/60">Store</th>
                             <th className="px-5 py-3 font-medium text-ink/60">Offers</th>
                             <th className="px-5 py-3 font-medium text-ink/60">Best Offer</th>
+                            <th className="px-5 py-3 font-medium text-ink/60"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -36,6 +49,20 @@ export default async function AdminDashboard() {
                                     {store.offerCount}
                                 </td>
                                 <td className="px-5 py-3 text-coupon">{store.bestOffer}</td>
+                                <td className="px-5 py-3">
+                                    <div className="flex items-center justify-end gap-3">
+                                        <Link
+                                            href={`/admin/stores/${store.id}/edit`}
+                                            className="text-xs font-medium text-ink/60 hover:text-ink"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <form action={deleteStore}>
+                                            <input type="hidden" name="id" value={store.id} />
+                                            <DeleteStoreButton />
+                                        </form>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>
