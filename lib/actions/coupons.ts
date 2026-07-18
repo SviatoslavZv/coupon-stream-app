@@ -14,6 +14,10 @@ export async function createCoupon(formData: FormData) {
   const code = formData.get("code") as string;
   const description = formData.get("description") as string;
   const expiresAt = formData.get("expiresAt") as string;
+  const category = formData.get("category") as string;
+  const subcategory = formData.get("subcategory") as string;
+  const gender = formData.get("gender") as string;
+  const brand = formData.get("brand") as string;
 
   const supabase = await createClient();
 
@@ -25,6 +29,10 @@ export async function createCoupon(formData: FormData) {
     code: code || null,
     description,
     expires_at: expiresAt,
+    category: category || null,
+    subcategory: subcategory || null,
+    gender: gender || null,
+    brand: brand || null,
   });
 
   if (error) {
@@ -35,7 +43,6 @@ export async function createCoupon(formData: FormData) {
   redirect("/admin");
 }
 
-
 export async function updateCoupon(formData: FormData) {
   const id = formData.get("id") as string;
   const storeId = formData.get("storeId") as string;
@@ -45,6 +52,10 @@ export async function updateCoupon(formData: FormData) {
   const code = formData.get("code") as string;
   const description = formData.get("description") as string;
   const expiresAt = formData.get("expiresAt") as string;
+  const category = formData.get("category") as string;
+  const subcategory = formData.get("subcategory") as string;
+  const gender = formData.get("gender") as string;
+  const brand = formData.get("brand") as string;
 
   const supabase = await createClient();
 
@@ -58,6 +69,10 @@ export async function updateCoupon(formData: FormData) {
       code: code || null,
       description,
       expires_at: expiresAt,
+      category: category || null,
+      subcategory: subcategory || null,
+      gender: gender || null,
+      brand: brand || null,
     })
     .eq("id", id);
 
