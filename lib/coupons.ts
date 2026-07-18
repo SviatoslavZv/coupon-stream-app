@@ -131,3 +131,85 @@ export async function getCouponById(id: string) {
 
   return data;
 }
+
+
+export interface CategoryCoupon {
+  id: string;
+  discountLabel: string;
+  title: string;
+  storeName: string;
+  storeSlug: string;
+  subcategory: string | null;
+  gender: string | null;
+  brand: string | null;
+}
+
+interface CategoryCouponDbRow {
+  id: string;
+  discount_label: string;
+  title: string;
+  subcategory: string | null;
+  gender: string | null;
+  brand: string | null;
+  stores: { name: string; slug: string } | null;
+}
+
+export async function getCouponsByCategory(
+  category: string,
+  filters: { subcategory?: string; gender?: string; brand?: string }
+): Promise<CategoryCoupon[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("coupons")
+    .select(
+      "id, discount_label, title, subcategory, gender, brand, stores(name, slug)"
+    )
+    .eq("category", category);
+
+  if (filters.subcategory) {
+    query = query.eq("subcategory", filters.subcategory);
+  }
+  if (filters.gender) {
+    query = query.eq("gender", filters.gender);
+  }
+  if (filters.brand) {
+    query = query.eq("brand", filters.brand);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to fetch category coupons: ${error.message}`);
+  }
+
+  return (data as unknown as CategoryCouponDbRow[]).map((row) => ({
+    id: row.id,
+    discountLabel: row.discount_label,
+    title: row.title,
+    storeName: row.stores?.name ?? "Unknown store",
+    storeSlug: row.stores?.slug ?? "",
+    subcategory: row.subcategory,
+    gender: row.gender,
+    brand: row.brand,
+  }));
+}
+
+
+export function extractFilterOptions(coupons: CategoryCoupon[]) {
+  const subcategories = new Set<string>();
+  const genders = new Set<string>();
+  const brands = new Set<string>();
+
+  for (const coupon of coupons) {
+    if (coupon.subcategory) subcategories.add(coupon.subcategory);
+    if (coupon.gender) genders.add(coupon.gender);
+    if (coupon.brand) brands.add(coupon.brand);
+  }
+
+  return {
+    subcategories: [...subcategories],
+    genders: [...genders],
+    brands: [...brands],
+  };
+}
