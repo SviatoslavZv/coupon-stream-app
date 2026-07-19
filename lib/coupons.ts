@@ -196,20 +196,39 @@ export async function getCouponsByCategory(
 }
 
 
+export interface FilterOption {
+  value: string;
+  count: number;
+}
+
 export function extractFilterOptions(coupons: CategoryCoupon[]) {
-  const subcategories = new Set<string>();
-  const genders = new Set<string>();
-  const brands = new Set<string>();
+  const subcategoryCounts = new Map<string, number>();
+  const genderCounts = new Map<string, number>();
+  const brandCounts = new Map<string, number>();
 
   for (const coupon of coupons) {
-    if (coupon.subcategory) subcategories.add(coupon.subcategory);
-    if (coupon.gender) genders.add(coupon.gender);
-    if (coupon.brand) brands.add(coupon.brand);
+    if (coupon.subcategory) {
+      subcategoryCounts.set(
+        coupon.subcategory,
+        (subcategoryCounts.get(coupon.subcategory) ?? 0) + 1
+      );
+    }
+    if (coupon.gender) {
+      genderCounts.set(coupon.gender, (genderCounts.get(coupon.gender) ?? 0) + 1);
+    }
+    if (coupon.brand) {
+      brandCounts.set(coupon.brand, (brandCounts.get(coupon.brand) ?? 0) + 1);
+    }
   }
 
+  const toSortedOptions = (counts: Map<string, number>): FilterOption[] =>
+    [...counts.entries()]
+      .map(([value, count]) => ({ value, count }))
+      .sort((a, b) => b.count - a.count);
+
   return {
-    subcategories: [...subcategories],
-    genders: [...genders],
-    brands: [...brands],
+    subcategories: toSortedOptions(subcategoryCounts),
+    genders: toSortedOptions(genderCounts),
+    brands: toSortedOptions(brandCounts),
   };
 }

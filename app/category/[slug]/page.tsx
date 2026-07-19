@@ -57,16 +57,16 @@ export default async function CategoryPage({
                         <span className="text-xs font-medium uppercase text-ink/40">
                             Subcategory
                         </span>
-                        {filterOptions.subcategories.map((sub) => (
+                        {filterOptions.subcategories.map(({ value, count }) => (
                             <Link
-                                key={sub}
-                                href={buildFilterUrl(slug, filters, "subcategory", sub)}
-                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.subcategory === sub
+                                key={value}
+                                href={buildFilterUrl(slug, filters, "subcategory", value)}
+                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.subcategory === value
                                     ? "border-coupon bg-coupon text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
-                                {sub}
+                                {value} ({count})
                             </Link>
                         ))}
                     </div>
@@ -77,16 +77,16 @@ export default async function CategoryPage({
                         <span className="text-xs font-medium uppercase text-ink/40">
                             Gender
                         </span>
-                        {filterOptions.genders.map((g) => (
+                        {filterOptions.genders.map(({ value, count }) => (
                             <Link
-                                key={g}
-                                href={buildFilterUrl(slug, filters, "gender", g)}
-                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.gender === g
+                                key={value}
+                                href={buildFilterUrl(slug, filters, "gender", value)}
+                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.gender === value
                                     ? "border-coupon bg-coupon text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
-                                {g}
+                                {value} ({count})
                             </Link>
                         ))}
                     </div>
@@ -97,16 +97,16 @@ export default async function CategoryPage({
                         <span className="text-xs font-medium uppercase text-ink/40">
                             Brand
                         </span>
-                        {filterOptions.brands.map((b) => (
+                        {filterOptions.brands.map(({ value, count }) => (
                             <Link
-                                key={b}
-                                href={buildFilterUrl(slug, filters, "brand", b)}
-                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.brand === b
+                                key={value}
+                                href={buildFilterUrl(slug, filters, "brand", value)}
+                                className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.brand === value
                                     ? "border-coupon bg-coupon text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
-                                {b}
+                                {value} ({count})
                             </Link>
                         ))}
                     </div>
