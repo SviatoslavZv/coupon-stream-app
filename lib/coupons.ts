@@ -1,6 +1,7 @@
 // lib/coupons.ts
 
 import { createClient } from "@/lib/supabase/server";
+import { BRANDS } from "@/lib/constants/taxonomy";
 import type { Store, Coupon } from "@/types";
 
 interface CouponRow {
@@ -142,6 +143,7 @@ export interface CategoryCoupon {
   subcategory: string | null;
   gender: string | null;
   brand: string | null;
+  brandSlug: string | null;
 }
 
 interface CategoryCouponDbRow {
@@ -192,6 +194,9 @@ export async function getCouponsByCategory(
     subcategory: row.subcategory,
     gender: row.gender,
     brand: row.brand,
+    brandSlug: row.brand
+    ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
+    : null,
   }));
 }
 
@@ -231,4 +236,104 @@ export function extractFilterOptions(coupons: CategoryCoupon[]) {
     genders: toSortedOptions(genderCounts),
     brands: toSortedOptions(brandCounts),
   };
+}
+
+
+export interface BrandCoupon {
+  id: string;
+  discountLabel: string;
+  title: string;
+  storeName: string;
+  storeSlug: string;
+  category: string | null;
+}
+
+interface BrandCouponDbRow {
+  id: string;
+  discount_label: string;
+  title: string;
+  category: string | null;
+  stores: { name: string; slug: string } | null;
+}
+
+export async function getCouponsByBrand(
+  brand: string,
+  filters: { category?: string }
+): Promise<BrandCoupon[]> {
+  const supabase = await createClient();
+
+  let query = supabase
+    .from("coupons")
+    .select("id, discount_label, title, category, stores(name, slug)")
+    .eq("brand", brand);
+
+  if (filters.category) {
+    query = query.eq("category", filters.category);
+  }
+
+  const { data, error } = await query;
+
+  if (error) {
+    throw new Error(`Failed to fetch brand coupons: ${error.message}`);
+  }
+
+  return (data as unknown as BrandCouponDbRow[]).map((row) => ({
+    id: row.id,
+    discountLabel: row.discount_label,
+    title: row.title,
+    storeName: row.stores?.name ?? "Unknown store",
+    storeSlug: row.stores?.slug ?? "",
+    category: row.category,
+  }));
+}
+
+export function extractCategoryOptions(
+  coupons: { category: string | null }[]
+): FilterOption[] {
+  const categoryCounts = new Map<string, number>();
+
+  for (const coupon of coupons) {
+    if (coupon.category) {
+      categoryCounts.set(
+        coupon.category,
+        (categoryCounts.get(coupon.category) ?? 0) + 1
+      );
+    }
+  }
+
+  return [...categoryCounts.entries()]
+    .map(([value, count]) => ({ value, count }))
+    .sort((a, b) => b.count - a.count);
+}
+
+
+export interface BrandSummary {
+  slug: string;
+  label: string;
+  count: number;
+}
+
+export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("coupons")
+    .select("brand")
+    .not("brand", "is", null);
+
+  if (error) {
+    throw new Error(`Failed to fetch brands: ${error.message}`);
+  }
+
+  const counts = new Map<string, number>();
+
+  for (const row of data as { brand: string }[]) {
+    counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
+  }
+
+  return BRANDS.filter((b) => counts.has(b.label)).map((b) => ({
+    slug: b.slug,
+    label: b.label,
+    count: counts.get(b.label) ?? 0,
+  }));
 }

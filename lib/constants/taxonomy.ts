@@ -55,32 +55,32 @@ export const GENDERS = [
 ] as const;
 
 export const BRANDS = [
-  "Nike",
-  "Adidas",
-  "New Balance",
-  "Skechers",
-  "Converse",
-  "Vans",
-  "Puma",
-  "Under Armour",
-  "Reebok",
-  "Levi's",
-  "Calvin Klein",
-  "Tommy Hilfiger",
-  "Ralph Lauren",
-  "The North Face",
-  "Champion",
-  "Columbia",
-  "Coach",
-  "Michael Kors",
-  "Kate Spade",
-  "Fossil",
-  "Guess",
+  { slug: "nike", label: "Nike" },
+  { slug: "adidas", label: "Adidas" },
+  { slug: "new-balance", label: "New Balance" },
+  { slug: "skechers", label: "Skechers" },
+  { slug: "converse", label: "Converse" },
+  { slug: "vans", label: "Vans" },
+  { slug: "puma", label: "Puma" },
+  { slug: "under-armour", label: "Under Armour" },
+  { slug: "reebok", label: "Reebok" },
+  { slug: "levis", label: "Levi's" },
+  { slug: "calvin-klein", label: "Calvin Klein" },
+  { slug: "tommy-hilfiger", label: "Tommy Hilfiger" },
+  { slug: "ralph-lauren", label: "Ralph Lauren" },
+  { slug: "the-north-face", label: "The North Face" },
+  { slug: "champion", label: "Champion" },
+  { slug: "columbia", label: "Columbia" },
+  { slug: "coach", label: "Coach" },
+  { slug: "michael-kors", label: "Michael Kors" },
+  { slug: "kate-spade", label: "Kate Spade" },
+  { slug: "fossil", label: "Fossil" },
+  { slug: "guess", label: "Guess" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
 export type GenderSlug = (typeof GENDERS)[number]["slug"];
-export type Brand = (typeof BRANDS)[number];
+export type BrandSlug = (typeof BRANDS)[number]["slug"];
 
 export function getSubcategories(categorySlug: string) {
   return CATEGORIES.find((c) => c.slug === categorySlug)?.subcategories ?? [];

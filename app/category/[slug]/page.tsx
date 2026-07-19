@@ -116,21 +116,37 @@ export default async function CategoryPage({
             <div className="mt-8 flex flex-col gap-3">
                 {coupons.length > 0 ? (
                     coupons.map((coupon) => (
-                        <Link
+                        <div
                             key={coupon.id}
-                            href={`/store/${coupon.storeSlug}`}
                             className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
                         >
-                            <div>
+                            <div className="flex-1">
                                 <span className="font-mono text-xs uppercase tracking-wide text-ink/40">
-                                    {coupon.storeName}
+                                    <Link href={`/store/${coupon.storeSlug}`} className="hover:underline">
+                                        {coupon.storeName}
+                                    </Link>
+                                    {coupon.brandSlug && (
+                                        <>
+                                            {" · "}
+                                            <Link
+                                                href={`/brand/${coupon.brandSlug}`}
+                                                className="text-coupon hover:underline"
+                                            >
+                                                {coupon.brand}
+                                            </Link>
+                                        </>
+                                    )}
                                 </span>
-                                <h3 className="font-medium text-ink">{coupon.title}</h3>
+                                <Link href={`/store/${coupon.storeSlug}`}>
+                                    <h3 className="font-medium text-ink hover:text-coupon">
+                                        {coupon.title}
+                                    </h3>
+                                </Link>
                             </div>
                             <span className="font-display text-lg font-black text-coupon">
                                 {coupon.discountLabel}
                             </span>
-                        </Link>
+                        </div>
                     ))
                 ) : (
                     <p className="text-ink/50">No offers found for this filter.</p>

@@ -232,8 +232,8 @@ export default function CouponForm({
                         >
                             <option value="">None</option>
                             {BRANDS.map((b) => (
-                                <option key={b} value={b}>
-                                    {b}
+                                <option key={b.slug} value={b.label}>
+                                    {b.label}
                                 </option>
                             ))}
                         </select>

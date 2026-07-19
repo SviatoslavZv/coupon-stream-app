@@ -24,6 +24,9 @@ export default function Header() {
                     <Link href="/categories" className="hover:text-coupon">
                         Categories
                     </Link>
+                    <Link href="/brands" className="hover:text-coupon">
+                        Brands
+                    </Link>
                 </nav>
             </div>
 
