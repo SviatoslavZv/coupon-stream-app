@@ -6,7 +6,14 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function createCoupon(formData: FormData) {
+export interface CouponFormState {
+  error?: string;
+}
+
+export async function createCoupon(
+  prevState: CouponFormState | null,
+  formData: FormData
+): Promise<CouponFormState> {
   const storeId = formData.get("storeId") as string;
   const type = formData.get("type") as string;
   const discountLabel = formData.get("discountLabel") as string;
@@ -36,14 +43,17 @@ export async function createCoupon(formData: FormData) {
   });
 
   if (error) {
-    throw new Error(`Failed to create coupon: ${error.message}`);
+    return { error: "Could not create the coupon. Please check the fields and try again." };
   }
 
   revalidatePath("/admin");
   redirect("/admin");
 }
 
-export async function updateCoupon(formData: FormData) {
+export async function updateCoupon(
+  prevState: CouponFormState | null,
+  formData: FormData
+): Promise<CouponFormState> {
   const id = formData.get("id") as string;
   const storeId = formData.get("storeId") as string;
   const type = formData.get("type") as string;
@@ -77,7 +87,7 @@ export async function updateCoupon(formData: FormData) {
     .eq("id", id);
 
   if (error) {
-    throw new Error(`Failed to update coupon: ${error.message}`);
+    return { error: "Could not save changes. Please check the fields and try again." };
   }
 
   revalidatePath("/admin");

@@ -1,9 +1,8 @@
-// components/admin/CouponForm.tsx
-
 "use client";
 
-import { useState } from "react";
+import { useActionState, useState } from "react";
 import { CATEGORIES, GENDERS, BRANDS, getSubcategories } from "@/lib/constants/taxonomy";
+import type { CouponFormState } from "@/lib/actions/coupons";
 
 interface StoreOption {
     id: string;
@@ -30,20 +29,30 @@ export default function CouponForm({
     storeOptions,
     initialValues,
 }: {
-    action: (formData: FormData) => void;
+    action: (
+        prevState: CouponFormState | null,
+        formData: FormData
+    ) => Promise<CouponFormState>;
     storeOptions: StoreOption[];
     initialValues?: CouponFormValues;
 }) {
     const [selectedCategory, setSelectedCategory] = useState(
         initialValues?.category ?? ""
     );
+    const [state, formAction, isPending] = useActionState(action, null);
 
     const subcategories = getSubcategories(selectedCategory);
 
     return (
-        <form action={action} className="flex flex-col gap-4">
+        <form action={formAction} className="flex flex-col gap-4">
             {initialValues?.id && (
                 <input type="hidden" name="id" value={initialValues.id} />
+            )}
+
+            {state?.error && (
+                <div className="rounded-lg border border-coupon bg-coupon/5 px-3 py-2 text-sm text-coupon">
+                    {state.error}
+                </div>
             )}
 
             <div className="grid grid-cols-2 gap-4">
@@ -243,9 +252,10 @@ export default function CouponForm({
 
             <button
                 type="submit"
-                className="rounded-full bg-coupon px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
+                disabled={isPending}
+                className="rounded-full bg-coupon px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90 disabled:opacity-50"
             >
-                {initialValues?.id ? "Save Changes" : "Create Coupon"}
+                {isPending ? "Saving…" : initialValues?.id ? "Save Changes" : "Create Coupon"}
             </button>
         </form>
     );
