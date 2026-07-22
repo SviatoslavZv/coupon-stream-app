@@ -1,4 +1,5 @@
 import Link from "next/link";
+import ShareButton from "@/components/ui/ShareButton";
 
 export default function Header() {
     return (
@@ -6,7 +7,7 @@ export default function Header() {
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
                 <Link href="/" className="shrink-0 font-display text-2xl font-black tracking-tight">
                     <span className="text-ink">Coupon</span>
-                    <span className="text-coupon">Stream</span>
+                    <span className="text-coupon">Creek</span>
                 </Link>
 
                 <div className="hidden flex-1 sm:block">
@@ -27,6 +28,11 @@ export default function Header() {
                     <Link href="/brands" className="hover:text-coupon">
                         Brands
                     </Link>
+                    <ShareButton
+                        path="/"
+                        title="CouponCreek — Promo Codes & Deals for Top Fashion Stores"
+                        className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
+                    />
                 </nav>
             </div>
 

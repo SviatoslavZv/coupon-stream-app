@@ -21,7 +21,7 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
-  title: "CouponStream — Promo Codes & Deals for Top Fashion Stores",
+  title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
   description:
     "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
 };

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getStoreWithCoupons } from "@/lib/coupons";
 import CouponItem from "@/components/store/CouponItem";
+import ShareButton from "@/components/ui/ShareButton";
 import Image from "next/image";
 
 export default async function StorePage({
@@ -20,24 +21,32 @@ export default async function StorePage({
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-10">
-            <div className="mb-8 flex items-center gap-4">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-paper">
-                    <Image
-                        src={store.logoUrl}
-                        alt={`${store.name} logo`}
-                        width={40}
-                        height={40}
-                        className="h-10 w-10 object-contain"
-                    />
+            <div className="mb-8 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-paper">
+                        <Image
+                            src={store.logoUrl}
+                            alt={`${store.name} logo`}
+                            width={40}
+                            height={40}
+                            className="h-10 w-10 object-contain"
+                        />
+                    </div>
+                    <div>
+                        <h1 className="font-display text-2xl font-black text-ink">
+                            {store.name} Promo Codes
+                        </h1>
+                        <p className="text-sm text-ink/60">
+                            {coupons.length} verified offers
+                        </p>
+                    </div>
                 </div>
-                <div>
-                    <h1 className="font-display text-2xl font-black text-ink">
-                        {store.name} Promo Codes
-                    </h1>
-                    <p className="text-sm text-ink/60">
-                        {coupons.length} verified offers
-                    </p>
-                </div>
+
+                <ShareButton
+                    path={`/store/${slug}`}
+                    title={`${store.name} Promo Codes — CouponCreek`}
+                    className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-4 py-2 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
+                />
             </div>
 
             {coupons.length > 0 ? (
