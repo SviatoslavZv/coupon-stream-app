@@ -4,6 +4,17 @@ import { useEffect, useState } from "react";
 import type { Coupon } from "@/types";
 import ShareButton from "@/components/ui/ShareButton";
 
+
+function formatVerifiedLabel(isoDate: string): string {
+    const diffMs = Date.now() - new Date(isoDate).getTime();
+    const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+    if (diffDays === 0) return "Verified today";
+    if (diffDays === 1) return "Verified yesterday";
+    return `Verified ${diffDays} days ago`;
+}
+
+
 export default function CouponItem({
     coupon,
     storeSlug,
@@ -107,16 +118,19 @@ export default function CouponItem({
                 </ShareButton>
             </div>
 
-            {
-                showDetails && (
-                    <div className="border-t border-line bg-paper px-5 py-3 text-sm text-ink/70">
-                        <p>{coupon.description}</p>
-                        <p className="mt-1 text-xs text-ink/40">
-                            Expires {coupon.expiresAt}
+            {showDetails && (
+                <div className="border-t border-line bg-paper px-5 py-3 text-sm text-ink/70">
+                    <p>{coupon.description}</p>
+                    <p className="mt-1 text-xs text-ink/40">
+                        Expires {coupon.expiresAt}
+                    </p>
+                    {coupon.lastVerifiedAt && (
+                        <p className="mt-1 flex items-center gap-1 text-xs font-medium text-green-600">
+                            <span>✓</span> {formatVerifiedLabel(coupon.lastVerifiedAt)}
                         </p>
-                    </div>
-                )
-            }
-        </div >
+                    )}
+                </div>
+            )}
+        </div>
     );
 }

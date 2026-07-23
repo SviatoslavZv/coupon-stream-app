@@ -16,4 +16,5 @@ export interface Coupon {
   code?: string;
   description: string;
   expiresAt: string;
+  lastVerifiedAt?: string | null;
 }

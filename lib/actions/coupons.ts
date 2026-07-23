@@ -107,3 +107,21 @@ export async function deleteCoupon(formData: FormData) {
 
   revalidatePath("/admin");
 }
+
+
+export async function markCouponVerified(formData: FormData) {
+  const id = formData.get("id") as string;
+
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("coupons")
+    .update({ last_verified_at: new Date().toISOString() })
+    .eq("id", id);
+
+  if (error) {
+    throw new Error(`Failed to verify coupon: ${error.message}`);
+  }
+
+  revalidatePath("/admin");
+}

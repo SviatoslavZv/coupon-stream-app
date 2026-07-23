@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getStores } from "@/lib/stores";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
-import { deleteCoupon } from "@/lib/actions/coupons";
+import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
 import { deleteStore } from "@/lib/actions/stores";
 import LogoutButton from "@/components/admin/LogoutButton";
 import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
+
 
 export default async function AdminDashboard() {
     const [stores, coupons] = await Promise.all([
@@ -101,6 +102,15 @@ export default async function AdminDashboard() {
                                 </td>
                                 <td className="px-5 py-3">
                                     <div className="flex items-center justify-end gap-3">
+                                        <form action={markCouponVerified}>
+                                            <input type="hidden" name="id" value={coupon.id} />
+                                            <button
+                                                type="submit"
+                                                className="text-xs font-medium text-green-600 hover:text-green-700"
+                                            >
+                                                Verify
+                                            </button>
+                                        </form>
                                         <Link
                                             href={`/admin/coupons/${coupon.id}/edit`}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"

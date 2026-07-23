@@ -12,8 +12,8 @@ interface CouponRow {
   code: string | null;
   description: string;
   expires_at: string;
+  last_verified_at: string | null;
 }
-
 interface StoreWithCouponsRow {
   slug: string;
   name: string;
@@ -30,6 +30,7 @@ function mapCoupon(row: CouponRow): Coupon {
     code: row.code ?? undefined,
     description: row.description,
     expiresAt: row.expires_at,
+    lastVerifiedAt: row.last_verified_at,
   };
 }
 
@@ -42,7 +43,7 @@ export async function getStoreWithCoupons(slug: string): Promise<{
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at)"
+      "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at)"
     )
     .eq("slug", slug)
     .maybeSingle();
