@@ -56,7 +56,7 @@ export default function CouponItem({
         }
 
         setTimeout(() => {
-            window.open(`/api/go/${storeSlug}`, "_blank");
+            window.open(`/api/go/${storeSlug}?coupon=${coupon.id}`, "_blank");
         }, 1800);
     };
 
@@ -90,7 +90,7 @@ export default function CouponItem({
                         </button>
                     ) : (
                         <a
-                            href={`/api/go/${storeSlug}`}
+                            href={`/api/go/${storeSlug}?coupon=${coupon.id}`}
                             target="_blank"
                             rel="noopener"
                             className="inline-block rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
@@ -127,6 +127,11 @@ export default function CouponItem({
                     {coupon.lastVerifiedAt && (
                         <p className="mt-1 flex items-center gap-1 text-xs font-medium text-green-600">
                             <span>✓</span> {formatVerifiedLabel(coupon.lastVerifiedAt)}
+                        </p>
+                    )}
+                    {!!coupon.usageCount && coupon.usageCount > 0 && (
+                        <p className="mt-1 text-xs text-ink/40">
+                            Used {coupon.usageCount} {coupon.usageCount === 1 ? "time" : "times"}
                         </p>
                     )}
                 </div>

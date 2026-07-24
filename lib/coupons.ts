@@ -57,13 +57,17 @@ export async function getStoreWithCoupons(slug: string): Promise<{
   }
 
   const row = data as StoreWithCouponsRow;
+  const couponIds = row.coupons.map((c) => c.id);
+  const clickCounts = await getClickCounts(couponIds);
 
   return {
     store: { slug: row.slug, name: row.name, logoUrl: row.logo_url },
-    coupons: row.coupons.map(mapCoupon),
+    coupons: row.coupons.map((c) => ({
+      ...mapCoupon(c),
+      usageCount: clickCounts.get(c.id) ?? 0,
+    })),
   };
 }
-
 
 export interface AdminCouponRow {
   id: string;
@@ -337,4 +341,32 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
     label: b.label,
     count: counts.get(b.label) ?? 0,
   }));
+}
+
+
+export async function getClickCounts(
+  couponIds: string[]
+): Promise<Map<string, number>> {
+  const counts = new Map<string, number>();
+
+  if (couponIds.length === 0) {
+    return counts;
+  }
+
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("clicks")
+    .select("coupon_id")
+    .in("coupon_id", couponIds);
+
+  if (error) {
+    throw new Error(`Failed to fetch click counts: ${error.message}`);
+  }
+
+  for (const row of data as { coupon_id: string }[]) {
+    counts.set(row.coupon_id, (counts.get(row.coupon_id) ?? 0) + 1);
+  }
+
+  return counts;
 }

@@ -37,10 +37,16 @@ export async function getStoreRedirectUrl(
   return { storeId: row.id, url };
 }
 
-export async function recordClick(storeId: string): Promise<void> {
+export async function recordClick(
+  storeId: string,
+  couponId?: string
+): Promise<void> {
   const supabase = await createClient();
 
-  const { error } = await supabase.from("clicks").insert({ store_id: storeId });
+  const { error } = await supabase.from("clicks").insert({
+    store_id: storeId,
+    coupon_id: couponId ?? null,
+  });
 
   if (error) {
     console.error(`Failed to record click: ${error.message}`);

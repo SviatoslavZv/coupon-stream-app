@@ -8,6 +8,7 @@ export async function GET(
   { params }: { params: Promise<{ store: string }> }
 ) {
   const { store: slug } = await params;
+  const couponId = request.nextUrl.searchParams.get("coupon");
 
   const redirectInfo = await getStoreRedirectUrl(slug);
 
@@ -15,7 +16,7 @@ export async function GET(
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  await recordClick(redirectInfo.storeId);
+  await recordClick(redirectInfo.storeId, couponId ?? undefined);
 
   return NextResponse.redirect(redirectInfo.url);
 }
