@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState, useRef, useEffect } from "react";
 import type { StoreFormState } from "@/lib/actions/stores";
+import { slugify, extractDomain, faviconUrl } from "@/lib/utils";
 
 interface StoreFormValues {
     id?: string;
@@ -24,6 +25,62 @@ export default function StoreForm({
 }) {
     const [state, formAction, isPending] = useActionState(action, null);
 
+    const isEditing = Boolean(initialValues?.id);
+
+    const [name, setName] = useState(initialValues?.name ?? "");
+    const [slug, setSlug] = useState(initialValues?.slug ?? "");
+    const [websiteUrl, setWebsiteUrl] = useState(initialValues?.websiteUrl ?? "https://www.");
+    const [logoUrl, setLogoUrl] = useState(initialValues?.logoUrl ?? "");
+
+    const [isSlugTouched, setIsSlugTouched] = useState(isEditing);
+    const [isLogoTouched, setIsLogoTouched] = useState(isEditing);
+    const [showSlugField, setShowSlugField] = useState(false);
+    const [showLogoField, setShowLogoField] = useState(false);
+
+
+    const slugFieldRef = useRef<HTMLDivElement>(null);
+    const logoFieldRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                showSlugField &&
+                slugFieldRef.current &&
+                !slugFieldRef.current.contains(event.target as Node)
+            ) {
+                setShowSlugField(false);
+            }
+            if (
+                showLogoField &&
+                logoFieldRef.current &&
+                !logoFieldRef.current.contains(event.target as Node)
+            ) {
+                setShowLogoField(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [showSlugField, showLogoField]);
+
+
+    const handleNameChange = (value: string) => {
+        setName(value);
+        if (!isSlugTouched) {
+            setSlug(slugify(value));
+        }
+    };
+
+    const handleWebsiteUrlChange = (value: string) => {
+        setWebsiteUrl(value);
+        if (!isLogoTouched) {
+            const domain = extractDomain(value);
+            if (domain) {
+                setLogoUrl(faviconUrl(domain));
+            }
+        }
+    };
+
     return (
         <form action={formAction} className="flex flex-col gap-4">
             {initialValues?.id && (
@@ -37,21 +94,6 @@ export default function StoreForm({
             )}
 
             <div>
-                <label htmlFor="slug" className="mb-1 block text-sm font-medium text-ink">
-                    Slug
-                </label>
-                <input
-                    id="slug"
-                    name="slug"
-                    type="text"
-                    required
-                    placeholder="nike"
-                    defaultValue={initialValues?.slug}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
-                />
-            </div>
-
-            <div>
                 <label htmlFor="name" className="mb-1 block text-sm font-medium text-ink">
                     Name
                 </label>
@@ -61,38 +103,109 @@ export default function StoreForm({
                     type="text"
                     required
                     placeholder="Nike"
-                    defaultValue={initialValues?.name}
+                    value={name}
+                    onChange={(e) => handleNameChange(e.target.value)}
                     className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                 />
             </div>
 
-            <div>
-                <label htmlFor="logoUrl" className="mb-1 block text-sm font-medium text-ink">
-                    Logo URL
-                </label>
-                <input
-                    id="logoUrl"
-                    name="logoUrl"
-                    type="text"
-                    required
-                    placeholder="https://..."
-                    defaultValue={initialValues?.logoUrl}
-                    className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
-                />
+            <div ref={slugFieldRef}>
+                {showSlugField ? (
+                    <div>
+                        <label htmlFor="slug" className="mb-1 block text-sm font-medium text-ink">
+                            URL Slug
+                        </label>
+                        <input
+                            id="slug"
+                            name="slug"
+                            type="text"
+                            required
+                            value={slug}
+                            onChange={(e) => {
+                                setSlug(e.target.value);
+                                setIsSlugTouched(true);
+                            }}
+                            className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                        />
+                    </div>
+                ) : (
+                    <>
+                        <input type="hidden" name="slug" value={slug} />
+                        <button
+                            type="button"
+                            onClick={() => setShowSlugField(true)}
+                            className="self-start text-xs font-medium text-ink/40 underline hover:text-ink"
+                        >
+                            Customize URL slug ({slug || "auto-generated"})
+                        </button>
+                    </>
+                )}
             </div>
 
             <div>
                 <label htmlFor="websiteUrl" className="mb-1 block text-sm font-medium text-ink">
-                    Website URL (fallback if no affiliate link yet)
+                    Website URL
                 </label>
                 <input
                     id="websiteUrl"
                     name="websiteUrl"
                     type="text"
                     placeholder="https://www.nike.com"
-                    defaultValue={initialValues?.websiteUrl ?? ""}
+                    value={websiteUrl ?? ""}
+                    onChange={(e) => handleWebsiteUrlChange(e.target.value)}
                     className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                 />
+            </div>
+
+            <div>
+                <p className="mb-1 text-sm font-medium text-ink">Logo</p>
+                <div className="flex items-center gap-3">
+                    {logoUrl ? (
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={logoUrl}
+                            alt="Logo preview"
+                            className="h-10 w-10 shrink-0 rounded-full border border-line bg-paper object-contain p-1"
+                        />
+                    ) : (
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-dashed border-line text-xs text-ink/30">
+                            ?
+                        </div>
+                    )}
+                    <p className="text-xs text-ink/50">
+                        {websiteUrl && websiteUrl !== "https://www."
+                            ? "Fetched automatically from the website above."
+                            : "Add a website URL to fetch a logo automatically."}
+                    </p>
+                </div>
+
+                <div ref={logoFieldRef}>
+                    {showLogoField ? (
+                        <input
+                            id="logoUrl"
+                            name="logoUrl"
+                            type="text"
+                            required
+                            value={logoUrl}
+                            onChange={(e) => {
+                                setLogoUrl(e.target.value);
+                                setIsLogoTouched(true);
+                            }}
+                            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                        />
+                    ) : (
+                        <>
+                            <input type="hidden" name="logoUrl" value={logoUrl} />
+                            <button
+                                type="button"
+                                onClick={() => setShowLogoField(true)}
+                                className="mt-1 text-xs font-medium text-ink/40 underline hover:text-ink"
+                            >
+                                Change logo manually
+                            </button>
+                        </>
+                    )}
+                </div>
             </div>
 
             <div>
@@ -114,7 +227,7 @@ export default function StoreForm({
                 disabled={isPending}
                 className="rounded-full bg-coupon px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90 disabled:opacity-50"
             >
-                {isPending ? "Saving…" : initialValues?.id ? "Save Changes" : "Create Store"}
+                {isPending ? "Saving…" : isEditing ? "Save Changes" : "Create Store"}
             </button>
         </form>
     );

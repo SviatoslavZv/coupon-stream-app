@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { CATEGORIES, GENDERS, BRANDS, getSubcategories } from "@/lib/constants/taxonomy";
 import type { CouponFormState } from "@/lib/actions/coupons";
+import { DISCOUNT_LABEL_PRESETS, DESCRIPTION_PRESETS, buildTitleSuggestions } from "@/lib/constants/coupon-presets";
 
 interface StoreOption {
     id: string;
@@ -24,6 +25,10 @@ interface CouponFormValues {
     brand?: string | null;
 }
 
+
+
+
+
 export default function CouponForm({
     action,
     storeOptions,
@@ -39,9 +44,18 @@ export default function CouponForm({
     const [selectedCategory, setSelectedCategory] = useState(
         initialValues?.category ?? ""
     );
+
+    const [discountLabel, setDiscountLabel] = useState(initialValues?.discountLabel ?? "");
+
+    const [code, setCode] = useState(initialValues?.code ?? "");
+
+    const [description, setDescription] = useState(initialValues?.description ?? "");
+
     const [state, formAction, isPending] = useActionState(action, null);
 
     const subcategories = getSubcategories(selectedCategory);
+
+    const titleSuggestions = buildTitleSuggestions(discountLabel);
 
     return (
         <form action={formAction} className="flex flex-col gap-4">
@@ -101,9 +115,17 @@ export default function CouponForm({
                         type="text"
                         required
                         placeholder="25% OFF"
-                        defaultValue={initialValues?.discountLabel}
+                        list="discount-label-options"
+                        autoComplete="off"
+                        value={discountLabel}
+                        onChange={(e) => setDiscountLabel(e.target.value)}
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
+                    <datalist id="discount-label-options">
+                        {DISCOUNT_LABEL_PRESETS.map((preset) => (
+                            <option key={preset} value={preset} />
+                        ))}
+                    </datalist>
                 </div>
 
                 <div>
@@ -115,7 +137,8 @@ export default function CouponForm({
                         name="code"
                         type="text"
                         placeholder="NIKE20"
-                        defaultValue={initialValues?.code}
+                        value={code}
+                        onChange={(e) => setCode(e.target.value.toUpperCase())}
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
                 </div>
@@ -130,9 +153,16 @@ export default function CouponForm({
                         type="text"
                         required
                         placeholder="25% Off Your Next Order"
+                        list="title-options"
+                        autoComplete="off"
                         defaultValue={initialValues?.title}
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
+                    <datalist id="title-options">
+                        {titleSuggestions.map((suggestion) => (
+                            <option key={suggestion} value={suggestion} />
+                        ))}
+                    </datalist>
                 </div>
 
                 <div className="col-span-2">
@@ -144,9 +174,22 @@ export default function CouponForm({
                         name="description"
                         required
                         rows={2}
-                        defaultValue={initialValues?.description}
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
+                    <div className="mt-1 flex flex-wrap gap-1">
+                        {DESCRIPTION_PRESETS.map((preset) => (
+                            <button
+                                key={preset}
+                                type="button"
+                                onClick={() => setDescription(preset)}
+                                className="rounded-full border border-line px-2 py-0.5 text-xs text-ink/80 transition hover:border-coupon hover:text-coupon"
+                            >
+                                {preset.length > 30 ? `${preset.slice(0, 30)}…` : preset}
+                            </button>
+                        ))}
+                    </div>
                 </div>
 
                 <div>
