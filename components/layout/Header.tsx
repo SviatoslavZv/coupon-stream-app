@@ -1,7 +1,11 @@
 import Link from "next/link";
 import ShareButton from "@/components/ui/ShareButton";
+import StoreSearch from "@/components/layout/StoreSearch";
+import { getStores } from "@/lib/stores";
 
-export default function Header() {
+export default async function Header() {
+    const stores = await getStores();
+
     return (
         <header className="bg-paper">
             <div className="mx-auto flex max-w-6xl items-center justify-between gap-6 px-4 py-4">
@@ -11,11 +15,7 @@ export default function Header() {
                 </Link>
 
                 <div className="hidden flex-1 sm:block">
-                    <input
-                        type="text"
-                        placeholder="Search stores…"
-                        className="w-full max-w-md rounded-full border border-line bg-white px-4 py-2 text-sm text-ink placeholder:text-ink/40 focus:border-coupon focus:outline-none"
-                    />
+                    <StoreSearch stores={stores} />
                 </div>
 
                 <nav className="hidden items-center gap-6 text-sm font-medium text-ink sm:flex">
@@ -27,6 +27,9 @@ export default function Header() {
                     </Link>
                     <Link href="/brands" className="hover:text-coupon">
                         Brands
+                    </Link>
+                    <Link href="/sales-calendar" className="hover:text-coupon">
+                        Calendar
                     </Link>
                     <ShareButton
                         path="/"
