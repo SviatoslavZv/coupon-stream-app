@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { CATEGORIES } from "@/lib/constants/taxonomy";
+import { getCategoriesWithCoupons } from "@/lib/coupons";
 
-export default function CategoriesPage() {
+export default async function CategoriesPage() {
+    const categories = await getCategoriesWithCoupons();
+
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
             <h1 className="font-display text-3xl font-black text-ink">
@@ -11,23 +13,21 @@ export default function CategoriesPage() {
                 Browse deals by category across every store.
             </p>
 
-            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-                {CATEGORIES.map((category) => (
-                    <Link
-                        key={category.slug}
-                        href={`/category/${category.slug}`}
-                        className="rounded-2xl border border-line bg-white p-5 transition hover:shadow-md"
-                    >
-                        <h2 className="font-display text-lg font-bold text-ink">
-                            {category.label}
-                        </h2>
-                        {category.subcategories.length > 0 && (
-                            <p className="mt-1 text-sm text-ink/50">
-                                {category.subcategories.map((sub) => sub.label).join(", ")}
-                            </p>
-                        )}
-                    </Link>
-                ))}
+            <div className="mt-8 flex flex-wrap gap-3">
+                {categories.length > 0 ? (
+                    categories.map((category) => (
+                        <Link
+                            key={category.slug}
+                            href={`/category/${category.slug}`}
+                            className="rounded-full border border-line bg-white px-4 py-2 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
+                        >
+                            {category.label}{" "}
+                            <span className="text-ink/40">({category.count})</span>
+                        </Link>
+                    ))
+                ) : (
+                    <p className="text-ink/50">No category deals available yet.</p>
+                )}
             </div>
         </div>
     );

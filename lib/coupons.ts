@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { BRANDS } from "@/lib/constants/taxonomy";
+import { CATEGORIES } from "@/lib/constants/taxonomy";
 import type { Store, Coupon } from "@/types";
 
 interface CouponRow {
@@ -369,4 +370,36 @@ export async function getClickCounts(
   }
 
   return counts;
+}
+
+
+export interface CategorySummary {
+  slug: string;
+  label: string;
+  count: number;
+}
+
+export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("coupons")
+    .select("category")
+    .not("category", "is", null);
+
+  if (error) {
+    throw new Error(`Failed to fetch categories: ${error.message}`);
+  }
+
+  const counts = new Map<string, number>();
+
+  for (const row of data as { category: string }[]) {
+    counts.set(row.category, (counts.get(row.category) ?? 0) + 1);
+  }
+
+  return CATEGORIES.filter((c) => counts.has(c.slug)).map((c) => ({
+    slug: c.slug,
+    label: c.label,
+    count: counts.get(c.slug) ?? 0,
+  }));
 }

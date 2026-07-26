@@ -149,7 +149,12 @@ export default async function CategoryPage({
                         </div>
                     ))
                 ) : (
-                    <p className="text-ink/50">No offers found for this filter.</p>
+                    <div className="text-ink/50">
+                        <p>No offers found for this filter.</p>
+                        <Link href="/categories" className="mt-2 inline-block text-coupon hover:underline">
+                            Browse all categories
+                        </Link>
+                    </div>
                 )}
             </div>
         </div>
