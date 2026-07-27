@@ -106,6 +106,13 @@ export const BRANDS = [
   { slug: "kate-spade", label: "Kate Spade" },
   { slug: "fossil", label: "Fossil" },
   { slug: "guess", label: "Guess" },
+  { slug: "hm", label: "H&M" },
+  { slug: "mango", label: "Mango" },
+  { slug: "dockers", label: "Dockers" },
+  { slug: "steve-madden", label: "Steve Madden" },
+  { slug: "timberland", label: "Timberland" },
+  { slug: "crocs", label: "Crocs" },
+  { slug: "ugg", label: "UGG" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
