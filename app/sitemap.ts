@@ -1,0 +1,46 @@
+// app/sitemap.ts
+
+import type { MetadataRoute } from "next";
+import { getStores } from "@/lib/stores";
+import { getCategoriesWithCoupons, getBrandsWithCoupons } from "@/lib/coupons";
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
+  const staticPages: MetadataRoute.Sitemap = [
+    { url: siteUrl, changeFrequency: "daily", priority: 1 },
+    { url: `${siteUrl}/stores`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${siteUrl}/categories`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${siteUrl}/brands`, changeFrequency: "weekly", priority: 0.8 },
+    { url: `${siteUrl}/sales-calendar`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${siteUrl}/privacy-policy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${siteUrl}/terms-of-use`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${siteUrl}/cookie-policy`, changeFrequency: "yearly", priority: 0.2 },
+  ];
+
+  const [stores, categories, brands] = await Promise.all([
+    getStores(),
+    getCategoriesWithCoupons(),
+    getBrandsWithCoupons(),
+  ]);
+
+  const storePages: MetadataRoute.Sitemap = stores.map((store) => ({
+    url: `${siteUrl}/store/${store.slug}`,
+    changeFrequency: "daily",
+    priority: 0.9,
+  }));
+
+  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
+    url: `${siteUrl}/category/${category.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
+  const brandPages: MetadataRoute.Sitemap = brands.map((brand) => ({
+    url: `${siteUrl}/brand/${brand.slug}`,
+    changeFrequency: "weekly",
+    priority: 0.7,
+  }));
+
+  return [...staticPages, ...storePages, ...categoryPages, ...brandPages];
+}

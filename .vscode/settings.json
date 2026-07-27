@@ -2,7 +2,11 @@
 {
   "css.lint.unknownAtRules": "ignore",
   "cSpell.words": [
+    "activewear",
+    "crocs",
+    "loungewear",
     "Skechers",
-    "supabase"
+    "supabase",
+    "tshirts"
   ]
 }
