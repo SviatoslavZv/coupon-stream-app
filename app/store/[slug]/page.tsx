@@ -3,6 +3,7 @@ import { getStoreWithCoupons } from "@/lib/coupons";
 import CouponItem from "@/components/store/CouponItem";
 import ShareButton from "@/components/ui/ShareButton";
 import Image from "next/image";
+import StoreStructuredData from "@/components/store/StoreStructuredData";
 
 export default async function StorePage({
     params,
@@ -21,6 +22,13 @@ export default async function StorePage({
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-10">
+
+            <StoreStructuredData
+                store={store}
+                coupons={coupons}
+                siteUrl={`${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/store/${slug}`}
+            />
+
             <div className="mb-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                     <div className="flex h-16 w-16 items-center justify-center rounded-full bg-paper">
