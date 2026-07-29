@@ -77,6 +77,24 @@ export default function TermsOfUsePage() {
                     </p>
                 </section>
             </div>
-        </div>
+
+            <section>
+                <h2 className="mb-2 font-display text-lg font-bold text-ink">
+                    7. Contact
+                </h2>
+                <p>
+                    If you have questions about these Terms of Use, you can reach us at{" "}
+
+                    <a
+                        href="mailto:couponcreek@gmail.com"
+                        className="text-coupon hover:underline"
+                    >
+                        couponcreek@gmail.com
+                    </a>
+                    .
+                </p>
+            </section>
+
+        </div >
     );
 }

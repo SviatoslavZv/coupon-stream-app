@@ -15,6 +15,9 @@ export default function Footer() {
                     </p>
 
                     <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-ink/60">
+                        <Link href="/disclaimer" className="hover:text-ink">
+                            Disclaimer
+                        </Link>
                         <Link href="/privacy-policy" className="hover:text-ink">
                             Privacy Policy
                         </Link>
@@ -24,20 +27,27 @@ export default function Footer() {
                         <Link href="/cookie-policy" className="hover:text-ink">
                             Cookie Policy
                         </Link>
+                        <a
+                            href="mailto:couponcreek@gmail.com"
+                            className="hover:text-ink"
+                        >
+                            Contact
+                        </a>
                     </nav>
 
-                    <a
-                        href="https://mybiostack.vercel.app?utm_source=couponstream&utm_medium=footer&utm_campaign=cross_promo"
-                        target="_blank"
-                        rel="noopener"
-                        className="text-sm text-ink/60 hover:text-ink"
-                    >
-                        Also building:{" "}
-                        <span className="font-medium text-coupon">BioStack</span> — build
-                        your perfect supplement stack
-                        <span className="sr-only"> (opens in a new tab)</span>
-                    </a>
+
                 </div>
+                <a
+                    href="https://mybiostack.vercel.app?utm_source=couponcreek&utm_medium=footer&utm_campaign=cross_promo"
+                    target="_blank"
+                    rel="noopener"
+                    className="text-sm text-ink/60 hover:text-ink"
+                >
+                    Also building:{" "}
+                    <span className="font-medium text-coupon">BioStack</span> — build
+                    your perfect supplement stack
+                    <span className="sr-only"> (opens in a new tab)</span>
+                </a>
             </div>
         </footer>
     );

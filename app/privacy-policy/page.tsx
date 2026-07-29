@@ -79,8 +79,15 @@ export default function PrivacyPolicyPage() {
                         6. Contact
                     </h2>
                     <p>
-                        If you have questions about this Privacy Policy, you can reach us
-                        through the contact information provided on our site.
+                        If you have questions about this Privacy Policy, you can reach us at{" "}
+
+                        <a
+                            href="mailto:couponcreek@gmail.com"
+                            className="text-coupon hover:underline"
+                        >
+                            couponcreek@gmail.com
+                        </a>
+                        .
                     </p>
                 </section>
             </div>

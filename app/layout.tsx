@@ -21,6 +21,9 @@ const archivo = Archivo({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
+  ),
   title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
   description:
     "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
