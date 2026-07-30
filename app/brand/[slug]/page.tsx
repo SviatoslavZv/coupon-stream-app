@@ -1,7 +1,53 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import type { Metadata } from "next";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import { getCouponsByBrand, extractCategoryOptions } from "@/lib/coupons";
+
+
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const brand = BRANDS.find((b) => b.slug === slug);
+
+    if (!brand) {
+        return { title: "Brand Not Found — CouponCreek" };
+    }
+
+    const coupons = await getCouponsByBrand(brand.label, {});
+    const monthYear = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+    });
+
+    const title = `${brand.label} Coupons & Promo Codes at Department Stores — ${monthYear} | CouponCreek`;
+    const description = `${coupons.length} verified ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`;
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: `/brand/${slug}`,
+        },
+        openGraph: {
+            title,
+            description,
+            url: `/brand/${slug}`,
+            type: "website",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+        },
+    };
+}
+
+
 
 function buildFilterUrl(
     brandSlug: string,

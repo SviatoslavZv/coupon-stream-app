@@ -27,6 +27,11 @@ export const metadata: Metadata = {
   title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
   description:
     "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+  verification: {
+    other: {
+      'impact-site-verification': '00cd0b44-49d1-40b5-9c5a-63d1826b9e41',
+    },
+  },
 };
 
 export default function RootLayout({

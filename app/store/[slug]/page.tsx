@@ -1,9 +1,54 @@
 import { notFound } from "next/navigation";
+import Image from "next/image";
+import type { Metadata } from "next";
 import { getStoreWithCoupons } from "@/lib/coupons";
 import CouponItem from "@/components/store/CouponItem";
 import ShareButton from "@/components/ui/ShareButton";
-import Image from "next/image";
 import StoreStructuredData from "@/components/store/StoreStructuredData";
+
+
+
+export async function generateMetadata({
+    params,
+}: {
+    params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+    const { slug } = await params;
+    const result = await getStoreWithCoupons(slug);
+
+    if (!result) {
+        return { title: "Store Not Found — CouponCreek" };
+    }
+
+    const { store, coupons } = result;
+    const monthYear = new Date().toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+    });
+
+    const title = `${store.name} Promo Codes & Coupons — ${monthYear} | CouponCreek`;
+    const description = `${coupons.length} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`;
+
+    return {
+        title,
+        description,
+        alternates: {
+            canonical: `/store/${slug}`,
+        },
+        openGraph: {
+            title,
+            description,
+            url: `/store/${slug}`,
+            type: "website",
+        },
+        twitter: {
+            card: "summary_large_image",
+            title,
+            description,
+        },
+    };
+}
+
 
 export default async function StorePage({
     params,
