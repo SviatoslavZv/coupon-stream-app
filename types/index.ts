@@ -6,6 +6,8 @@ export interface Store {
   logoUrl: string;
   offerCount: number;
   bestOffer: string;
+  createdAt?: string; // Добавляем опциональную дату создания
+  updatedAt?: string; // Добавляем опциональную дату обновления
 }
 
 export interface Coupon {

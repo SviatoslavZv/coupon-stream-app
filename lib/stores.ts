@@ -8,6 +8,8 @@ interface StoreRow {
   slug: string;
   name: string;
   logo_url: string;
+  created_at?: string; // 👈 Добавили
+  updated_at?: string; // 👈 Добавили
   coupons: { discount_label: string }[];
 }
 
@@ -19,6 +21,8 @@ function mapStoreFromDb(row: StoreRow): Store {
     logoUrl: row.logo_url,
     offerCount: row.coupons.length,
     bestOffer: row.coupons[0]?.discount_label ?? "No offers yet",
+    createdAt: row.created_at, // 👈 Добавили маппинг
+    updatedAt: row.updated_at, // 👈 Добавили маппинг
   };
 }
 
@@ -27,7 +31,8 @@ export async function getStores(): Promise<Store[]> {
 
   const { data, error } = await supabase
     .from("stores")
-    .select("id, slug, name, logo_url, coupons(discount_label)");
+    // 💡 Запрашиваем created_at и updated_at из таблицы:
+    .select("id, slug, name, logo_url, created_at, updated_at, coupons(discount_label)");
 
   if (error) {
     throw new Error(`Failed to fetch stores: ${error.message}`);
@@ -43,7 +48,6 @@ export async function getTopStores(limit: number): Promise<Store[]> {
     .sort((a, b) => b.offerCount - a.offerCount)
     .slice(0, limit);
 }
-
 
 export interface StoreOption {
   id: string;
@@ -64,7 +68,6 @@ export async function getStoreOptions(): Promise<StoreOption[]> {
 
   return data as StoreOption[];
 }
-
 
 export interface AdminStoreRow {
   id: string;

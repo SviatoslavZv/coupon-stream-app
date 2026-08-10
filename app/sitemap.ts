@@ -1,5 +1,4 @@
 // app/sitemap.ts
-
 import type { MetadataRoute } from "next";
 import { getStores } from "@/lib/stores";
 import { getCategoriesWithCoupons, getBrandsWithCoupons } from "@/lib/coupons";
@@ -27,18 +26,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const storePages: MetadataRoute.Sitemap = stores.map((store) => ({
     url: `${siteUrl}/store/${store.slug}`,
+    // Разбираем эту строчку:
+    // Если store.updatedAt существует — берем его.
+    // Если нет, проверяем store.createdAt.
+    // Если и его нет — ставим new Date() (текущую дату).
+    lastModified: store.updatedAt 
+      ? new Date(store.updatedAt) 
+      : store.createdAt 
+        ? new Date(store.createdAt) 
+        : new Date(),
     changeFrequency: "daily",
     priority: 0.9,
   }));
 
   const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
     url: `${siteUrl}/category/${category.slug}`,
+    lastModified: category.lastModified ? new Date(category.lastModified) : new Date(),
     changeFrequency: "weekly",
     priority: 0.7,
   }));
 
   const brandPages: MetadataRoute.Sitemap = brands.map((brand) => ({
     url: `${siteUrl}/brand/${brand.slug}`,
+    lastModified: brand.lastModified ? new Date(brand.lastModified) : new Date(),
     changeFrequency: "weekly",
     priority: 0.7,
   }));

@@ -317,6 +317,7 @@ export interface BrandSummary {
   slug: string;
   label: string;
   count: number;
+  lastModified?: string;
 }
 
 export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
@@ -324,23 +325,37 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
 
   const { data, error } = await supabase
     .from("coupons")
-    .select("brand")
+    .select("brand, updated_at, created_at")
     .not("brand", "is", null);
 
   if (error) {
     throw new Error(`Failed to fetch brands: ${error.message}`);
   }
 
-  const counts = new Map<string, number>();
+  const brandMeta = new Map<string, { count: number; lastModified?: string }>();
 
-  for (const row of data as { brand: string }[]) {
-    counts.set(row.brand, (counts.get(row.brand) ?? 0) + 1);
+  for (const row of data as { brand: string; updated_at?: string; created_at?: string }[]) {
+    const existing = brandMeta.get(row.brand);
+    const rowDate = row.updated_at || row.created_at;
+
+    let latestDate = existing?.lastModified;
+    if (rowDate) {
+      if (!latestDate || new Date(rowDate) > new Date(latestDate)) {
+        latestDate = rowDate;
+      }
+    }
+
+    brandMeta.set(row.brand, {
+      count: (existing?.count ?? 0) + 1,
+      lastModified: latestDate,
+    });
   }
 
-  return BRANDS.filter((b) => counts.has(b.label)).map((b) => ({
+  return BRANDS.filter((b) => brandMeta.has(b.label)).map((b) => ({
     slug: b.slug,
     label: b.label,
-    count: counts.get(b.label) ?? 0,
+    count: brandMeta.get(b.label)?.count ?? 0,
+    lastModified: brandMeta.get(b.label)?.lastModified,
   }));
 }
 
@@ -377,6 +392,7 @@ export interface CategorySummary {
   slug: string;
   label: string;
   count: number;
+  lastModified?: string;
 }
 
 export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
@@ -384,22 +400,36 @@ export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
 
   const { data, error } = await supabase
     .from("coupons")
-    .select("category")
+    .select("category, updated_at, created_at")
     .not("category", "is", null);
 
   if (error) {
     throw new Error(`Failed to fetch categories: ${error.message}`);
   }
 
-  const counts = new Map<string, number>();
+  const categoryMeta = new Map<string, { count: number; lastModified?: string }>();
 
-  for (const row of data as { category: string }[]) {
-    counts.set(row.category, (counts.get(row.category) ?? 0) + 1);
+  for (const row of data as { category: string; updated_at?: string; created_at?: string }[]) {
+    const existing = categoryMeta.get(row.category);
+    const rowDate = row.updated_at || row.created_at;
+
+    let latestDate = existing?.lastModified;
+    if (rowDate) {
+      if (!latestDate || new Date(rowDate) > new Date(latestDate)) {
+        latestDate = rowDate;
+      }
+    }
+
+    categoryMeta.set(row.category, {
+      count: (existing?.count ?? 0) + 1,
+      lastModified: latestDate,
+    });
   }
 
-  return CATEGORIES.filter((c) => counts.has(c.slug)).map((c) => ({
+  return CATEGORIES.filter((c) => categoryMeta.has(c.slug)).map((c) => ({
     slug: c.slug,
     label: c.label,
-    count: counts.get(c.slug) ?? 0,
+    count: categoryMeta.get(c.slug)?.count ?? 0,
+    lastModified: categoryMeta.get(c.slug)?.lastModified,
   }));
 }
