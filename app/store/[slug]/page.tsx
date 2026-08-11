@@ -5,6 +5,7 @@ import { getStoreWithCoupons } from "@/lib/coupons";
 import CouponItem from "@/components/store/CouponItem";
 import ShareButton from "@/components/ui/ShareButton";
 import StoreStructuredData from "@/components/store/StoreStructuredData";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 
 
@@ -17,7 +18,10 @@ export async function generateMetadata({
     const result = await getStoreWithCoupons(slug);
 
     if (!result) {
-        return { title: "Store Not Found — CouponCreek" };
+        return {
+            title: "Store Not Found — CouponCreek",
+            robots: { index: false, follow: false }, // 👈 Не индексируем несуществующие страницы
+        };
     }
 
     const { store, coupons } = result;
@@ -40,11 +44,20 @@ export async function generateMetadata({
             description,
             url: `/store/${slug}`,
             type: "website",
+            images: store.logoUrl // 👈 Картинка логотипа для красивых карточек в соцсетях
+                ? [
+                    {
+                        url: store.logoUrl,
+                        alt: `${store.name} Logo`,
+                    },
+                ]
+                : [],
         },
         twitter: {
             card: "summary_large_image",
             title,
             description,
+            images: store.logoUrl ? [store.logoUrl] : [], // 👈 Превью для Twitter
         },
     };
 }
@@ -67,6 +80,14 @@ export default async function StorePage({
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-10">
+
+            <Breadcrumbs
+                items={[
+                    { label: "Home", href: "/" },
+                    { label: "Stores", href: "/stores" },
+                    { label: store.name },
+                ]}
+            />
 
             <StoreStructuredData
                 store={store}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { CATEGORIES } from "@/lib/constants/taxonomy";
 import { getCouponsByCategory, extractFilterOptions } from "@/lib/coupons";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 
 
@@ -89,6 +90,15 @@ export default async function CategoryPage({
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
+
+            <Breadcrumbs
+                items={[
+                    { label: "Home", href: "/" },
+                    { label: "Categories", href: "/categories" },
+                    { label: category.label },
+                ]}
+            />
+
             <h1 className="font-display text-3xl font-black text-ink">
                 {category.label} Deals
             </h1>

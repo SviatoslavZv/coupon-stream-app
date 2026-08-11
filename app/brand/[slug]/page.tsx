@@ -3,6 +3,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import { getCouponsByBrand, extractCategoryOptions } from "@/lib/coupons";
+import Breadcrumbs from "@/components/ui/Breadcrumbs";
 
 
 
@@ -85,6 +86,15 @@ export default async function BrandPage({
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
+
+            <Breadcrumbs
+                items={[
+                    { label: "Home", href: "/" },
+                    { label: "Brands", href: "/brands" },
+                    { label: brand.label },
+                ]}
+            />
+
             <h1 className="font-display text-3xl font-black text-ink">
                 {brand.label} Deals
             </h1>
