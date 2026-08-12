@@ -23,6 +23,7 @@ export function buildPageMetadata({
       url: path,
     },
     twitter: {
+      card: "summary_large_image",
       title,
       description,
     },
