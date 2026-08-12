@@ -1,8 +1,7 @@
 // lib/coupons.ts
 
 import { createClient } from "@/lib/supabase/server";
-import { BRANDS } from "@/lib/constants/taxonomy";
-import { CATEGORIES } from "@/lib/constants/taxonomy";
+import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
 import type { Store, Coupon } from "@/types";
 
 interface CouponRow {

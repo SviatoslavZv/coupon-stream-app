@@ -8,6 +8,7 @@ export interface Store {
   bestOffer: string;
   createdAt?: string; // Добавляем опциональную дату создания
   updatedAt?: string; // Добавляем опциональную дату обновления
+  lastModified?: string;
 }
 
 export interface Coupon {

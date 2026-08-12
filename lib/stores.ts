@@ -8,12 +8,28 @@ interface StoreRow {
   slug: string;
   name: string;
   logo_url: string;
-  created_at?: string; // 👈 Добавили
-  updated_at?: string; // 👈 Добавили
-  coupons: { discount_label: string }[];
+  created_at?: string;
+  updated_at?: string;
+  coupons: { discount_label: string; updated_at?: string; created_at?: string }[];
 }
 
 function mapStoreFromDb(row: StoreRow): Store {
+  const storeDate = row.updated_at ?? row.created_at;
+
+  const latestCouponDate = row.coupons.reduce<string | undefined>((latest, coupon) => {
+    const couponDate = coupon.updated_at ?? coupon.created_at;
+    if (!couponDate) return latest;
+    if (!latest || new Date(couponDate) > new Date(latest)) return couponDate;
+    return latest;
+  }, undefined);
+
+  const lastModified =
+    storeDate && latestCouponDate
+      ? new Date(storeDate) > new Date(latestCouponDate)
+        ? storeDate
+        : latestCouponDate
+      : storeDate ?? latestCouponDate;
+
   return {
     id: row.id,
     slug: row.slug,
@@ -21,8 +37,9 @@ function mapStoreFromDb(row: StoreRow): Store {
     logoUrl: row.logo_url,
     offerCount: row.coupons.length,
     bestOffer: row.coupons[0]?.discount_label ?? "No offers yet",
-    createdAt: row.created_at, // 👈 Добавили маппинг
-    updatedAt: row.updated_at, // 👈 Добавили маппинг
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+    lastModified,
   };
 }
 
@@ -31,8 +48,9 @@ export async function getStores(): Promise<Store[]> {
 
   const { data, error } = await supabase
     .from("stores")
-    // 💡 Запрашиваем created_at и updated_at из таблицы:
-    .select("id, slug, name, logo_url, created_at, updated_at, coupons(discount_label)");
+    .select(
+      "id, slug, name, logo_url, created_at, updated_at, coupons(discount_label, updated_at, created_at)"
+    );
 
   if (error) {
     throw new Error(`Failed to fetch stores: ${error.message}`);

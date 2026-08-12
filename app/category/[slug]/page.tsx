@@ -4,8 +4,7 @@ import type { Metadata } from "next";
 import { CATEGORIES } from "@/lib/constants/taxonomy";
 import { getCouponsByCategory, extractFilterOptions } from "@/lib/coupons";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-
-
+import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
     params,
@@ -16,7 +15,7 @@ export async function generateMetadata({
     const category = CATEGORIES.find((c) => c.slug === slug);
 
     if (!category) {
-        return { title: "Category Not Found — CouponCreek" };
+        return notFoundMetadata("Category Not Found");
     }
 
     const coupons = await getCouponsByCategory(slug, {});
@@ -25,27 +24,11 @@ export async function generateMetadata({
         year: "numeric",
     });
 
-    const title = `${category.label} Deals & Promo Codes — ${monthYear} | CouponCreek`;
-    const description = `${coupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`;
-
-    return {
-        title,
-        description,
-        alternates: {
-            canonical: `/category/${slug}`,
-        },
-        openGraph: {
-            title,
-            description,
-            url: `/category/${slug}`,
-            type: "website",
-        },
-        twitter: {
-            card: "summary_large_image",
-            title,
-            description,
-        },
-    };
+    return buildPageMetadata({
+        title: `${category.label} Deals & Promo Codes — ${monthYear}`,
+        description: `${coupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
+        path: `/category/${slug}`,
+    });
 }
 
 

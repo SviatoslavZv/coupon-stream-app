@@ -24,12 +24,27 @@ export const metadata: Metadata = {
   metadataBase: new URL(
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
   ),
-  title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
+  title: {
+    default: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
+    template: "%s | CouponCreek",
+  },
   description:
     "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+  openGraph: {
+    siteName: "CouponCreek",
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   verification: {
     other: {
-      'impact-site-verification': '00cd0b44-49d1-40b5-9c5a-63d1826b9e41',
+      "impact-site-verification": "00cd0b44-49d1-40b5-9c5a-63d1826b9e41",
     },
   },
 };

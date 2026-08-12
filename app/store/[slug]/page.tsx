@@ -6,8 +6,7 @@ import CouponItem from "@/components/store/CouponItem";
 import ShareButton from "@/components/ui/ShareButton";
 import StoreStructuredData from "@/components/store/StoreStructuredData";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
-
-
+import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
     params,
@@ -18,10 +17,7 @@ export async function generateMetadata({
     const result = await getStoreWithCoupons(slug);
 
     if (!result) {
-        return {
-            title: "Store Not Found — CouponCreek",
-            robots: { index: false, follow: false }, // 👈 Не индексируем несуществующие страницы
-        };
+        return notFoundMetadata("Store Not Found");
     }
 
     const { store, coupons } = result;
@@ -30,37 +26,13 @@ export async function generateMetadata({
         year: "numeric",
     });
 
-    const title = `${store.name} Promo Codes & Coupons — ${monthYear} | CouponCreek`;
-    const description = `${coupons.length} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`;
-
-    return {
-        title,
-        description,
-        alternates: {
-            canonical: `/store/${slug}`,
-        },
-        openGraph: {
-            title,
-            description,
-            url: `/store/${slug}`,
-            type: "website",
-            images: store.logoUrl // 👈 Картинка логотипа для красивых карточек в соцсетях
-                ? [
-                    {
-                        url: store.logoUrl,
-                        alt: `${store.name} Logo`,
-                    },
-                ]
-                : [],
-        },
-        twitter: {
-            card: "summary_large_image",
-            title,
-            description,
-            images: store.logoUrl ? [store.logoUrl] : [], // 👈 Превью для Twitter
-        },
-    };
+    return buildPageMetadata({
+        title: `${store.name} Promo Codes & Coupons — ${monthYear}`,
+        description: `${coupons.length} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`,
+        path: `/store/${slug}`,
+    });
 }
+
 
 
 export default async function StorePage({

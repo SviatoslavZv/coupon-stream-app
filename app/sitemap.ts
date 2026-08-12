@@ -26,15 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const storePages: MetadataRoute.Sitemap = stores.map((store) => ({
     url: `${siteUrl}/store/${store.slug}`,
-    // Разбираем эту строчку:
-    // Если store.updatedAt существует — берем его.
-    // Если нет, проверяем store.createdAt.
-    // Если и его нет — ставим new Date() (текущую дату).
-    lastModified: store.updatedAt 
-      ? new Date(store.updatedAt) 
-      : store.createdAt 
-        ? new Date(store.createdAt) 
-        : new Date(),
+    lastModified: store.lastModified ? new Date(store.lastModified) : new Date(),
     changeFrequency: "daily",
     priority: 0.9,
   }));
