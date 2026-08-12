@@ -1,4 +1,5 @@
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 import type { Metadata } from "next";
 import { getStoreWithCoupons } from "@/lib/coupons";
@@ -7,6 +8,7 @@ import ShareButton from "@/components/ui/ShareButton";
 import StoreStructuredData from "@/components/store/StoreStructuredData";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
+
 
 export async function generateMetadata({
     params,
@@ -83,7 +85,9 @@ export default async function StorePage({
                             {store.name} Promo Codes
                         </h1>
                         <p className="text-sm text-ink/60">
-                            {coupons.length} verified offers
+                            {coupons.length > 0
+                                ? `${coupons.length} verified ${coupons.length === 1 ? "offer" : "offers"}`
+                                : "No offers yet"}
                         </p>
                     </div>
                 </div>
@@ -102,9 +106,12 @@ export default async function StorePage({
                     ))}
                 </div>
             ) : (
-                <p className="text-ink/50">
-                    No active offers for {store.name} right now. Check back soon.
-                </p>
+                <div className="text-ink/50">
+                    <p>No active offers for {store.name} right now. Check back soon.</p>
+                    <Link href="/stores" className="mt-2 inline-block text-coupon hover:underline">
+                        Browse other stores
+                    </Link>
+                </div>
             )}
         </div>
     );

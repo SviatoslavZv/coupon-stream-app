@@ -69,7 +69,9 @@ export default async function Image({
                         opacity: 0.7,
                     }}
                 >
-                    {offerCount} verified {offerCount === 1 ? "offer" : "offers"}
+                    {offerCount > 0
+                        ? `${offerCount} verified ${offerCount === 1 ? "offer" : "offers"}`
+                        : "New deals coming soon"}
                 </div>
 
                 {bestOffer && (
