@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import { getCouponsByBrand, extractCategoryOptions } from "@/lib/coupons";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import BrandStructuredData from "@/components/seo/BrandStructuredData";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -30,8 +31,6 @@ export async function generateMetadata({
         path: `/brand/${slug}`,
     });
 }
-
-
 
 function buildFilterUrl(
     brandSlug: string,
@@ -69,6 +68,11 @@ export default async function BrandPage({
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
+            <BrandStructuredData
+                brandName={brand.label}
+                brandSlug={slug}
+                coupons={coupons}
+            />
 
             <Breadcrumbs
                 items={[
@@ -96,8 +100,8 @@ export default async function BrandPage({
                             key={value}
                             href={buildFilterUrl(slug, category, value)}
                             className={`rounded-full border px-3 py-1 text-xs font-medium transition ${category === value
-                                ? "border-coupon bg-coupon text-white"
-                                : "border-line text-ink/70 hover:border-ink"
+                                    ? "border-coupon bg-coupon text-white"
+                                    : "border-line text-ink/70 hover:border-ink"
                                 }`}
                         >
                             {value} ({count})

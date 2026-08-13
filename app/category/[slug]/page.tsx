@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { CATEGORIES } from "@/lib/constants/taxonomy";
 import { getCouponsByCategory, extractFilterOptions } from "@/lib/coupons";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import CategoryStructuredData from "@/components/seo/CategoryStructuredData";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 
 export async function generateMetadata({
@@ -30,7 +31,6 @@ export async function generateMetadata({
         path: `/category/${slug}`,
     });
 }
-
 
 function buildFilterUrl(
     categorySlug: string,
@@ -73,6 +73,11 @@ export default async function CategoryPage({
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
+            <CategoryStructuredData
+                categoryName={category.label}
+                categorySlug={slug}
+                coupons={coupons}
+            />
 
             <Breadcrumbs
                 items={[

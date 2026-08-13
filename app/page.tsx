@@ -1,5 +1,15 @@
+import type { Metadata } from "next";
 import StoreGrid from "@/components/store/StoreGrid";
 import { getTopStores } from "@/lib/stores";
+
+export const metadata: Metadata = {
+  title: "CouponCreek — Verified Promo Codes & Discounts for Top Stores",
+  description:
+    "Discover daily updated promo codes, discount coupons, and exclusive sales for your favorite fashion and retail stores on CouponCreek.",
+  alternates: {
+    canonical: "/",
+  },
+};
 
 export default async function Home() {
   const stores = await getTopStores(6);
