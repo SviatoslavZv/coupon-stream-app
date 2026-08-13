@@ -7,8 +7,10 @@ import CouponItem from "@/components/store/CouponItem";
 import ShareButton from "@/components/ui/ShareButton";
 import StoreStructuredData from "@/components/store/StoreStructuredData";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import FaqSection from "@/components/ui/FaqSection";
+import FaqStructuredData from "@/components/seo/FaqStructuredData";
+import { getStoreFaq } from "@/lib/constants/faq";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
-
 
 export async function generateMetadata({
     params,
@@ -35,8 +37,6 @@ export async function generateMetadata({
     });
 }
 
-
-
 export default async function StorePage({
     params,
 }: {
@@ -51,10 +51,10 @@ export default async function StorePage({
     }
 
     const { store, coupons } = result;
+    const faqItems = getStoreFaq(store.name, coupons.length);
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-10">
-
             <Breadcrumbs
                 items={[
                     { label: "Home", href: "/" },
@@ -68,6 +68,8 @@ export default async function StorePage({
                 coupons={coupons}
                 siteUrl={`${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/store/${slug}`}
             />
+
+            <FaqStructuredData items={faqItems} />
 
             <div className="mb-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
@@ -113,6 +115,11 @@ export default async function StorePage({
                     </Link>
                 </div>
             )}
+
+            <FaqSection
+                title={`Frequently Asked Questions about ${store.name} Promo Codes`}
+                items={faqItems}
+            />
         </div>
     );
 }
