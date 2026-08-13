@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Archivo } from "next/font/google";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -47,6 +47,10 @@ export const metadata: Metadata = {
       "impact-site-verification": "00cd0b44-49d1-40b5-9c5a-63d1826b9e41",
     },
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#E23E2F",
 };
 
 export default function RootLayout({
