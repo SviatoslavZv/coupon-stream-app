@@ -20,10 +20,10 @@ const archivo = Archivo({
   weight: ["700", "800", "900"],
 });
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+
 export const metadata: Metadata = {
-  metadataBase: new URL(
-    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"
-  ),
+  metadataBase: new URL(siteUrl),
   title: {
     default: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
     template: "%s | CouponCreek",
@@ -31,12 +31,19 @@ export const metadata: Metadata = {
   description:
     "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
   openGraph: {
+    title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
+    description:
+      "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+    url: siteUrl,
     siteName: "CouponCreek",
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
+    title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
+    description:
+      "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
   },
   robots: {
     index: true,

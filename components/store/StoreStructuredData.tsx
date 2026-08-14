@@ -18,9 +18,16 @@ export default function StoreStructuredData({
             "@type": "Offer",
             name: coupon.title,
             description: coupon.description,
-            validThrough: coupon.expiresAt,
+            price: "0",
+            priceCurrency: "USD",
+            availability: "https://schema.org/InStock",
+            validThrough: coupon.expiresAt ?? undefined,
             url: siteUrl,
             category: coupon.type === "code" ? "Promo Code" : "Sale",
+            seller: {
+                "@type": "Organization",
+                name: store.name,
+            },
         })),
     };
 
