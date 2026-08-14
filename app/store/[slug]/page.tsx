@@ -30,9 +30,12 @@ export async function generateMetadata({
         year: "numeric",
     });
 
+    const activeCount = coupons.length;
+    const countBadge = activeCount > 0 ? `(${activeCount} Active) ` : "";
+
     return buildPageMetadata({
-        title: `${store.name} Promo Codes & Coupons — ${monthYear}`,
-        description: `${coupons.length} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`,
+        title: `${store.name} Promo Codes & Coupons ${countBadge}— ${monthYear}`,
+        description: `${activeCount} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`,
         path: `/store/${slug}`,
     });
 }
@@ -66,7 +69,6 @@ export default async function StorePage({
             <StoreStructuredData
                 store={store}
                 coupons={coupons}
-                siteUrl={`${process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"}/store/${slug}`}
             />
 
             <FaqStructuredData items={faqItems} />

@@ -19,7 +19,7 @@ export async function generateMetadata({
         return notFoundMetadata("Category Not Found");
     }
 
-    const coupons = await getCouponsByCategory(slug, {});
+    const allCoupons = await getCouponsByCategory(slug, {});
     const monthYear = new Date().toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
@@ -27,7 +27,7 @@ export async function generateMetadata({
 
     return buildPageMetadata({
         title: `${category.label} Deals & Promo Codes — ${monthYear}`,
-        description: `${coupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
+        description: `${allCoupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
         path: `/category/${slug}`,
     });
 }
@@ -44,6 +44,7 @@ function buildFilterUrl(
         if (v && k !== key) params.set(k, v);
     }
 
+    // Toggle: если фильтр уже выбран — при повторном клике сбрасываем его
     if (currentFilters[key] !== value) {
         params.set(key, value);
     }
@@ -68,15 +69,22 @@ export default async function CategoryPage({
         notFound();
     }
 
-    const coupons = await getCouponsByCategory(slug, filters);
-    const filterOptions = extractFilterOptions(coupons);
+    // 1. Получаем ВСЕ купоны категории для корректного расчета чипсов фильтров
+    const allCategoryCoupons = await getCouponsByCategory(slug, {});
+    const filterOptions = extractFilterOptions(allCategoryCoupons);
+
+    // 2. Получаем отфильтрованные купоны для отображения в списке
+    const displayedCoupons =
+        Object.keys(filters).length > 0
+            ? await getCouponsByCategory(slug, filters)
+            : allCategoryCoupons;
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
             <CategoryStructuredData
                 categoryName={category.label}
                 categorySlug={slug}
-                coupons={coupons}
+                coupons={displayedCoupons}
             />
 
             <Breadcrumbs
@@ -91,9 +99,11 @@ export default async function CategoryPage({
                 {category.label} Deals
             </h1>
             <p className="mt-2 text-ink/60">
-                {coupons.length} {coupons.length === 1 ? "offer" : "offers"} across all stores
+                {displayedCoupons.length}{" "}
+                {displayedCoupons.length === 1 ? "offer" : "offers"} found
             </p>
 
+            {/* Панель фильтров */}
             <div className="mt-6 flex flex-col gap-3">
                 {filterOptions.subcategories.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
@@ -156,9 +166,10 @@ export default async function CategoryPage({
                 )}
             </div>
 
+            {/* Список карточек купонов */}
             <div className="mt-8 flex flex-col gap-3">
-                {coupons.length > 0 ? (
-                    coupons.map((coupon) => (
+                {displayedCoupons.length > 0 ? (
+                    displayedCoupons.map((coupon) => (
                         <div
                             key={coupon.id}
                             className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
@@ -193,9 +204,9 @@ export default async function CategoryPage({
                     ))
                 ) : (
                     <div className="text-ink/50">
-                        <p>No offers found for this filter.</p>
-                        <Link href="/categories" className="mt-2 inline-block text-coupon hover:underline">
-                            Browse all categories
+                        <p>No offers found for this filter combination.</p>
+                        <Link href={`/category/${slug}`} className="mt-2 inline-block text-coupon hover:underline">
+                            Clear filters
                         </Link>
                     </div>
                 )}

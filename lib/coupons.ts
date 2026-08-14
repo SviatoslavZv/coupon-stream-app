@@ -1,6 +1,7 @@
 // lib/coupons.ts
 
 import { createClient } from "@/lib/supabase/server";
+import { cache } from "react";
 import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
 import type { Store, Coupon } from "@/types";
 
@@ -34,10 +35,13 @@ function mapCoupon(row: CouponRow): Coupon {
   };
 }
 
-export async function getStoreWithCoupons(slug: string): Promise<{
+
+
+// Оборачиваем функцию в cache
+export const getStoreWithCoupons = cache(async (slug: string): Promise<{
   store: Pick<Store, "slug" | "name" | "logoUrl">;
   coupons: Coupon[];
-} | null> {
+} | null> => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -67,7 +71,7 @@ export async function getStoreWithCoupons(slug: string): Promise<{
       usageCount: clickCounts.get(c.id) ?? 0,
     })),
   };
-}
+});
 
 export interface AdminCouponRow {
   id: string;
@@ -161,49 +165,51 @@ interface CategoryCouponDbRow {
   stores: { name: string; slug: string } | null;
 }
 
-export async function getCouponsByCategory(
-  category: string,
-  filters: { subcategory?: string; gender?: string; brand?: string }
-): Promise<CategoryCoupon[]> {
-  const supabase = await createClient();
+export const getCouponsByCategory = cache(
+  async (
+    category: string,
+    filters: { subcategory?: string; gender?: string; brand?: string }
+  ): Promise<CategoryCoupon[]> => {
+    const supabase = await createClient();
 
-  let query = supabase
-    .from("coupons")
-    .select(
-      "id, discount_label, title, subcategory, gender, brand, stores(name, slug)"
-    )
-    .eq("category", category);
+    let query = supabase
+      .from("coupons")
+      .select(
+        "id, discount_label, title, subcategory, gender, brand, stores(name, slug)"
+      )
+      .eq("category", category);
 
-  if (filters.subcategory) {
-    query = query.eq("subcategory", filters.subcategory);
+    if (filters.subcategory) {
+      query = query.eq("subcategory", filters.subcategory);
+    }
+    if (filters.gender) {
+      query = query.eq("gender", filters.gender);
+    }
+    if (filters.brand) {
+      query = query.eq("brand", filters.brand);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(`Failed to fetch category coupons: ${error.message}`);
+    }
+
+    return (data as unknown as CategoryCouponDbRow[]).map((row) => ({
+      id: row.id,
+      discountLabel: row.discount_label,
+      title: row.title,
+      storeName: row.stores?.name ?? "Unknown store",
+      storeSlug: row.stores?.slug ?? "",
+      subcategory: row.subcategory,
+      gender: row.gender,
+      brand: row.brand,
+      brandSlug: row.brand
+        ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
+        : null,
+    }));
   }
-  if (filters.gender) {
-    query = query.eq("gender", filters.gender);
-  }
-  if (filters.brand) {
-    query = query.eq("brand", filters.brand);
-  }
-
-  const { data, error } = await query;
-
-  if (error) {
-    throw new Error(`Failed to fetch category coupons: ${error.message}`);
-  }
-
-  return (data as unknown as CategoryCouponDbRow[]).map((row) => ({
-    id: row.id,
-    discountLabel: row.discount_label,
-    title: row.title,
-    storeName: row.stores?.name ?? "Unknown store",
-    storeSlug: row.stores?.slug ?? "",
-    subcategory: row.subcategory,
-    gender: row.gender,
-    brand: row.brand,
-    brandSlug: row.brand
-    ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
-    : null,
-  }));
-}
+);
 
 
 export interface FilterOption {
@@ -261,36 +267,38 @@ interface BrandCouponDbRow {
   stores: { name: string; slug: string } | null;
 }
 
-export async function getCouponsByBrand(
-  brand: string,
-  filters: { category?: string }
-): Promise<BrandCoupon[]> {
-  const supabase = await createClient();
+export const getCouponsByBrand = cache(
+  async (
+    brand: string,
+    filters: { category?: string }
+  ): Promise<BrandCoupon[]> => {
+    const supabase = await createClient();
 
-  let query = supabase
-    .from("coupons")
-    .select("id, discount_label, title, category, stores(name, slug)")
-    .eq("brand", brand);
+    let query = supabase
+      .from("coupons")
+      .select("id, discount_label, title, category, stores(name, slug)")
+      .eq("brand", brand);
 
-  if (filters.category) {
-    query = query.eq("category", filters.category);
+    if (filters.category) {
+      query = query.eq("category", filters.category);
+    }
+
+    const { data, error } = await query;
+
+    if (error) {
+      throw new Error(`Failed to fetch brand coupons: ${error.message}`);
+    }
+
+    return (data as unknown as BrandCouponDbRow[]).map((row) => ({
+      id: row.id,
+      discountLabel: row.discount_label,
+      title: row.title,
+      storeName: row.stores?.name ?? "Unknown store",
+      storeSlug: row.stores?.slug ?? "",
+      category: row.category,
+    }));
   }
-
-  const { data, error } = await query;
-
-  if (error) {
-    throw new Error(`Failed to fetch brand coupons: ${error.message}`);
-  }
-
-  return (data as unknown as BrandCouponDbRow[]).map((row) => ({
-    id: row.id,
-    discountLabel: row.discount_label,
-    title: row.title,
-    storeName: row.stores?.name ?? "Unknown store",
-    storeSlug: row.stores?.slug ?? "",
-    category: row.category,
-  }));
-}
+);
 
 export function extractCategoryOptions(
   coupons: { category: string | null }[]

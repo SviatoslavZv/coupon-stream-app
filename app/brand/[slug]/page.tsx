@@ -19,7 +19,7 @@ export async function generateMetadata({
         return notFoundMetadata("Brand Not Found");
     }
 
-    const coupons = await getCouponsByBrand(brand.label, {});
+    const allCoupons = await getCouponsByBrand(brand.label, {});
     const monthYear = new Date().toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
@@ -27,7 +27,7 @@ export async function generateMetadata({
 
     return buildPageMetadata({
         title: `${brand.label} Coupons & Promo Codes at Department Stores — ${monthYear}`,
-        description: `${coupons.length} verified ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
+        description: `${allCoupons.length} verified ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
         path: `/brand/${slug}`,
     });
 }
@@ -39,6 +39,7 @@ function buildFilterUrl(
 ) {
     const params = new URLSearchParams();
 
+    // Переключатель (Toggle): если фильтр уже выбран, повторный клик его сбрасывает
     if (currentCategory !== value) {
         params.set("category", value);
     }
@@ -63,15 +64,21 @@ export default async function BrandPage({
         notFound();
     }
 
-    const coupons = await getCouponsByBrand(brand.label, { category });
-    const categoryOptions = extractCategoryOptions(coupons);
+    // 1. Запрашиваем ВСЕ купоны бренда, чтобы списки категорий не исчезали при фильтрации
+    const allBrandCoupons = await getCouponsByBrand(brand.label, {});
+    const categoryOptions = extractCategoryOptions(allBrandCoupons);
+
+    // 2. Отображаем отфильтрованные или все купоны
+    const displayedCoupons = category
+        ? await getCouponsByBrand(brand.label, { category })
+        : allBrandCoupons;
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
             <BrandStructuredData
                 brandName={brand.label}
                 brandSlug={slug}
-                coupons={coupons}
+                coupons={displayedCoupons}
             />
 
             <Breadcrumbs
@@ -86,8 +93,8 @@ export default async function BrandPage({
                 {brand.label} Deals
             </h1>
             <p className="mt-2 text-ink/60">
-                {coupons.length} {coupons.length === 1 ? "offer" : "offers"} across
-                department stores
+                {displayedCoupons.length}{" "}
+                {displayedCoupons.length === 1 ? "offer" : "offers"} across department stores
             </p>
 
             {categoryOptions.length > 0 && (
@@ -111,8 +118,8 @@ export default async function BrandPage({
             )}
 
             <div className="mt-8 flex flex-col gap-3">
-                {coupons.length > 0 ? (
-                    coupons.map((coupon) => (
+                {displayedCoupons.length > 0 ? (
+                    displayedCoupons.map((coupon) => (
                         <Link
                             key={coupon.id}
                             href={`/store/${coupon.storeSlug}`}
@@ -130,7 +137,15 @@ export default async function BrandPage({
                         </Link>
                     ))
                 ) : (
-                    <p className="text-ink/50">No offers found for this brand yet.</p>
+                    <div className="text-ink/50">
+                        <p>No offers found for this category.</p>
+                        <Link
+                            href={`/brand/${slug}`}
+                            className="mt-2 inline-block text-coupon hover:underline"
+                        >
+                            Clear filters
+                        </Link>
+                    </div>
                 )}
             </div>
         </div>
