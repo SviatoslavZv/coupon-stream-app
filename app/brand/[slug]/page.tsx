@@ -13,7 +13,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const brand = BRANDS.find((b) => b.slug === slug);
+    const brand = BRANDS.find((b) => b.slug === slug.toLowerCase());
 
     if (!brand) {
         return notFoundMetadata("Brand Not Found");
@@ -58,18 +58,19 @@ export default async function BrandPage({
     const { slug } = await params;
     const { category } = await searchParams;
 
-    const brand = BRANDS.find((b) => b.slug === slug);
+    const brand = BRANDS.find((b) => b.slug === slug.toLowerCase());
 
     if (!brand) {
         notFound();
     }
 
-    // 1. Запрашиваем ВСЕ купоны бренда, чтобы списки категорий не исчезали при фильтрации
     const allBrandCoupons = await getCouponsByBrand(brand.label, {});
     const categoryOptions = extractCategoryOptions(allBrandCoupons);
 
-    // 2. Отображаем отфильтрованные или все купоны
-    const displayedCoupons = category
+    // Проверяем, выбран ли фильтр категории
+    const hasActiveFilters = Boolean(category);
+
+    const displayedCoupons = hasActiveFilters
         ? await getCouponsByBrand(brand.label, { category })
         : allBrandCoupons;
 
@@ -89,13 +90,30 @@ export default async function BrandPage({
                 ]}
             />
 
-            <h1 className="font-display text-3xl font-black text-ink">
-                {brand.label} Deals
-            </h1>
-            <p className="mt-2 text-ink/60">
-                {displayedCoupons.length}{" "}
-                {displayedCoupons.length === 1 ? "offer" : "offers"} across department stores
-            </p>
+            <div className="flex items-baseline justify-between">
+                <div>
+                    <h1 className="font-display text-3xl font-black text-ink">
+                        {brand.label} Deals
+                    </h1>
+                    <p className="mt-2 text-ink/60">
+                        {displayedCoupons.length}{" "}
+                        {displayedCoupons.length === 1 ? "offer" : "offers"} across department stores
+                    </p>
+                </div>
+
+                {/* 👈 Кнопка сброса для бренда */}
+                {hasActiveFilters && (
+                    <Link
+                        href={`/brand/${slug}`}
+                        className="text-xs font-semibold text-coupon hover:underline transition"
+                    >
+                        ✕ Clear filter
+                    </Link>
+                )}
+            </div>
+
+            {/* Панель фильтров*/}
+
 
             {categoryOptions.length > 0 && (
                 <div className="mt-6 flex flex-wrap items-center gap-2">
@@ -107,8 +125,8 @@ export default async function BrandPage({
                             key={value}
                             href={buildFilterUrl(slug, category, value)}
                             className={`rounded-full border px-3 py-1 text-xs font-medium transition ${category === value
-                                    ? "border-coupon bg-coupon text-white"
-                                    : "border-line text-ink/70 hover:border-ink"
+                                ? "border-coupon bg-coupon text-white"
+                                : "border-line text-ink/70 hover:border-ink"
                                 }`}
                         >
                             {value} ({count})

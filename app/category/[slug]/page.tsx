@@ -13,7 +13,7 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const category = CATEGORIES.find((c) => c.slug === slug);
+    const category = CATEGORIES.find((c) => c.slug === slug.toLowerCase());
 
     if (!category) {
         return notFoundMetadata("Category Not Found");
@@ -63,21 +63,21 @@ export default async function CategoryPage({
     const { slug } = await params;
     const filters = await searchParams;
 
-    const category = CATEGORIES.find((c) => c.slug === slug);
+    const category = CATEGORIES.find((c) => c.slug === slug.toLowerCase());
 
     if (!category) {
         notFound();
     }
 
-    // 1. Получаем ВСЕ купоны категории для корректного расчета чипсов фильтров
     const allCategoryCoupons = await getCouponsByCategory(slug, {});
     const filterOptions = extractFilterOptions(allCategoryCoupons);
 
-    // 2. Получаем отфильтрованные купоны для отображения в списке
-    const displayedCoupons =
-        Object.keys(filters).length > 0
-            ? await getCouponsByCategory(slug, filters)
-            : allCategoryCoupons;
+    // Проверяем, активен ли хотя бы один фильтр
+    const hasActiveFilters = Boolean(filters.subcategory || filters.gender || filters.brand);
+
+    const displayedCoupons = hasActiveFilters
+        ? await getCouponsByCategory(slug, filters)
+        : allCategoryCoupons;
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
@@ -95,13 +95,27 @@ export default async function CategoryPage({
                 ]}
             />
 
-            <h1 className="font-display text-3xl font-black text-ink">
-                {category.label} Deals
-            </h1>
-            <p className="mt-2 text-ink/60">
-                {displayedCoupons.length}{" "}
-                {displayedCoupons.length === 1 ? "offer" : "offers"} found
-            </p>
+            <div className="flex items-baseline justify-between">
+                <div>
+                    <h1 className="font-display text-3xl font-black text-ink">
+                        {category.label} Deals
+                    </h1>
+                    <p className="mt-2 text-ink/60">
+                        {displayedCoupons.length}{" "}
+                        {displayedCoupons.length === 1 ? "offer" : "offers"} found
+                    </p>
+                </div>
+
+                {/* 👈 Кнопка сброса появляется только при активных фильтрах */}
+                {hasActiveFilters && (
+                    <Link
+                        href={`/category/${slug}`}
+                        className="text-xs font-semibold text-coupon hover:underline transition"
+                    >
+                        ✕ Clear all filters
+                    </Link>
+                )}
+            </div>
 
             {/* Панель фильтров */}
             <div className="mt-6 flex flex-col gap-3">

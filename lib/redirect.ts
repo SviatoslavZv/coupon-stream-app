@@ -16,7 +16,7 @@ export async function getStoreRedirectUrl(
   const { data, error } = await supabase
     .from("stores")
     .select("id, affiliate_link, website_url")
-    .eq("slug", slug)
+    .eq("slug", slug.toLowerCase())
     .maybeSingle();
 
   if (error) {

@@ -1,10 +1,16 @@
+"use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import type { Store } from "@/types";
 
-
 export default function StoreCard({ store }: { store: Store }) {
+  const [imgError, setImgError] = useState(false);
+
+  // Берём первую букву названия магазина для заглушки
+  const firstLetter = store.name ? store.name.charAt(0).toUpperCase() : "S";
+
   return (
     <Link
       href={`/store/${store.slug}`}
@@ -12,13 +18,21 @@ export default function StoreCard({ store }: { store: Store }) {
     >
       <div className="flex items-center justify-between p-5">
         <div className="flex h-12 w-12 items-center justify-center rounded-full bg-paper">
-          <Image
-            src={store.logoUrl}
-            alt={`${store.name} logo`}
-            width={32}
-            height={32}
-            className="h-8 w-8 object-contain"
-          />
+          {store.logoUrl && !imgError ? (
+            <Image
+              src={store.logoUrl}
+              alt={`${store.name} logo`}
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain"
+              onError={() => setImgError(true)}
+            />
+          ) : (
+            /* 🔥 Красивый фоллбэк с первой буквой магазина */
+            <span className="font-display text-lg font-bold text-ink/60">
+              {firstLetter}
+            </span>
+          )}
         </div>
 
         <span className="font-mono text-xs text-ink/50">

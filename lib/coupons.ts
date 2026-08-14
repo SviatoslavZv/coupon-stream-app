@@ -49,7 +49,7 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
     .select(
       "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at)"
     )
-    .eq("slug", slug)
+    .eq("slug", slug.toLowerCase())
     .maybeSingle();
 
   if (error) {
@@ -177,7 +177,7 @@ export const getCouponsByCategory = cache(
       .select(
         "id, discount_label, title, subcategory, gender, brand, stores(name, slug)"
       )
-      .eq("category", category);
+      .eq("category", category.toLowerCase())
 
     if (filters.subcategory) {
       query = query.eq("subcategory", filters.subcategory);

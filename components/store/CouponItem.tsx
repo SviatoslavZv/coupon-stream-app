@@ -44,25 +44,36 @@ export default function CouponItem({
         }
     }, [anchorId]);
 
-    // ⚡️ МГНОВЕННЫЙ КЛИК (0 мс задержки -> блокировщики молчат)
-    const handleShowCode = async () => {
-        // 1. Сразу открываем магазин (браузер считает это 100% честным кликом)
-        window.open(affiliateUrl, "_blank", "noopener,noreferrer");
+    // ⚡️ НАДЁЖНЫЙ ОБРАБОТЧИК КЛИКА (без падений Clipboard API)
+    const handleShowCode = () => {
+        const codeText = coupon.code?.trim() || "";
 
-        // 2. Показываем код на кнопке
+        // 1. Мгновенно обновляем UI, чтобы пользователь увидел изменение кнопки
         setIsRevealed(true);
 
-        // 3. Копируем в буфер обмена
-        if (coupon.code) {
-            try {
-                await navigator.clipboard.writeText(coupon.code);
-                setIsCopied(true);
-                setTimeout(() => setIsCopied(false), 2000);
-            } catch {
-                // Если буфер недоступен, код всё равно виден на кнопке
-            }
+        // 2. Работа с буфером
+        if (codeText && typeof navigator !== "undefined" && navigator.clipboard) {
+            navigator.clipboard
+                .writeText(codeText)
+                .then(() => {
+                    setIsCopied(true);
+                    setTimeout(() => setIsCopied(false), 2500);
+                })
+                .catch((err) => {
+                    console.error("Clipboard access denied:", err);
+                });
         }
+
+        // 3. ОТКРЫВАЕМ ВКЛАДКУ С ЗАДЕРЖКОЙ
+        // Это "секретный ингредиент": 150мс достаточно, чтобы отрисовать 
+        // изменение текста, но достаточно быстро, чтобы не раздражать пользователя.
+        setTimeout(() => {
+            window.open(affiliateUrl, "_blank", "noopener,noreferrer");
+        }, 300);
     };
+
+    // Определение типа: код это или акция
+    const isCodeType = coupon.type === "code" || Boolean(coupon.code);
 
     return (
         <div
@@ -82,7 +93,7 @@ export default function CouponItem({
                 <div className="flex-1">
                     <div className="flex items-center gap-2">
                         <span className="font-mono text-xs uppercase tracking-wide text-ink/40">
-                            {coupon.type === "code" ? "Code" : "Sale"}
+                            {isCodeType ? "Code" : "Sale"}
                         </span>
 
                         <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-green-700 bg-green-50 px-2.5 py-0.5 rounded-full">
@@ -94,20 +105,20 @@ export default function CouponItem({
 
                 {/* Action Button */}
                 <div className="shrink-0">
-                    {coupon.type === "code" ? (
+                    {isCodeType ? (
                         <button
                             type="button"
                             onClick={handleShowCode}
-                            className="rounded-full bg-coupon px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90 active:scale-95 cursor-pointer"
+                            className="inline-flex items-center justify-center min-w-[120px] rounded-full bg-coupon px-5 py-2.5 text-sm font-semibold text-white transition-all duration-300 hover:bg-coupon/90 active:scale-95 cursor-pointer whitespace-nowrap"
                         >
-                            {isCopied ? "Copied!" : isRevealed ? coupon.code : "Show Code"}
+                            {isCopied ? "Copied!" : isRevealed ? (coupon.code || "REVEALED") : "Show Code"}
                         </button>
                     ) : (
                         <a
                             href={affiliateUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-block rounded-full bg-ink px-5 py-2 text-sm font-semibold text-white transition hover:bg-ink/90 active:scale-95"
+                            className="inline-flex items-center justify-center min-w-[120px] rounded-full bg-coupon px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-coupon/90 active:scale-95 whitespace-nowrap"
                         >
                             Get Deal
                         </a>
@@ -130,7 +141,7 @@ export default function CouponItem({
                     title={`${coupon.title} — CouponCreek`}
                     className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink/60 transition hover:border-coupon hover:text-coupon"
                 >
-                    {coupon.type === "code" ? "Share Code" : "Share Deal"}
+                    {isCodeType ? "Share Code" : "Share Deal"}
                 </ShareButton>
             </div>
 
