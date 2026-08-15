@@ -13,13 +13,14 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const category = CATEGORIES.find((c) => c.slug === slug.toLowerCase());
+    const lowerSlug = slug.toLowerCase();
+    const category = CATEGORIES.find((c) => c.slug === lowerSlug);
 
     if (!category) {
         return notFoundMetadata("Category Not Found");
     }
 
-    const allCoupons = await getCouponsByCategory(slug, {});
+    const allCoupons = await getCouponsByCategory(lowerSlug, {});
     const monthYear = new Date().toLocaleDateString("en-US", {
         month: "long",
         year: "numeric",
@@ -28,7 +29,7 @@ export async function generateMetadata({
     return buildPageMetadata({
         title: `${category.label} Deals & Promo Codes — ${monthYear}`,
         description: `${allCoupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
-        path: `/category/${slug}`,
+        path: `/category/${lowerSlug}`,
     });
 }
 

@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function CookiePolicyPage() {
     return (
         <div className="mx-auto max-w-2xl px-4 py-10">
@@ -50,6 +52,22 @@ export default function CookiePolicyPage() {
                         Most browsers allow you to control cookies through their
                         settings, including blocking or deleting them. Please note that
                         disabling cookies may affect certain site functionality.
+                    </p>
+                </section>
+
+                <section>
+                    <h2 className="mb-2 font-display text-lg font-bold text-ink">
+                        5. Contact
+                    </h2>
+                    <p>
+                        If you have questions about our Cookie Policy, you can reach us at{" "}
+                        <a
+                            href="mailto:couponcreek@gmail.com"
+                            className="text-coupon hover:underline"
+                        >
+                            couponcreek@gmail.com
+                        </a>
+                        .
                     </p>
                 </section>
             </div>

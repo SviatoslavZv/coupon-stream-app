@@ -13,7 +13,8 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const brand = BRANDS.find((b) => b.slug === slug.toLowerCase());
+    const lowerSlug = slug.toLowerCase();
+    const brand = BRANDS.find((b) => b.slug === lowerSlug);
 
     if (!brand) {
         return notFoundMetadata("Brand Not Found");
@@ -28,7 +29,7 @@ export async function generateMetadata({
     return buildPageMetadata({
         title: `${brand.label} Coupons & Promo Codes at Department Stores — ${monthYear}`,
         description: `${allCoupons.length} verified ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
-        path: `/brand/${slug}`,
+        path: `/brand/${lowerSlug}`,
     });
 }
 
@@ -112,9 +113,7 @@ export default async function BrandPage({
                 )}
             </div>
 
-            {/* Панель фильтров*/}
-
-
+            {/* Панель фильтров */}
             {categoryOptions.length > 0 && (
                 <div className="mt-6 flex flex-wrap items-center gap-2">
                     <span className="text-xs font-medium uppercase text-ink/40">

@@ -5,9 +5,6 @@ interface StoreStructuredDataProps {
     coupons: Coupon[];
 }
 
-/**
- * Безопасная очистка JSON от XSS/script-инъекций
- */
 function safeJsonLd(data: object): string {
     return JSON.stringify(data).replace(/</g, "\\u003c");
 }
@@ -19,33 +16,7 @@ export default function StoreStructuredData({
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://couponcreek.com";
     const storeUrl = `${baseUrl}/store/${store.slug}`;
 
-    // 1. Хлебные крошки (BreadcrumbList)
-    const breadcrumbSchema = {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-            {
-                "@type": "ListItem",
-                position: 1,
-                name: "Home",
-                item: baseUrl,
-            },
-            {
-                "@type": "ListItem",
-                position: 2,
-                name: "Stores",
-                item: `${baseUrl}/stores`,
-            },
-            {
-                "@type": "ListItem",
-                position: 3,
-                name: store.name,
-                item: storeUrl,
-            },
-        ],
-    };
-
-    // 2. Список промокодов (ItemList из Offer)
+    // 1. Список промокодов (ItemList из Offer)
     const couponsSchema = {
         "@context": "https://schema.org",
         "@type": "ItemList",
@@ -81,7 +52,7 @@ export default function StoreStructuredData({
         }),
     };
 
-    // 3. Организация / Бренд (Organization)
+    // 2. Организация / Бренд (Organization)
     const organizationSchema = {
         "@context": "https://schema.org",
         "@type": "Organization",
@@ -92,10 +63,6 @@ export default function StoreStructuredData({
 
     return (
         <>
-            <script
-                type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbSchema) }}
-            />
             <script
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: safeJsonLd(couponsSchema) }}

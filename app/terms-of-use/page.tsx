@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function TermsOfUsePage() {
     return (
         <div className="mx-auto max-w-2xl px-4 py-10">
@@ -76,25 +78,23 @@ export default function TermsOfUsePage() {
                         the updated terms.
                     </p>
                 </section>
+
+                <section>
+                    <h2 className="mb-2 font-display text-lg font-bold text-ink">
+                        7. Contact
+                    </h2>
+                    <p>
+                        If you have questions about these Terms of Use, you can reach us at{" "}
+                        <a
+                            href="mailto:couponcreek@gmail.com"
+                            className="text-coupon hover:underline"
+                        >
+                            couponcreek@gmail.com
+                        </a>
+                        .
+                    </p>
+                </section>
             </div>
-
-            <section>
-                <h2 className="mb-2 font-display text-lg font-bold text-ink">
-                    7. Contact
-                </h2>
-                <p>
-                    If you have questions about these Terms of Use, you can reach us at{" "}
-
-                    <a
-                        href="mailto:couponcreek@gmail.com"
-                        className="text-coupon hover:underline"
-                    >
-                        couponcreek@gmail.com
-                    </a>
-                    .
-                </p>
-            </section>
-
-        </div >
+        </div>
     );
 }

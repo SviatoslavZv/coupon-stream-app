@@ -3,51 +3,55 @@ import Link from "next/link";
 export default function Footer() {
     return (
         <footer className="border-t border-line bg-paper">
-            <div className="mx-auto max-w-6xl px-4 py-6">
-                <p className="text-xs text-ink/50">
+            <div className="mx-auto max-w-6xl px-4 py-8">
+                {/* Верхняя секция: Юридическое уведомление (Affiliate Disclaimer) */}
+                <p className="text-xs leading-relaxed text-ink/50 max-w-3xl">
                     CouponCreek may earn a commission when you buy through links on our
-                    site. This does not affect the price you pay.
+                    site. This does not affect the price you pay. All promo codes and deals are 100% free for users.
                 </p>
 
-                <div className="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-sm text-ink/60">
-                        © 2026 CouponCreek. All rights reserved.
+                {/* Средняя секция: Навигация и Копирайт */}
+                <div className="mt-6 flex flex-col gap-4 border-t border-line/40 pt-6 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs sm:text-sm text-ink/60 order-2 sm:order-1">
+                        © {new Date().getFullYear()} CouponCreek. All rights reserved.
                     </p>
 
-                    <nav className="flex flex-wrap gap-x-4 gap-y-2 text-sm text-ink/60">
-                        <Link href="/disclaimer" className="hover:text-ink">
+                    <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs sm:text-sm text-ink/60 order-1 sm:order-2">
+                        <Link href="/disclaimer" className="hover:text-ink transition py-1">
                             Disclaimer
                         </Link>
-                        <Link href="/privacy-policy" className="hover:text-ink">
+                        <Link href="/privacy-policy" className="hover:text-ink transition py-1">
                             Privacy Policy
                         </Link>
-                        <Link href="/terms-of-use" className="hover:text-ink">
+                        <Link href="/terms-of-use" className="hover:text-ink transition py-1">
                             Terms of Use
                         </Link>
-                        <Link href="/cookie-policy" className="hover:text-ink">
+                        <Link href="/cookie-policy" className="hover:text-ink transition py-1">
                             Cookie Policy
                         </Link>
                         <a
                             href="mailto:couponcreek@gmail.com"
-                            className="hover:text-ink"
+                            className="font-medium text-ink/80 hover:text-coupon transition py-1"
                         >
-                            Contact
+                            Contact Us
                         </a>
                     </nav>
-
-
                 </div>
-                <a
-                    href="https://mybiostack.vercel.app?utm_source=couponcreek&utm_medium=footer&utm_campaign=cross_promo"
-                    target="_blank"
-                    rel="noopener"
-                    className="text-sm text-ink/60 hover:text-ink"
-                >
-                    Also building:{" "}
-                    <span className="font-medium text-coupon">BioStack</span> — build
-                    your perfect supplement stack
-                    <span className="sr-only"> (opens in a new tab)</span>
-                </a>
+
+                {/* Нижняя секция: Кросс-промо блок */}
+                <div className="mt-6 border-t border-line/30 pt-4">
+                    <a
+                        href="https://mybiostack.vercel.app?utm_source=couponcreek&utm_medium=footer&utm_campaign=cross_promo"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex flex-wrap items-center gap-1.5 text-xs text-ink/50 hover:text-ink transition"
+                    >
+                        <span>Also building:</span>
+                        <span className="font-semibold text-coupon hover:underline">BioStack</span>
+                        <span>— build your perfect supplement stack</span>
+                        <span className="sr-only"> (opens in a new tab)</span>
+                    </a>
+                </div>
             </div>
         </footer>
     );

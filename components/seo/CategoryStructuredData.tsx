@@ -6,6 +6,10 @@ interface CategoryStructuredDataProps {
     coupons: CategoryCoupon[];
 }
 
+function safeJsonLd(data: object): string {
+    return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export default function CategoryStructuredData({
     categoryName,
     categorySlug,
@@ -18,7 +22,7 @@ export default function CategoryStructuredData({
         "@type": "CollectionPage",
         name: `${categoryName} Promo Codes & Deals`,
         description: `Verified promo codes, sales, and discounts for ${categoryName}.`,
-        url: `${siteUrl}/category/${categorySlug}`,
+        url: `${siteUrl}/category/${categorySlug.toLowerCase()}`,
         mainEntity: {
             "@type": "ItemList",
             numberOfItems: coupons.length,
@@ -41,7 +45,7 @@ export default function CategoryStructuredData({
     return (
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
     );
 }

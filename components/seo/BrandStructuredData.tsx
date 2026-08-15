@@ -6,6 +6,10 @@ interface BrandStructuredDataProps {
     coupons: BrandCoupon[];
 }
 
+function safeJsonLd(data: object): string {
+    return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export default function BrandStructuredData({
     brandName,
     brandSlug,
@@ -18,7 +22,7 @@ export default function BrandStructuredData({
         "@type": "CollectionPage",
         name: `${brandName} Promo Codes & Deals`,
         description: `Verified promo codes, discount codes, and special offers for ${brandName}.`,
-        url: `${siteUrl}/brand/${brandSlug}`,
+        url: `${siteUrl}/brand/${brandSlug.toLowerCase()}`,
         mainEntity: {
             "@type": "ItemList",
             numberOfItems: coupons.length,
@@ -41,7 +45,7 @@ export default function BrandStructuredData({
     return (
         <script
             type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
         />
     );
 }

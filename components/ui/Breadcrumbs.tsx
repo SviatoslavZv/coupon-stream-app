@@ -5,25 +5,35 @@ interface BreadcrumbItem {
     href?: string;
 }
 
+function safeJsonLd(data: object): string {
+    return JSON.stringify(data).replace(/</g, "\\u003c");
+}
+
 export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
     const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 
     const jsonLd = {
         "@context": "https://schema.org",
         "@type": "BreadcrumbList",
-        itemListElement: items.map((item, index) => ({
-            "@type": "ListItem",
-            position: index + 1,
-            name: item.label,
-            ...(item.href && { item: `${siteUrl}${item.href}` }),
-        })),
+        itemListElement: items.map((item, index) => {
+            const itemUrl = item.href
+                ? `${siteUrl}${item.href.startsWith("/") ? item.href : `/${item.href}`}`
+                : undefined;
+
+            return {
+                "@type": "ListItem",
+                position: index + 1,
+                name: item.label,
+                ...(itemUrl && { item: itemUrl }),
+            };
+        }),
     };
 
     return (
         <>
             <script
                 type="application/ld+json"
-                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+                dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
             />
             <nav aria-label="Breadcrumb" className="mb-4 text-sm text-ink/50">
                 <ol className="flex flex-wrap items-center gap-1">
