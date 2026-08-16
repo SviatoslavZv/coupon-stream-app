@@ -47,6 +47,9 @@ export async function generateMetadata({
     });
 }
 
+// Лимит отображения истёкших купонов для защиты производительности и SEO
+const MAX_EXPIRED_SHOW = 5;
+
 export default async function StorePage({
     params,
 }: {
@@ -62,11 +65,15 @@ export default async function StorePage({
 
     const { store, coupons } = result;
 
-    // Разделяем купоны на активные и просроченные
+    // Разделяем купоны на активные и ограничение по просроченным
     const activeCoupons = coupons.filter((c) => !isCouponExpired(c.expiresAt));
-    const expiredCoupons = coupons.filter((c) => isCouponExpired(c.expiresAt));
+    const expiredCoupons = coupons
+        .filter((c) => isCouponExpired(c.expiresAt))
+        .slice(0, MAX_EXPIRED_SHOW); // 👈 Берем только 5 последних
 
     const faqItems = getStoreFaq(store.name, activeCoupons.length);
+
+    // ... остальной JSX код остается без изменений
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10">
