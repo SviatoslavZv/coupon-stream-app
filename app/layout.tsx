@@ -50,6 +50,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   verification: {
+    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
     other: {
       "impact-site-verification": "00cd0b44-49d1-40b5-9c5a-63d1826b9e41",
     },
