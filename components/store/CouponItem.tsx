@@ -1,5 +1,5 @@
 "use client";
-
+import { sendGAEvent } from "@next/third-parties/google";
 import { useEffect, useState } from "react";
 import type { Coupon } from "@/types";
 import ShareButton from "@/components/ui/ShareButton";
@@ -61,6 +61,15 @@ export default function CouponItem({
 
     const handleShowCode = () => {
         const codeText = coupon.code?.trim() || "";
+
+        // GA4 Event: Клик по коду
+        sendGAEvent("event", "coupon_click", {
+            event_category: "Coupon",
+            event_label: coupon.title,
+            store_slug: storeSlug,
+            coupon_id: coupon.id,
+            coupon_type: "code",
+        });
 
         setIsRevealed(true);
 
@@ -150,6 +159,15 @@ export default function CouponItem({
                             href={affiliateUrl}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onClick={() => {
+                                sendGAEvent("event", "coupon_click", {
+                                    event_category: "Coupon",
+                                    event_label: coupon.title,
+                                    store_slug: storeSlug,
+                                    coupon_id: coupon.id,
+                                    coupon_type: "deal",
+                                });
+                            }}
                             className={`inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition active:scale-95 whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5 ${isExpired ? "bg-ink/40 hover:bg-ink/50" : "bg-coupon hover:bg-coupon/90"
                                 }`}
                         >
