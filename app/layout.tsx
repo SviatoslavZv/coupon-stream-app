@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono, Archivo } from "next/font/google";
 import { GoogleAnalytics } from "@next/third-parties/google";
-import { Analytics } from "@vercel/analytics/react";
+import { Analytics } from "@vercel/analytics/next"
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import Script from "next/script";
 import Header from "@/components/layout/Header";
