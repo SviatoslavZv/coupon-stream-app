@@ -14,6 +14,7 @@ interface CouponRow {
   description: string;
   expires_at: string;
   last_verified_at: string | null;
+  click_count: number;
 }
 interface StoreWithCouponsRow {
   slug: string;
@@ -32,6 +33,7 @@ function mapCoupon(row: CouponRow): Coupon {
     description: row.description,
     expiresAt: row.expires_at,
     lastVerifiedAt: row.last_verified_at,
+    usageCount: row.click_count,
   };
 }
 
@@ -46,9 +48,9 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
 
   const { data, error } = await supabase
     .from("stores")
-    .select(
-      "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at)"
-    )
+.select(
+  "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count)"
+)
     .eq("slug", slug.toLowerCase())
     .maybeSingle();
 
@@ -61,16 +63,10 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
   }
 
   const row = data as StoreWithCouponsRow;
-  const couponIds = row.coupons.map((c) => c.id);
-  const clickCounts = await getClickCounts(couponIds);
-
-  return {
-    store: { slug: row.slug, name: row.name, logoUrl: row.logo_url },
-    coupons: row.coupons.map((c) => ({
-      ...mapCoupon(c),
-      usageCount: clickCounts.get(c.id) ?? 0,
-    })),
-  };
+return {
+  store: { slug: row.slug, name: row.name, logoUrl: row.logo_url },
+  coupons: row.coupons.map((c) => mapCoupon(c)),
+};
 });
 
 export interface AdminCouponRow {
@@ -364,34 +360,6 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
     count: brandMeta.get(b.label)?.count ?? 0,
     lastModified: brandMeta.get(b.label)?.lastModified,
   }));
-}
-
-
-export async function getClickCounts(
-  couponIds: string[]
-): Promise<Map<string, number>> {
-  const counts = new Map<string, number>();
-
-  if (couponIds.length === 0) {
-    return counts;
-  }
-
-  const supabase = await createClient();
-
-  const { data, error } = await supabase
-    .from("clicks")
-    .select("coupon_id")
-    .in("coupon_id", couponIds);
-
-  if (error) {
-    throw new Error(`Failed to fetch click counts: ${error.message}`);
-  }
-
-  for (const row of data as { coupon_id: string }[]) {
-    counts.set(row.coupon_id, (counts.get(row.coupon_id) ?? 0) + 1);
-  }
-
-  return counts;
 }
 
 

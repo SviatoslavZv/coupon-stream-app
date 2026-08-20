@@ -37,15 +37,13 @@ export async function getStoreRedirectUrl(
   return { storeId: row.id, url };
 }
 
-export async function recordClick(
-  storeId: string,
-  couponId?: string
-): Promise<void> {
+export async function recordClick(storeId: string, couponId?: string): Promise<void> {
+  if (!couponId) return;
+
   const supabase = await createClient();
 
-  const { error } = await supabase.from("clicks").insert({
-    store_id: storeId,
-    coupon_id: couponId ?? null,
+  const { error } = await supabase.rpc("increment_coupon_click", {
+    coupon_id_input: couponId,
   });
 
   if (error) {
