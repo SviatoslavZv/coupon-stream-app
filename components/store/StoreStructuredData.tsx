@@ -31,9 +31,6 @@ export default function StoreStructuredData({
                 name: coupon.title,
                 description: coupon.description || coupon.title,
                 url: `${storeUrl}#coupon-${coupon.id}`,
-                price: "0",
-                priceCurrency: "USD",
-                availability: "https://schema.org/InStock",
             };
 
             if (coupon.code) {

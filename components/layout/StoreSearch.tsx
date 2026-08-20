@@ -21,6 +21,7 @@ export default function StoreSearch({
     const [isOpen, setIsOpen] = useState(false);
     const [isPending, startTransition] = useTransition();
     const inputRef = useRef<HTMLInputElement>(null);
+    const containerRef = useRef<HTMLDivElement>(null);
 
     // Фокус на инпут при открытии мобильного оверлея
     useEffect(() => {
@@ -55,12 +56,37 @@ export default function StoreSearch({
         if (onCloseMobile) onCloseMobile();
     };
 
-    // Топ популярные магазины для быстрого выбора
-    const popularStores = stores.slice(0, 5);
+
+    useEffect(() => {
+        if (isMobileOverlay) return;
+
+        function handleClickOutside(event: MouseEvent) {
+            if (
+                containerRef.current &&
+                !containerRef.current.contains(event.target as Node)
+            ) {
+                setIsOpen(false);
+            }
+        }
+
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, [isMobileOverlay]);
+
+
+    // Топ популярные магазины для быстрого выбора — сортируем по количеству офферов
+    const popularStores = [...stores]
+        .sort((a, b) => b.offerCount - a.offerCount)
+        .slice(0, 5);
 
     return (
-        <div className={`relative w-full ${isMobileOverlay ? "h-full" : ""}`}>
+        <div
+            ref={containerRef}
+            className={`relative w-full ${isMobileOverlay ? "h-full" : ""}`}
+        >
+
             {/* Поисковая строка */}
+
             <div className="relative flex items-center">
                 <input
                     ref={inputRef}

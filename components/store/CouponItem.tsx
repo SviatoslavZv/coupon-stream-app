@@ -62,7 +62,6 @@ export default function CouponItem({
     const handleShowCode = () => {
         const codeText = coupon.code?.trim() || "";
 
-        // GA4 Event: Клик по коду
         sendGAEvent("event", "coupon_click", {
             event_category: "Coupon",
             event_label: coupon.title,
@@ -71,26 +70,23 @@ export default function CouponItem({
             coupon_type: "code",
         });
 
-        setIsRevealed(true);
-
         if (codeText && typeof navigator !== "undefined" && navigator.clipboard) {
             navigator.clipboard
                 .writeText(codeText)
-                .then(() => {
-                    setIsCopied(true);
-                    setTimeout(() => setIsCopied(false), 2500);
-                })
+                .then(() => setIsCopied(true))
                 .catch((err) => {
                     console.error("Clipboard access denied:", err);
                 });
         }
 
-        setTimeout(() => {
-            window.open(affiliateUrl, "_blank", "noopener,noreferrer");
-        }, 300);
+        setIsRevealed(true);
+
+        const newTab = window.open(affiliateUrl, "_blank");
+        if (newTab) {
+            newTab.opener = null;
+        }
     };
 
-    // Определение статусов
     const isExpired = isCouponExpired(coupon.expiresAt);
     const status = formatVerifiedLabel(coupon.lastVerifiedAt, coupon.expiresAt);
     const hasValidCode = Boolean(coupon.code && coupon.code.trim().length > 0);
@@ -152,7 +148,20 @@ export default function CouponItem({
                             onClick={handleShowCode}
                             className="inline-flex w-full items-center justify-center rounded-full bg-coupon px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-coupon/90 active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
                         >
-                            {isCopied ? "Copied!" : isRevealed ? (coupon.code || "Get Deal") : "Show Code"}
+                            {isRevealed ? (
+                                isCopied ? (
+                                    <span className="flex flex-col items-center leading-tight">
+                                        <span className="flex items-center gap-1 text-[10px] font-medium ">
+                                            <span>✓</span> Copied to clipboard
+                                        </span>
+                                        <span>{coupon.code}</span>
+                                    </span>
+                                ) : (
+                                    coupon.code || "Get Deal"
+                                )
+                            ) : (
+                                "Show Code"
+                            )}
                         </button>
                     ) : (
                         <a
@@ -177,7 +186,7 @@ export default function CouponItem({
                 </div>
             </div>
 
-            {/* Нижнаяя панель */}
+            {/* Нижняя панель */}
             <div className="flex items-center justify-between border-t border-line px-4 py-2.5 sm:px-5">
                 <button
                     type="button"
@@ -197,22 +206,24 @@ export default function CouponItem({
             </div>
 
             {/* Аккордеон деталей */}
-            {showDetails && (
-                <div className="border-t border-line bg-paper px-4 py-3.5 sm:px-5 text-sm text-ink/70">
-                    <p className="leading-relaxed">{coupon.description}</p>
-                    {coupon.expiresAt && (
-                        <p className={`mt-1.5 text-xs ${isExpired ? "font-semibold text-red-600" : "text-ink/40"}`}>
-                            {isExpired ? `Expired on ${coupon.expiresAt}` : `Expires ${coupon.expiresAt}`}
-                        </p>
-                    )}
-                    {!!coupon.usageCount && coupon.usageCount > 0 && (
-                        <p className="mt-1 text-xs text-ink/40">
-                            Used {coupon.usageCount}{" "}
-                            {coupon.usageCount === 1 ? "time" : "times"}
-                        </p>
-                    )}
-                </div>
-            )}
-        </div>
+            {
+                showDetails && (
+                    <div className="border-t border-line bg-paper px-4 py-3.5 sm:px-5 text-sm text-ink/70">
+                        <p className="leading-relaxed">{coupon.description}</p>
+                        {coupon.expiresAt && (
+                            <p className={`mt-1.5 text-xs ${isExpired ? "font-semibold text-red-600" : "text-ink/40"}`}>
+                                {isExpired ? `Expired on ${coupon.expiresAt}` : `Expires ${coupon.expiresAt}`}
+                            </p>
+                        )}
+                        {!!coupon.usageCount && coupon.usageCount > 0 && (
+                            <p className="mt-1 text-xs text-ink/40">
+                                Used {coupon.usageCount}{" "}
+                                {coupon.usageCount === 1 ? "time" : "times"}
+                            </p>
+                        )}
+                    </div>
+                )
+            }
+        </div >
     );
 }
