@@ -29,7 +29,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
                     </Link>
 
                     {/* Desktop Search */}
-                    <div className="hidden flex-1 max-w-md sm:block">
+                    <div className="hidden flex-1 max-w-md lg:block">
                         <StoreSearch stores={stores} />
                     </div>
 
@@ -55,7 +55,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
                     </nav>
 
                     {/* Mobile Controls */}
-                    <div className="flex items-center gap-2 sm:hidden">
+                    <div className="flex items-center gap-2 lg:hidden">
                         <button
                             type="button"
                             onClick={() => setIsSearchOpen(true)}
@@ -88,7 +88,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
 
                 {/* Mobile Navigation Drawer */}
                 {isMenuOpen && (
-                    <div className="border-t border-line/50 bg-paper px-4 py-6 sm:hidden">
+                    <div className="border-t border-line/50 bg-paper px-4 py-6 lg:hidden">
                         <nav className="flex flex-col gap-4 text-base font-semibold text-ink">
                             <Link
                                 href="/stores"
@@ -145,7 +145,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
 
             {/* Mobile Search Fullscreen Overlay */}
             {isSearchOpen && (
-                <div className="fixed inset-0 z-50 flex flex-col bg-paper p-4 sm:hidden">
+                <div className="fixed inset-0 z-50 flex flex-col bg-paper p-4 lg:hidden">
                     <div className="flex items-center justify-between gap-3 mb-4">
                         <span className="font-display font-bold text-lg text-ink">Search Stores</span>
                         <button
