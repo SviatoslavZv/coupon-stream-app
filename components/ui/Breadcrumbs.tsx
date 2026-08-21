@@ -35,7 +35,7 @@ export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
                 type="application/ld+json"
                 dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
             />
-            <nav aria-label="Breadcrumb" className="mb-4 text-sm text-ink/50">
+            <nav aria-label="Breadcrumb" className="mb-4 text-sm text-ink/70">
                 <ol className="flex flex-wrap items-center gap-1">
                     {items.map((item, index) => (
                         <li key={index} className="flex items-center gap-1">
