@@ -55,7 +55,7 @@ export default function PrivacyPolicyPage() {
                     <p>
                         Our site may use cookies for basic functionality and analytics.
                         See our{" "}
-                        <Link href="/cookie-policy" className="text-coupon underline hover:no-underline">
+                        <Link href="/cookie-policy" className="text-coupon-dark underline hover:no-underline">
                             Cookie Policy
                         </Link>{" "}
                         for more details.
