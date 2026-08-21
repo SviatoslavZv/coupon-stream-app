@@ -6,7 +6,7 @@ export default function TermsOfUsePage() {
             <h1 className="font-display text-3xl font-black text-ink">
                 Terms of Use
             </h1>
-            <p className="mt-2 text-sm text-ink/60">Last updated: July 2026</p>
+            <p className="mt-2 text-sm text-ink/70">Last updated: July 2026</p>
 
             <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed text-ink/80">
                 <section>
@@ -87,7 +87,7 @@ export default function TermsOfUsePage() {
                         If you have questions about these Terms of Use, you can reach us at{" "}
                         <a
                             href="mailto:couponcreek@gmail.com"
-                            className="text-coupon hover:underline"
+                            className="text-coupon underline hover:no-underline"
                         >
                             couponcreek@gmail.com
                         </a>
