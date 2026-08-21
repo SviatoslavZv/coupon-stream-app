@@ -129,7 +129,7 @@ export default function CouponItem({
                         <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
                             {isCodeType ? "Code" : "Sale"}
                         </span>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-500" : "bg-green-50 text-green-700"
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
                             }`}>
                             {!status.isExpired && <span>✓</span>} {status.text}
                         </span>
@@ -146,7 +146,7 @@ export default function CouponItem({
                         <button
                             type="button"
                             onClick={handleShowCode}
-                            className="inline-flex w-full items-center justify-center rounded-full bg-coupon px-5 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-coupon/90 active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
+                            className="inline-flex w-full items-center justify-center rounded-full bg-coupon px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:bg-coupon/90 active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
                         >
                             {isRevealed ? (
                                 isCopied ? (
