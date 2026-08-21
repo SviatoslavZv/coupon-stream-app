@@ -154,7 +154,7 @@ export default async function BrandPage({
                         </Link>
                     ))
                 ) : (
-                    <div className="text-ink/50">
+                    <div className="text-ink/60">
                         <p>No offers found for this category.</p>
                         <Link
                             href={`/brand/${slug}`}

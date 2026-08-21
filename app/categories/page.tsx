@@ -43,7 +43,7 @@ export default async function CategoriesPage() {
                             <h2 className="font-display text-base sm:text-lg font-bold text-ink transition group-hover:text-coupon">
                                 {category.label}
                             </h2>
-                            <p className="mt-1 text-xs sm:text-sm text-ink/60">
+                            <p className="mt-1 text-xs sm:text-sm text-ink/80">
                                 {category.count} active {category.count === 1 ? "deal" : "deals"}
                             </p>
                         </div>
