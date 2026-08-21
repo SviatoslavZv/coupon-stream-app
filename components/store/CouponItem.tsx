@@ -140,13 +140,14 @@ export default function CouponItem({
                     </h2>
                 </div>
 
+
                 {/* Кнопка действия */}
                 <div className="w-full shrink-0 sm:w-auto">
                     {isCodeType ? (
                         <button
                             type="button"
                             onClick={handleShowCode}
-                            className="inline-flex w-full items-center justify-center rounded-full bg-coupon px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:bg-coupon/90 active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
+                            className="inline-flex w-full items-center justify-center rounded-full bg-coupon-dark px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:bg-coupon active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
                         >
                             {isRevealed ? (
                                 isCopied ? (
