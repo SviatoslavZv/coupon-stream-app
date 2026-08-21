@@ -7,7 +7,7 @@ export default function NotFound() {
             <h1 className="mt-4 font-display text-2xl font-black text-ink">
                 Looks like this deal expired
             </h1>
-            <p className="mt-2 text-ink/60">
+            <p className="mt-2 text-ink/70">
                 We couldn&apos;t find the page you were looking for. It may have
                 moved, or the offer may no longer be available.
             </p>

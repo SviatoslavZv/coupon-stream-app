@@ -20,7 +20,7 @@ export default function Error({
             <h1 className="mt-4 font-display text-2xl font-black text-ink">
                 Something went wrong on our end
             </h1>
-            <p className="mt-2 text-ink/60">
+            <p className="mt-2 text-ink/70">
                 We&apos;re working on it. Please try again in a moment, or head back
                 to the homepage.
             </p>

@@ -5,18 +5,18 @@ export default function Footer() {
         <footer className="border-t border-line bg-paper">
             <div className="mx-auto max-w-6xl px-4 py-8">
                 {/* Верхняя секция: Юридическое уведомление (Affiliate Disclaimer) */}
-                <p className="text-xs leading-relaxed text-ink/50 max-w-3xl">
+                <p className="text-xs leading-relaxed text-ink/70">
                     CouponCreek may earn a commission when you buy through links on our
                     site. This does not affect the price you pay. All promo codes and deals are 100% free for users.
                 </p>
 
                 {/* Средняя секция: Навигация и Копирайт */}
-                <div className="mt-6 flex flex-col gap-4 border-t border-line/40 pt-6 sm:flex-row sm:items-center sm:justify-between">
-                    <p className="text-xs sm:text-sm text-ink/60 order-2 sm:order-1">
+                <div className="mt-3 flex flex-col gap-4 border-t border-line/40 pt-3 sm:flex-row sm:items-center sm:justify-between">
+                    <p className="text-xs sm:text-sm text-ink/70 order-2 sm:order-1">
                         © {new Date().getFullYear()} CouponCreek. All rights reserved.
                     </p>
 
-                    <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs sm:text-sm text-ink/60 order-1 sm:order-2">
+                    <nav className="flex flex-wrap gap-x-5 gap-y-2 text-xs sm:text-sm text-ink/70 order-1 sm:order-2">
                         <Link href="/disclaimer" className="hover:text-ink transition py-1">
                             Disclaimer
                         </Link>
@@ -39,12 +39,12 @@ export default function Footer() {
                 </div>
 
                 {/* Нижняя секция: Кросс-промо блок */}
-                <div className="mt-6 border-t border-line/30 pt-4">
+                <div className="mt-3 border-t border-line/30 pt-2">
                     <a
                         href="https://mybiostack.vercel.app?utm_source=couponcreek&utm_medium=footer&utm_campaign=cross_promo"
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex flex-wrap items-center gap-1.5 text-xs text-ink/50 hover:text-ink transition"
+                        className="inline-flex flex-wrap items-center gap-1.5 text-xs text-ink/70 hover:text-ink transition"
                     >
                         <span>Also building:</span>
                         <span className="font-semibold text-coupon hover:underline">BioStack</span>

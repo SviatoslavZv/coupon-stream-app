@@ -101,7 +101,7 @@ export default async function CategoryPage({
                     <h1 className="font-display text-3xl font-black text-ink">
                         {category.label} Deals
                     </h1>
-                    <p className="mt-2 text-ink/60">
+                    <p className="mt-2 text-ink/70">
                         {displayedCoupons.length}{" "}
                         {displayedCoupons.length === 1 ? "offer" : "offers"} found
                     </p>

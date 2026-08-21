@@ -7,7 +7,7 @@ export default function SalesCalendarPage() {
             <h1 className="font-display text-3xl font-black text-ink">
                 US Sales Calendar
             </h1>
-            <p className="mt-2 text-ink/60">
+            <p className="mt-2 text-ink/70">
                 The biggest shopping seasons of the year, and where to find the best
                 deals for each.
             </p>

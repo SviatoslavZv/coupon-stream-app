@@ -35,15 +35,15 @@ export default function StoreCard({ store }: { store: Store }) {
           )}
         </div>
 
-        <span className="font-mono text-xs text-ink/50">
+        <span className="font-mono text-xs text-ink/60">
           {store.offerCount} offers
         </span>
       </div>
 
       <div className="px-5 pb-4">
-        <h3 className="font-display text-lg font-bold text-ink">
+        <h2 className="font-display text-lg font-bold text-ink">
           {store.name}
-        </h3>
+        </h2>
         <p className="text-sm font-medium text-coupon">{store.bestOffer}</p>
       </div>
 

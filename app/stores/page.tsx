@@ -27,7 +27,7 @@ export default async function StoresPage() {
             <h1 className="font-display text-3xl font-black text-ink">
                 All Stores
             </h1>
-            <p className="mt-2 text-ink/60">
+            <p className="mt-2 text-ink/70">
                 Browse every store with active promo codes and deals.
             </p>
 
