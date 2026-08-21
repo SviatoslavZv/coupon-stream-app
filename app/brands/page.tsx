@@ -43,7 +43,7 @@ export default async function BrandsPage() {
                             <h2 className="font-display text-base sm:text-lg font-bold text-ink transition group-hover:text-coupon">
                                 {brand.label}
                             </h2>
-                            <p className="mt-1 text-xs sm:text-sm text-ink/50">
+                            <p className="mt-1 text-xs sm:text-sm text-ink/60">
                                 {brand.count} active {brand.count === 1 ? "offer" : "offers"}
                             </p>
                         </div>

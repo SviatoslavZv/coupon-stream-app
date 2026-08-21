@@ -191,7 +191,7 @@ export default function CouponItem({
                 <button
                     type="button"
                     onClick={() => setShowDetails(!showDetails)}
-                    className="text-left text-xs font-medium text-ink/50 hover:text-ink cursor-pointer transition"
+                    className="text-left text-xs font-medium text-ink/60 hover:text-ink cursor-pointer transition"
                 >
                     {showDetails ? "Hide Details −" : "See Details +"}
                 </button>

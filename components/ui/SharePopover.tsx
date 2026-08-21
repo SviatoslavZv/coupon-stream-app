@@ -114,7 +114,7 @@ export default function SharePopover({
                 />
                 <button
                     onClick={handleCopy}
-                    className={`shrink-0 rounded-lg p-2 transition ${copied ? "bg-green-100 text-green-600" : "bg-paper text-ink/50 hover:bg-line"
+                    className={`shrink-0 rounded-lg p-2 transition ${copied ? "bg-green-100 text-green-600" : "bg-paper text-ink/60 hover:bg-line"
                         }`}
                 >
                     {copied ? <Check size={14} /> : <Copy size={16} />}

@@ -146,7 +146,7 @@ export default async function StorePage({
                             <h2 className="font-display text-lg font-bold text-ink/80">
                                 Recently Expired {store.name} Promo Codes
                             </h2>
-                            <p className="mt-0.5 text-xs text-ink/50">
+                            <p className="mt-0.5 text-xs text-ink/60">
                                 These offers have ended, but store promotional periods sometimes get extended.
                             </p>
                         </div>

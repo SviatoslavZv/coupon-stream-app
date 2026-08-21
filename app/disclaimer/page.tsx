@@ -4,7 +4,7 @@ export default function DisclaimerPage() {
             <h1 className="font-display text-3xl font-black text-ink">
                 Disclaimer
             </h1>
-            <p className="mt-2 text-sm text-ink/50">Last updated: July 2026</p>
+            <p className="mt-2 text-sm text-ink/60">Last updated: July 2026</p>
 
             <div className="mt-6 rounded-2xl border border-coupon bg-coupon/5 p-4 text-sm font-medium text-ink">
                 By accessing or using CouponCreek, you fully and unconditionally

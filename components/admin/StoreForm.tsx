@@ -172,7 +172,7 @@ export default function StoreForm({
                             ?
                         </div>
                     )}
-                    <p className="text-xs text-ink/50">
+                    <p className="text-xs text-ink/60">
                         {websiteUrl && websiteUrl !== "https://www."
                             ? "Fetched automatically from the website above."
                             : "Add a website URL to fetch a logo automatically."}

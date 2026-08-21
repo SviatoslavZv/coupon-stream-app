@@ -192,7 +192,7 @@ export default function StoreSearch({
 
                     {/* Если ничего не найдено */}
                     {query.trim() && filteredStores.length === 0 && !isPending && (
-                        <div className="p-4 text-center text-xs text-ink/50">
+                        <div className="p-4 text-center text-xs text-ink/60">
                             No stores found for &quot;{query}&quot;
                         </div>
                     )}
