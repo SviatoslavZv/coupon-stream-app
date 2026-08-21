@@ -130,7 +130,7 @@ export default function DisclaimerPage() {
 
                         <a
                             href="mailto:couponcreek@gmail.com"
-                            className="text-coupon underline hover:no-underline"
+                            className="text-coupon-dark underline hover:no-underline"
                         >
                             couponcreek@gmail.com
                         </a>
