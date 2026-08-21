@@ -98,7 +98,7 @@ export default function CouponItem({
         <div
             id={anchorId}
             className={`overflow-hidden rounded-2xl border bg-white transition-colors duration-700 ${isExpired
-                ? "border-line opacity-75"
+                ? "border-line"
                 : isHighlighted
                     ? "border-coupon bg-coupon/5"
                     : "border-line"
@@ -108,15 +108,15 @@ export default function CouponItem({
             <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5">
                 {/* Скидка + мобильные метки */}
                 <div className="flex items-center justify-between sm:w-28 sm:shrink-0 sm:flex-col sm:justify-center text-left sm:text-center">
-                    <span className={`font-display text-2xl font-black leading-none sm:text-3xl ${isExpired ? "text-ink/40" : "text-coupon"}`}>
+                    <span className={`font-display text-2xl font-black leading-none sm:text-3xl ${isExpired ? "text-ink/60" : "text-coupon"}`}>
                         {coupon.discountLabel}
                     </span>
 
                     <div className="flex items-center gap-1.5 sm:hidden">
-                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink/40">
+                        <span className="font-mono text-[11px] uppercase tracking-wide text-ink/80">
                             {isCodeType ? "Code" : "Sale"}
                         </span>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-500" : "bg-green-50 text-green-700"
+                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
                             }`}>
                             {!status.isExpired && <span>✓</span>} {status.text}
                         </span>
@@ -126,7 +126,7 @@ export default function CouponItem({
                 {/* Заголовок купона + десктопные метки */}
                 <div className="flex-1">
                     <div className="hidden items-center gap-2 sm:flex">
-                        <span className="font-mono text-xs uppercase tracking-wide text-ink/40">
+                        <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
                             {isCodeType ? "Code" : "Sale"}
                         </span>
                         <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-500" : "bg-green-50 text-green-700"
@@ -135,9 +135,9 @@ export default function CouponItem({
                         </span>
                     </div>
 
-                    <h4 className="mt-1 font-medium text-ink text-base sm:text-lg leading-snug">
+                    <h2 className="mt-1 font-medium text-ink text-base sm:text-lg leading-snug">
                         {coupon.title}
-                    </h4>
+                    </h2>
                 </div>
 
                 {/* Кнопка действия */}
@@ -177,7 +177,7 @@ export default function CouponItem({
                                     coupon_type: "deal",
                                 });
                             }}
-                            className={`inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition active:scale-95 whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5 ${isExpired ? "bg-ink/40 hover:bg-ink/50" : "bg-coupon hover:bg-coupon/90"
+                            className={`inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold  transition active:scale-95 whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5 ${isExpired ? "bg-ink/10 text-ink/70 hover:bg-ink/15" : "bg-coupon hover:bg-coupon/90"
                                 }`}
                         >
                             {isExpired ? "Expired Deal" : "Get Deal"}
@@ -191,7 +191,7 @@ export default function CouponItem({
                 <button
                     type="button"
                     onClick={() => setShowDetails(!showDetails)}
-                    className="text-left text-xs font-medium text-ink/60 hover:text-ink cursor-pointer transition"
+                    className="text-left text-xs font-medium text-ink/80 hover:text-ink cursor-pointer transition"
                 >
                     {showDetails ? "Hide Details −" : "See Details +"}
                 </button>
@@ -199,7 +199,7 @@ export default function CouponItem({
                 <ShareButton
                     path={`/store/${storeSlug}#${anchorId}`}
                     title={`${coupon.title} — CouponCreek`}
-                    className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink/60 transition hover:border-coupon hover:text-coupon"
+                    className="flex items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-xs font-medium text-ink/80 transition hover:border-coupon hover:text-coupon"
                 >
                     {isCodeType ? "Share Code" : "Share Deal"}
                 </ShareButton>

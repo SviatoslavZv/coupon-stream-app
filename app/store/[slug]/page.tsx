@@ -108,7 +108,7 @@ export default async function StorePage({
                         <h1 className="font-display text-xl sm:text-2xl font-black text-ink">
                             {store.name} Promo Codes
                         </h1>
-                        <p className="text-xs sm:text-sm text-ink/60">
+                        <p className="text-xs sm:text-sm text-ink/70">
                             {activeCoupons.length > 0
                                 ? `${activeCoupons.length} verified ${activeCoupons.length === 1 ? "offer" : "offers"} available`
                                 : "No active offers currently"}
@@ -146,7 +146,7 @@ export default async function StorePage({
                             <h2 className="font-display text-lg font-bold text-ink/80">
                                 Recently Expired {store.name} Promo Codes
                             </h2>
-                            <p className="mt-0.5 text-xs text-ink/60">
+                            <p className="mt-0.5 text-xs text-ink/70">
                                 These offers have ended, but store promotional periods sometimes get extended.
                             </p>
                         </div>
