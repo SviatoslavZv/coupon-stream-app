@@ -27,7 +27,7 @@ export default async function BrandsPage() {
             <h1 className="font-display text-2xl sm:text-3xl font-black text-ink">
                 All Brands
             </h1>
-            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ink/60">
+            <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ink/70">
                 Discover verified promo codes and sales for leading fashion brands.
             </p>
 
