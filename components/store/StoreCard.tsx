@@ -35,7 +35,7 @@ export default function StoreCard({ store }: { store: Store }) {
           )}
         </div>
 
-        <span className="font-mono text-xs text-ink/60">
+        <span className="font-mono text-xs text-ink/80">
           {store.offerCount} offers
         </span>
       </div>
@@ -44,7 +44,7 @@ export default function StoreCard({ store }: { store: Store }) {
         <h2 className="font-display text-lg font-bold text-ink">
           {store.name}
         </h2>
-        <p className="text-sm font-medium text-coupon">{store.bestOffer}</p>
+        <p className="text-sm font-medium text-coupon-dark">{store.bestOffer}</p>
       </div>
 
       <div

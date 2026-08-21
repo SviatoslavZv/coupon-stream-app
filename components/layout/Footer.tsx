@@ -47,7 +47,7 @@ export default function Footer() {
                         className="inline-flex flex-wrap items-center gap-1.5 text-xs text-ink/70 hover:text-ink transition"
                     >
                         <span>Also building:</span>
-                        <span className="font-semibold text-coupon hover:underline">BioStack</span>
+                        <span className="font-semibold text-coupon-dark hover:underline">BioStack</span>
                         <span>— build your perfect supplement stack</span>
                         <span className="sr-only"> (opens in a new tab)</span>
                     </a>
