@@ -19,13 +19,13 @@ export default function SalesCalendarPage() {
                         className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-5 sm:flex-row sm:items-center sm:justify-between"
                     >
                         <div>
-                            <span className="font-mono text-xs uppercase tracking-wide text-coupon">
+                            <span className="font-mono text-xs uppercase tracking-wide text-coupon-dark">
                                 {event.period}
                             </span>
                             <h2 className="font-display text-lg font-bold text-ink">
                                 {event.name}
                             </h2>
-                            <p className="mt-1 text-sm text-ink/60">{event.description}</p>
+                            <p className="mt-1 text-sm text-ink/70">{event.description}</p>
                         </div>
 
                         <Link
