@@ -111,7 +111,7 @@ export default async function CategoryPage({
                 {hasActiveFilters && (
                     <Link
                         href={`/category/${slug}`}
-                        className="text-xs font-semibold text-coupon hover:underline transition"
+                        className="text-xs font-semibold text-coupon-dark hover:underline transition"
                     >
                         ✕ Clear all filters
                     </Link>
@@ -130,7 +130,7 @@ export default async function CategoryPage({
                                 key={value}
                                 href={buildFilterUrl(slug, filters, "subcategory", value)}
                                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.subcategory === value
-                                    ? "border-coupon bg-coupon text-white"
+                                    ? "border-coupon-dark bg-coupon-dark text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
@@ -150,7 +150,7 @@ export default async function CategoryPage({
                                 key={value}
                                 href={buildFilterUrl(slug, filters, "gender", value)}
                                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.gender === value
-                                    ? "border-coupon bg-coupon text-white"
+                                    ? "border-coupon-dark bg-coupon-dark text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
@@ -170,7 +170,7 @@ export default async function CategoryPage({
                                 key={value}
                                 href={buildFilterUrl(slug, filters, "brand", value)}
                                 className={`rounded-full border px-3 py-1 text-xs font-medium transition ${filters.brand === value
-                                    ? "border-coupon bg-coupon text-white"
+                                    ? "border-coupon-dark bg-coupon-dark text-white"
                                     : "border-line text-ink/70 hover:border-ink"
                                     }`}
                             >
@@ -205,7 +205,7 @@ export default async function CategoryPage({
                                     )}
                                 </span>
                                 <Link href={`/store/${coupon.storeSlug}`} className="block hover:underline">
-                                    <h2 className="font-medium text-ink hover:text-coupon">
+                                    <h2 className="font-medium text-ink hover:text-coupon-dark">
                                         {coupon.title}
                                     </h2>
                                 </Link>
@@ -218,7 +218,7 @@ export default async function CategoryPage({
                 ) : (
                     <div className="text-ink/80">
                         <p>No offers found for this filter combination.</p>
-                        <Link href={`/category/${slug}`} className="mt-2 inline-block text-coupon hover:underline">
+                        <Link href={`/category/${slug}`} className="mt-2 inline-block text-coupon-dark hover:underline">
                             Clear filters
                         </Link>
                     </div>

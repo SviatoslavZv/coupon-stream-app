@@ -124,7 +124,7 @@ export default async function BrandPage({
                             key={value}
                             href={buildFilterUrl(slug, category, value)}
                             className={`rounded-full border px-3 py-1 text-xs font-medium transition ${category === value
-                                ? "border-coupon bg-coupon text-white"
+                                ? "border-coupon-dark bg-coupon-dark text-white"
                                 : "border-line text-ink/70 hover:border-ink"
                                 }`}
                         >
