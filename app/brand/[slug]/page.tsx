@@ -106,7 +106,7 @@ export default async function BrandPage({
                 {hasActiveFilters && (
                     <Link
                         href={`/brand/${slug}`}
-                        className="text-xs font-semibold text-coupon hover:underline transition"
+                        className="text-xs font-semibold text-coupon-dark hover:underline transition"
                     >
                         ✕ Clear filter
                     </Link>
@@ -143,12 +143,12 @@ export default async function BrandPage({
                             className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
                         >
                             <div>
-                                <span className="font-mono text-xs uppercase tracking-wide text-ink/40">
+                                <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
                                     {coupon.storeName}
                                 </span>
-                                <h3 className="font-medium text-ink">{coupon.title}</h3>
+                                <h2 className="font-medium text-ink">{coupon.title}</h2>
                             </div>
-                            <span className="font-display text-lg font-black text-coupon">
+                            <span className="font-display text-lg font-black text-coupon-dark">
                                 {coupon.discountLabel}
                             </span>
                         </Link>
@@ -158,7 +158,7 @@ export default async function BrandPage({
                         <p>No offers found for this category.</p>
                         <Link
                             href={`/brand/${slug}`}
-                            className="mt-2 inline-block text-coupon hover:underline"
+                            className="mt-2 inline-block text-coupon-dark hover:underline"
                         >
                             Clear filters
                         </Link>
