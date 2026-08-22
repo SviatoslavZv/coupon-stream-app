@@ -16,7 +16,7 @@ export default function Error({
 
     return (
         <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center">
-            <span className="font-display text-6xl font-black text-coupon">Oops</span>
+            <span className="font-display text-6xl font-black text-coupon-dark">Oops</span>
             <h1 className="mt-4 font-display text-2xl font-black text-ink">
                 Something went wrong on our end
             </h1>
@@ -29,7 +29,7 @@ export default function Error({
                 <button
                     type="button"
                     onClick={reset}
-                    className="rounded-full bg-coupon px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
+                    className="rounded-full bg-coupon-dark px-5 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
                 >
                     Try Again
                 </button>
