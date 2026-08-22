@@ -190,7 +190,7 @@ export default async function CategoryPage({
                             className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
                         >
                             <div className="flex-1">
-                                <span className="font-mono text-xs uppercase tracking-wide text-ink/60">
+                                <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
                                     {coupon.storeName}
                                     {coupon.brandSlug && (
                                         <>
