@@ -35,22 +35,22 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
 
                     {/* Desktop Nav */}
                     <nav className="hidden items-center gap-6 text-sm font-medium text-ink lg:flex">
-                        <Link href="/stores" className="transition hover:text-coupon">
-                            Stores
+                        <Link href="/stores" className="transition hover:text-coupon-dark">
+                            All Stores
                         </Link>
-                        <Link href="/categories" className="transition hover:text-coupon">
+                        <Link href="/categories" className="transition hover:text-coupon-dark">
                             Categories
                         </Link>
-                        <Link href="/brands" className="transition hover:text-coupon">
+                        <Link href="/brands" className="transition hover:text-coupon-dark">
                             Brands
                         </Link>
-                        <Link href="/sales-calendar" className="transition hover:text-coupon">
+                        <Link href="/sales-calendar" className="transition hover:text-coupon-dark">
                             Calendar
                         </Link>
                         <ShareButton
                             path="/"
                             title="CouponCreek — Promo Codes & Deals for Top Fashion Stores"
-                            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
+                            className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3 py-1.5 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon-dark"
                         />
                     </nav>
 
@@ -92,28 +92,28 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
                         <nav className="flex flex-col gap-4 text-base font-semibold text-ink">
                             <Link
                                 href="/stores"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon"
+                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
                                 onClick={() => setIsMenuOpen(false)}
                             >
-                                Stores
+                                All Stores
                             </Link>
                             <Link
                                 href="/categories"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon"
+                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Categories
                             </Link>
                             <Link
                                 href="/brands"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon"
+                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Brands
                             </Link>
                             <Link
                                 href="/sales-calendar"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon"
+                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Calendar
@@ -123,7 +123,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
                                 <ShareButton
                                     path="/"
                                     title="CouponCreek — Promo Codes & Deals for Top Fashion Stores"
-                                    className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-2.5 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
+                                    className="flex w-full items-center justify-center gap-2 rounded-full border border-line py-2.5 text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon-dark"
                                 />
                             </div>
                         </nav>

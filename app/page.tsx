@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import StoreGrid from "@/components/store/StoreGrid";
 import { getTopStores } from "@/lib/stores";
 
@@ -26,6 +27,17 @@ export default async function Home() {
       </p>
 
       <StoreGrid stores={stores} />
+
+      <div className="mt-8 text-center">
+        <Link
+          href="/stores"
+          className="inline-flex items-center gap-1.5 rounded-full border border-line px-5 py-2.5 text-sm font-medium text-ink transition hover:border-coupon-dark hover:text-coupon-dark"
+        >
+          View All Stores
+          <span aria-hidden="true">→</span>
+        </Link>
+      </div>
+
     </div>
   );
 }

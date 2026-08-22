@@ -108,7 +108,7 @@ export default function CouponItem({
             <div className="flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:gap-5 sm:p-5">
                 {/* Скидка + мобильные метки */}
                 <div className="flex items-center justify-between sm:w-28 sm:shrink-0 sm:flex-col sm:justify-center text-left sm:text-center">
-                    <span className={`font-display text-2xl font-black leading-none sm:text-3xl ${isExpired ? "text-ink/60" : "text-coupon"}`}>
+                    <span className={`font-display text-2xl font-black leading-none sm:text-3xl ${isExpired ? "text-ink/60" : "text-coupon-dark"}`}>
                         {coupon.discountLabel}
                     </span>
 
