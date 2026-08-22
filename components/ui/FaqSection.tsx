@@ -23,11 +23,11 @@ export default function FaqSection({
                 {items.map((item, index) => (
                     <details
                         key={index}
-                        className="group rounded-xl border border-line/60 bg-white p-4 transition-all open:border-coupon/40 open:bg-coupon/5"
+                        className="group rounded-xl border border-line/60 bg-white p-4 transition-all open:border-coupon-dark/40 open:bg-coupon-dark/5"
                     >
-                        <summary className="flex cursor-pointer items-center justify-between font-display font-bold text-ink hover:text-coupon focus:outline-none select-none">
+                        <summary className="flex cursor-pointer items-center justify-between font-display font-bold text-ink hover:text-coupon-dark focus:outline-none select-none">
                             <span className="pr-4 text-base sm:text-lg">{item.question}</span>
-                            <span className="shrink-0 transition-transform duration-200 group-open:rotate-180 text-ink/40 group-open:text-coupon">
+                            <span className="shrink-0 transition-transform duration-200 group-open:rotate-180 text-ink/40 group-open:text-coupon-dark">
                                 <svg
                                     className="h-5 w-5"
                                     fill="none"
