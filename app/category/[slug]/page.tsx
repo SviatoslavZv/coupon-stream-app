@@ -122,7 +122,7 @@ export default async function CategoryPage({
             <div className="mt-6 flex flex-col gap-3">
                 {filterOptions.subcategories.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium uppercase text-ink/40">
+                        <span className="text-xs font-medium uppercase text-ink/80">
                             Subcategory
                         </span>
                         {filterOptions.subcategories.map(({ value, count }) => (
@@ -142,7 +142,7 @@ export default async function CategoryPage({
 
                 {filterOptions.genders.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium uppercase text-ink/40">
+                        <span className="text-xs font-medium uppercase text-ink/80">
                             Gender
                         </span>
                         {filterOptions.genders.map(({ value, count }) => (
@@ -162,7 +162,7 @@ export default async function CategoryPage({
 
                 {filterOptions.brands.length > 0 && (
                     <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs font-medium uppercase text-ink/40">
+                        <span className="text-xs font-medium uppercase text-ink/80">
                             Brand
                         </span>
                         {filterOptions.brands.map(({ value, count }) => (
@@ -190,29 +190,27 @@ export default async function CategoryPage({
                             className="flex items-center justify-between rounded-2xl border border-line bg-white p-4 transition hover:shadow-md"
                         >
                             <div className="flex-1">
-                                <span className="font-mono text-xs uppercase tracking-wide text-ink/40">
-                                    <Link href={`/store/${coupon.storeSlug}`} className="hover:underline">
-                                        {coupon.storeName}
-                                    </Link>
+                                <span className="font-mono text-xs uppercase tracking-wide text-ink/60">
+                                    {coupon.storeName}
                                     {coupon.brandSlug && (
                                         <>
                                             {" · "}
                                             <Link
                                                 href={`/brand/${coupon.brandSlug}`}
-                                                className="text-coupon hover:underline"
+                                                className="text-coupon-dark hover:underline"
                                             >
                                                 {coupon.brand}
                                             </Link>
                                         </>
                                     )}
                                 </span>
-                                <Link href={`/store/${coupon.storeSlug}`}>
-                                    <h3 className="font-medium text-ink hover:text-coupon">
+                                <Link href={`/store/${coupon.storeSlug}`} className="block hover:underline">
+                                    <h2 className="font-medium text-ink hover:text-coupon">
                                         {coupon.title}
-                                    </h3>
+                                    </h2>
                                 </Link>
                             </div>
-                            <span className="font-display text-lg font-black text-coupon">
+                            <span className="font-display text-lg font-black text-coupon-dark">
                                 {coupon.discountLabel}
                             </span>
                         </div>

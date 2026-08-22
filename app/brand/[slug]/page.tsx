@@ -116,7 +116,7 @@ export default async function BrandPage({
             {/* Панель фильтров */}
             {categoryOptions.length > 0 && (
                 <div className="mt-6 flex flex-wrap items-center gap-2">
-                    <span className="text-xs font-medium uppercase text-ink/40">
+                    <span className="text-xs font-medium uppercase text-ink/80">
                         Category
                     </span>
                     {categoryOptions.map(({ value, count }) => (
