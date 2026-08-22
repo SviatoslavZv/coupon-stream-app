@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import ShareButton from "@/components/ui/ShareButton";
 import StoreSearch from "@/components/layout/StoreSearch";
 import type { Store } from "@/types";
@@ -13,6 +14,20 @@ interface HeaderClientProps {
 export default function HeaderClient({ stores }: HeaderClientProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const pathname = usePathname();
+
+    const isActive = (href: string) => {
+        if (href === "/stores") {
+            return pathname === "/stores" || pathname.startsWith("/store/");
+        }
+        if (href === "/categories") {
+            return pathname === "/categories" || pathname.startsWith("/category/");
+        }
+        if (href === "/brands") {
+            return pathname === "/brands" || pathname.startsWith("/brand/");
+        }
+        return pathname === href;
+    };
 
     return (
         <>
@@ -35,16 +50,32 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
 
                     {/* Desktop Nav */}
                     <nav className="hidden items-center gap-6 text-sm font-medium text-ink lg:flex">
-                        <Link href="/stores" className="transition hover:text-coupon-dark">
+                        <Link
+                            href="/stores"
+                            className={`transition hover:text-coupon-dark ${isActive("/stores") ? "font-semibold text-coupon-dark" : ""}`}
+                            aria-current={isActive("/stores") ? "page" : undefined}
+                        >
                             All Stores
                         </Link>
-                        <Link href="/categories" className="transition hover:text-coupon-dark">
+                        <Link
+                            href="/categories"
+                            className={`transition hover:text-coupon-dark ${isActive("/categories") ? "font-semibold text-coupon-dark" : ""}`}
+                            aria-current={isActive("/categories") ? "page" : undefined}
+                        >
                             Categories
                         </Link>
-                        <Link href="/brands" className="transition hover:text-coupon-dark">
+                        <Link
+                            href="/brands"
+                            className={`transition hover:text-coupon-dark ${isActive("/brands") ? "font-semibold text-coupon-dark" : ""}`}
+                            aria-current={isActive("/brands") ? "page" : undefined}
+                        >
                             Brands
                         </Link>
-                        <Link href="/sales-calendar" className="transition hover:text-coupon-dark">
+                        <Link
+                            href="/sales-calendar"
+                            className={`transition hover:text-coupon-dark ${isActive("/sales-calendar") ? "font-semibold text-coupon-dark" : ""}`}
+                            aria-current={isActive("/sales-calendar") ? "page" : undefined}
+                        >
                             Calendar
                         </Link>
                         <ShareButton
@@ -92,33 +123,36 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
                         <nav className="flex flex-col gap-4 text-base font-semibold text-ink">
                             <Link
                                 href="/stores"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
+                                className={`rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark ${isActive("/stores") ? "text-coupon-dark" : ""}`}
+                                aria-current={isActive("/stores") ? "page" : undefined}
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 All Stores
                             </Link>
                             <Link
                                 href="/categories"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
+                                className={`rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark ${isActive("/categories") ? "text-coupon-dark" : ""}`}
+                                aria-current={isActive("/categories") ? "page" : undefined}
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Categories
                             </Link>
                             <Link
                                 href="/brands"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
+                                className={`rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark ${isActive("/brands") ? "text-coupon-dark" : ""}`}
+                                aria-current={isActive("/brands") ? "page" : undefined}
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Brands
                             </Link>
                             <Link
                                 href="/sales-calendar"
-                                className="rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark"
+                                className={`rounded-lg p-2 transition hover:bg-line/20 hover:text-coupon-dark ${isActive("/sales-calendar") ? "text-coupon-dark" : ""}`}
+                                aria-current={isActive("/sales-calendar") ? "page" : undefined}
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Calendar
                             </Link>
-
                             <div className="mt-2 border-t border-line/40 pt-4">
                                 <ShareButton
                                     path="/"
