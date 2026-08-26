@@ -208,22 +208,27 @@ export default function CouponItem({
 
             {/* Аккордеон деталей */}
             {
-                showDetails && (
-                    <div className="border-t border-line bg-paper px-4 py-3.5 sm:px-5 text-sm text-ink/70">
-                        <p className="leading-relaxed">{coupon.description}</p>
-                        {coupon.expiresAt && (
-                            <p className={`mt-1.5 text-xs ${isExpired ? "font-semibold text-red-600" : "text-ink/40"}`}>
-                                {isExpired ? `Expired on ${coupon.expiresAt}` : `Expires ${coupon.expiresAt}`}
-                            </p>
-                        )}
-                        {!!coupon.usageCount && coupon.usageCount > 0 && (
-                            <p className="mt-1 text-xs text-ink/40">
-                                Used {coupon.usageCount}{" "}
-                                {coupon.usageCount === 1 ? "time" : "times"}
-                            </p>
-                        )}
+                <div
+                    className={`grid transition-all duration-300 ease-in-out ${showDetails ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0"
+                        }`}
+                >
+                    <div className="overflow-hidden">
+                        <div className="border-t border-line bg-paper px-4 py-3.5 sm:px-5 text-sm text-ink/70">
+                            <p className="leading-relaxed">{coupon.description}</p>
+                            {coupon.expiresAt && (
+                                <p className={`mt-1.5 text-xs ${isExpired ? "font-semibold text-red-600" : "text-ink/40"}`}>
+                                    {isExpired ? `Expired on ${coupon.expiresAt}` : `Expires ${coupon.expiresAt}`}
+                                </p>
+                            )}
+                            {!!coupon.usageCount && coupon.usageCount > 0 && (
+                                <p className="mt-1 text-xs text-ink/40">
+                                    Used {coupon.usageCount}{" "}
+                                    {coupon.usageCount === 1 ? "time" : "times"}
+                                </p>
+                            )}
+                        </div>
                     </div>
-                )
+                </div>
             }
         </div >
     );

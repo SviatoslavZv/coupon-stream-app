@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function NotFound() {
     return (
-        <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center">
+        <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center  animate-fade-in-up">
             <span className="font-display text-6xl font-black text-coupon-dark">404</span>
             <h1 className="mt-4 font-display text-2xl font-black text-ink">
                 Looks like this deal expired

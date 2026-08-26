@@ -76,7 +76,7 @@ export default async function BrandPage({
         : allBrandCoupons;
 
     return (
-        <div className="mx-auto max-w-4xl px-4 py-10">
+        <div className="mx-auto max-w-4xl px-4 py-10  animate-fade-in-up">
             <BrandStructuredData
                 brandName={brand.label}
                 brandSlug={slug}

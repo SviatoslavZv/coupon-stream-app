@@ -81,7 +81,7 @@ export default async function CategoryPage({
         : allCategoryCoupons;
 
     return (
-        <div className="mx-auto max-w-4xl px-4 py-10">
+        <div className="mx-auto max-w-4xl px-4 py-10  animate-fade-in-up">
             <CategoryStructuredData
                 categoryName={category.label}
                 categorySlug={slug}

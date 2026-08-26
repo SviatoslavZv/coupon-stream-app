@@ -18,7 +18,7 @@ export default async function Home() {
   const stores = await getTopStores(6);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-10 animate-fade-in-up">
       <h1 className="font-display text-3xl font-black text-ink">
         Top Stores
       </h1>

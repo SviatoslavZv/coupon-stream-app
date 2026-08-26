@@ -16,7 +16,7 @@ export default async function CategoriesPage() {
     const categories = await getCategoriesWithCoupons();
 
     return (
-        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10">
+        <div className="mx-auto max-w-6xl px-4 py-6 sm:py-10 animate-fade-in-up">
             <Breadcrumbs
                 items={[
                     { label: "Home", href: "/" },
@@ -34,20 +34,21 @@ export default async function CategoriesPage() {
             {/* Мобильная адаптивная сетка: 2 колонки на смартфонах, 3 на планшетах/десктопе */}
             <div className="mt-6 sm:mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
                 {categories.map((category) => (
-                    <Link
-                        key={category.slug}
-                        href={`/category/${category.slug}`}
-                        className="group flex flex-col justify-between rounded-2xl border border-line bg-white p-3.5 sm:p-5 transition-all hover:border-coupon hover:shadow-md active:scale-[0.98]"
-                    >
-                        <div>
-                            <h2 className="font-display text-base sm:text-lg font-bold text-ink transition group-hover:text-coupon">
-                                {category.label}
-                            </h2>
-                            <p className="mt-1 text-xs sm:text-sm text-ink/80">
-                                {category.count} active {category.count === 1 ? "deal" : "deals"}
-                            </p>
-                        </div>
-                    </Link>
+                    <div key={category.slug} className="animate-fade-in-up">
+                        <Link
+                            href={`/category/${category.slug}`}
+                            className="group flex flex-col justify-between rounded-2xl border border-line bg-white p-3.5 sm:p-5 transition-all hover:border-coupon hover:shadow-md active:scale-[0.98]"
+                        >
+                            <div>
+                                <h2 className="font-display text-base sm:text-lg font-bold text-ink transition group-hover:text-coupon">
+                                    {category.label}
+                                </h2>
+                                <p className="mt-1 text-xs sm:text-sm text-ink/80">
+                                    {category.count} active {category.count === 1 ? "deal" : "deals"}
+                                </p>
+                            </div>
+                        </Link>
+                    </div>
                 ))}
             </div>
         </div>

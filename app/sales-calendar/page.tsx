@@ -3,7 +3,7 @@ import { SALES_CALENDAR } from "@/lib/constants/sales-calendar";
 
 export default function SalesCalendarPage() {
     return (
-        <div className="mx-auto max-w-3xl px-4 py-10">
+        <div className="mx-auto max-w-3xl px-4 py-10 animate-fade-in-up">
             <h1 className="font-display text-3xl font-black text-ink">
                 US Sales Calendar
             </h1>

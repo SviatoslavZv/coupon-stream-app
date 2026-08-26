@@ -15,7 +15,7 @@ export default function Error({
     }, [error]);
 
     return (
-        <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center">
+        <div className="mx-auto flex min-h-[60vh] max-w-2xl flex-col items-center justify-center px-4 text-center  animate-fade-in-up">
             <span className="font-display text-6xl font-black text-coupon-dark">Oops</span>
             <h1 className="mt-4 font-display text-2xl font-black text-ink">
                 Something went wrong on our end

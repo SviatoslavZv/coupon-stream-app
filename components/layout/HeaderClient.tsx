@@ -31,7 +31,7 @@ export default function HeaderClient({ stores }: HeaderClientProps) {
 
     return (
         <>
-            <header className="sticky top-0 z-40 w-full border-b border-line/40 bg-paper/90 backdrop-blur-md transition-all">
+            <header className="sticky top-0 z-40 w-full border-b border-line/40 bg-paper/90 backdrop-blur-md transition-all animate-fade-in-up">
                 <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3.5">
                     {/* Logo */}
                     <Link
