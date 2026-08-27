@@ -8,7 +8,7 @@ export async function GET(
   const { store: slug } = await params;
   const couponId = request.nextUrl.searchParams.get("coupon");
 
-  const redirectInfo = await getStoreRedirectUrl(slug);
+  const redirectInfo = await getStoreRedirectUrl(slug, couponId ?? undefined);
 
   // 1. Если магазин не найден — редирект на главную (тоже без кэширования)
   if (!redirectInfo) {

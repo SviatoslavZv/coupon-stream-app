@@ -24,7 +24,8 @@ export async function createCoupon(
   const category = formData.get("category") as string;
   const subcategory = formData.get("subcategory") as string;
   const gender = formData.get("gender") as string;
-  const brand = formData.get("brand") as string;
+    const brand = formData.get("brand") as string;
+  const affiliateLink = formData.get("affiliateLink") as string;
 
   const supabase = await createClient();
 
@@ -40,6 +41,7 @@ export async function createCoupon(
     subcategory: subcategory || null,
     gender: gender || null,
     brand: brand || null,
+    affiliate_link: affiliateLink || null,
   });
 
   if (error) {
@@ -65,7 +67,8 @@ export async function updateCoupon(
   const category = formData.get("category") as string;
   const subcategory = formData.get("subcategory") as string;
   const gender = formData.get("gender") as string;
-  const brand = formData.get("brand") as string;
+    const brand = formData.get("brand") as string;
+  const affiliateLink = formData.get("affiliateLink") as string;
 
   const supabase = await createClient();
 
@@ -83,6 +86,7 @@ export async function updateCoupon(
       subcategory: subcategory || null,
       gender: gender || null,
       brand: brand || null,
+      affiliate_link: affiliateLink || null,
     })
     .eq("id", id);
 

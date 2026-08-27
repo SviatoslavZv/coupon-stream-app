@@ -21,4 +21,5 @@ export interface Coupon {
   expiresAt: string;
   lastVerifiedAt?: string | null;
   usageCount?: number;
+  affiliateLink?: string | null;
 }

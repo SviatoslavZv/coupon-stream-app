@@ -9,7 +9,8 @@ interface StoreRedirectRow {
 }
 
 export async function getStoreRedirectUrl(
-  slug: string
+  slug: string,
+  couponId?: string
 ): Promise<{ storeId: string; url: string } | null> {
   const supabase = await createClient();
 
@@ -28,6 +29,22 @@ export async function getStoreRedirectUrl(
   }
 
   const row = data as StoreRedirectRow;
+
+  // Приоритет — собственная ссылка конкретного купона, если она указана
+  if (couponId) {
+    const { data: couponData, error: couponError } = await supabase
+      .from("coupons")
+      .select("affiliate_link")
+      .eq("id", couponId)
+      .maybeSingle();
+
+    if (couponError) {
+      console.error(`Failed to fetch coupon affiliate link: ${couponError.message}`);
+    } else if (couponData?.affiliate_link) {
+      return { storeId: row.id, url: couponData.affiliate_link };
+    }
+  }
+
   const url = row.affiliate_link ?? row.website_url;
 
   if (!url) {

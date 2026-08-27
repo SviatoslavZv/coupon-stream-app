@@ -23,6 +23,7 @@ interface CouponFormValues {
     subcategory?: string | null;
     gender?: string | null;
     brand?: string | null;
+    affiliateLink?: string | null;
 }
 
 
@@ -202,6 +203,20 @@ export default function CouponForm({
                         type="date"
                         required
                         defaultValue={initialValues?.expiresAt}
+                        className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                    />
+                </div>
+
+                <div className="col-span-2">
+                    <label htmlFor="affiliateLink" className="mb-1 block text-sm font-medium text-ink">
+                        Affiliate Link (optional — overrides store`s default link)
+                    </label>
+                    <input
+                        id="affiliateLink"
+                        name="affiliateLink"
+                        type="text"
+                        placeholder="https://www.example.com/click-..."
+                        defaultValue={initialValues?.affiliateLink ?? ""}
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
                 </div>

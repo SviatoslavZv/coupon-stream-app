@@ -15,6 +15,7 @@ interface CouponRow {
   expires_at: string;
   last_verified_at: string | null;
   click_count: number;
+  affiliate_link: string | null;
 }
 interface StoreWithCouponsRow {
   slug: string;
@@ -34,6 +35,7 @@ function mapCoupon(row: CouponRow): Coupon {
     expiresAt: row.expires_at,
     lastVerifiedAt: row.last_verified_at,
     usageCount: row.click_count,
+    affiliateLink: row.affiliate_link,
   };
 }
 
@@ -49,7 +51,7 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
   const { data, error } = await supabase
     .from("stores")
 .select(
-  "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count)"
+  "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count, affiliate_link)"
 )
     .eq("slug", slug.toLowerCase())
     .maybeSingle();
@@ -126,7 +128,7 @@ export async function getCouponById(id: string) {
   const { data, error } = await supabase
     .from("coupons")
     .select(
-      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand"
+      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand, affiliate_link"
     )
     .eq("id", id)
     .maybeSingle();
