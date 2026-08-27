@@ -21,6 +21,8 @@ interface StoreWithCouponsRow {
   slug: string;
   name: string;
   logo_url: string;
+  banner_url: string | null;
+  banner_link: string | null;
   coupons: CouponRow[];
 }
 
@@ -43,7 +45,7 @@ function mapCoupon(row: CouponRow): Coupon {
 
 // Оборачиваем функцию в cache
 export const getStoreWithCoupons = cache(async (slug: string): Promise<{
-  store: Pick<Store, "slug" | "name" | "logoUrl">;
+  store: Pick<Store, "slug" | "name" | "logoUrl" | "bannerUrl" | "bannerLink">;
   coupons: Coupon[];
 } | null> => {
   const supabase = await createClient();
@@ -51,7 +53,7 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
   const { data, error } = await supabase
     .from("stores")
 .select(
-  "slug, name, logo_url, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count, affiliate_link)"
+  "slug, name, logo_url, banner_url, banner_link, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count, affiliate_link)"
 )
     .eq("slug", slug.toLowerCase())
     .maybeSingle();
@@ -66,7 +68,13 @@ export const getStoreWithCoupons = cache(async (slug: string): Promise<{
 
   const row = data as StoreWithCouponsRow;
 return {
-  store: { slug: row.slug, name: row.name, logoUrl: row.logo_url },
+  store: {
+    slug: row.slug,
+    name: row.name,
+    logoUrl: row.logo_url,
+    bannerUrl: row.banner_url,
+    bannerLink: row.banner_link,
+  },
   coupons: row.coupons.map((c) => mapCoupon(c)),
 };
 });

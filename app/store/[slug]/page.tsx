@@ -123,6 +123,24 @@ export default async function StorePage({
                 />
             </div>
 
+            {/* Баннер магазина — только на десктопе, опционально */}
+            {store.bannerUrl && store.bannerLink && (
+
+                <a
+                    href={store.bannerLink}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="mb-6 hidden overflow-hidden rounded-2xl border border-line/60 md:block"
+                >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={store.bannerUrl}
+                        alt={`${store.name} promotional banner`}
+                        className="w-full object-cover"
+                    />
+                </a>
+            )}
+
             {/* Список купонов */}
             <div className="flex flex-col gap-8">
                 {/* 1. СЕКЦИЯ: Активные купоны */}

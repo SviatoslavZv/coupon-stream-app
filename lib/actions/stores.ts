@@ -19,6 +19,8 @@ export async function createStore(
   const logoUrl = (formData.get("logoUrl") as string)?.trim();
   const affiliateLink = (formData.get("affiliateLink") as string)?.trim();
   const websiteUrl = (formData.get("websiteUrl") as string)?.trim();
+  const bannerUrl = (formData.get("bannerUrl") as string)?.trim();
+  const bannerLink = (formData.get("bannerLink") as string)?.trim();
 
   // Простая проверка обязательных полей
   if (!slug || !name) {
@@ -33,6 +35,8 @@ export async function createStore(
     logo_url: logoUrl || null,
     affiliate_link: affiliateLink || null,
     website_url: websiteUrl || null,
+    banner_url: bannerUrl || null,
+    banner_link: bannerLink || null,
   });
 
   if (error) {
@@ -61,6 +65,8 @@ export async function updateStore(
   const logoUrl = (formData.get("logoUrl") as string)?.trim();
   const affiliateLink = (formData.get("affiliateLink") as string)?.trim();
   const websiteUrl = (formData.get("websiteUrl") as string)?.trim();
+  const bannerUrl = (formData.get("bannerUrl") as string)?.trim();
+  const bannerLink = (formData.get("bannerLink") as string)?.trim();
 
   if (!id || !slug || !name) {
     return { error: "Store ID, Name and Slug are required fields." };
@@ -76,6 +82,8 @@ export async function updateStore(
       logo_url: logoUrl || null,
       affiliate_link: affiliateLink || null,
       website_url: websiteUrl || null,
+      banner_url: bannerUrl || null,
+      banner_link: bannerLink || null,
     })
     .eq("id", id);
 

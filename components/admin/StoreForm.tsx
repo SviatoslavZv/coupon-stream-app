@@ -11,6 +11,8 @@ interface StoreFormValues {
     logoUrl?: string;
     websiteUrl?: string | null;
     affiliateLink?: string | null;
+    bannerUrl?: string | null;
+    bannerLink?: string | null;
 }
 
 export default function StoreForm({
@@ -220,6 +222,42 @@ export default function StoreForm({
                     defaultValue={initialValues?.affiliateLink ?? ""}
                     className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                 />
+            </div>
+
+            <div className="border-t border-line pt-4">
+                <p className="mb-3 text-xs font-medium uppercase tracking-wide text-ink/40">
+                    Desktop Banner (optional)
+                </p>
+
+                <div className="flex flex-col gap-4">
+                    <div>
+                        <label htmlFor="bannerUrl" className="mb-1 block text-sm font-medium text-ink">
+                            Banner Image URL
+                        </label>
+                        <input
+                            id="bannerUrl"
+                            name="bannerUrl"
+                            type="text"
+                            placeholder="https://www.awltovhc.com/image-..."
+                            defaultValue={initialValues?.bannerUrl ?? ""}
+                            className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                        />
+                    </div>
+
+                    <div>
+                        <label htmlFor="bannerLink" className="mb-1 block text-sm font-medium text-ink">
+                            Banner Click-Through Link
+                        </label>
+                        <input
+                            id="bannerLink"
+                            name="bannerLink"
+                            type="text"
+                            placeholder="https://www.tkqlhce.com/click-..."
+                            defaultValue={initialValues?.bannerLink ?? ""}
+                            className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                        />
+                    </div>
+                </div>
             </div>
 
             <button

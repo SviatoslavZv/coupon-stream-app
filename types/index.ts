@@ -9,6 +9,8 @@ export interface Store {
   createdAt?: string; // Добавляем опциональную дату создания
   updatedAt?: string; // Добавляем опциональную дату обновления
   lastModified?: string;
+  bannerUrl?: string | null;
+  bannerLink?: string | null;
 }
 
 export interface Coupon {
