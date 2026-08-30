@@ -16,7 +16,7 @@ export default async function StoresPage() {
     const stores = await getStores();
 
     return (
-        <div className="mx-auto max-w-6xl px-4 py-10 animate-fade-in-up">
+        <div className="mx-auto max-w-6xl px-4 pt-4 pb-10 animate-fade-in-up">
             <Breadcrumbs
                 items={[
                     { label: "Home", href: "/" },
