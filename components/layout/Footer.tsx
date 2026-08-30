@@ -3,7 +3,7 @@ import Link from "next/link";
 export default function Footer() {
     return (
         <footer className="border-t border-line bg-paper">
-            <div className="mx-auto max-w-6xl px-4 py-8">
+            <div className="mx-auto max-w-6xl px-4 pt-4 pb-8">
                 {/* Верхняя секция: Юридическое уведомление (Affiliate Disclaimer) */}
                 <p className="text-xs leading-relaxed text-ink/70">
                     CouponCreek may earn a commission when you buy through links on our

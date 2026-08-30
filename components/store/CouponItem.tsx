@@ -40,7 +40,7 @@ export default function CouponItem({
     storeSlug: string;
 }) {
     const [isRevealed, setIsRevealed] = useState(false);
-    const [isCopied, setIsCopied] = useState(false);
+    const [justCopied, setJustCopied] = useState(false);
     const [showDetails, setShowDetails] = useState(false);
     const [isHighlighted, setIsHighlighted] = useState(false);
 
@@ -73,7 +73,10 @@ export default function CouponItem({
         if (codeText && typeof navigator !== "undefined" && navigator.clipboard) {
             navigator.clipboard
                 .writeText(codeText)
-                .then(() => setIsCopied(true))
+                .then(() => {
+                    setJustCopied(true);
+                    setTimeout(() => setJustCopied(false), 2000);
+                })
                 .catch((err) => {
                     console.error("Clipboard access denied:", err);
                 });
@@ -86,6 +89,24 @@ export default function CouponItem({
             newTab.opener = null;
         }
     };
+
+
+    const handleCopyAgain = () => {
+        const codeText = coupon.code?.trim() || "";
+        if (codeText && typeof navigator !== "undefined" && navigator.clipboard) {
+            navigator.clipboard
+                .writeText(codeText)
+                .then(() => {
+                    setJustCopied(true);
+                    setTimeout(() => setJustCopied(false), 2000);
+                })
+                .catch((err) => {
+                    console.error("Clipboard access denied:", err);
+                });
+        }
+    };
+
+
 
     const isExpired = isCouponExpired(coupon.expiresAt);
     const status = formatVerifiedLabel(coupon.lastVerifiedAt, coupon.expiresAt);
@@ -144,26 +165,41 @@ export default function CouponItem({
                 {/* Кнопка действия */}
                 <div className="w-full shrink-0 sm:w-auto">
                     {isCodeType ? (
-                        <button
-                            type="button"
-                            onClick={handleShowCode}
-                            className="inline-flex w-full items-center justify-center rounded-full bg-coupon-dark px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:bg-coupon active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
-                        >
-                            {isRevealed ? (
-                                isCopied ? (
-                                    <span className="flex flex-col items-center leading-tight">
-                                        <span className="flex items-center gap-1 text-[10px] font-medium ">
-                                            <span>✓</span> Copied to clipboard
-                                        </span>
-                                        <span>{coupon.code}</span>
-                                    </span>
-                                ) : (
-                                    coupon.code || "Get Deal"
-                                )
-                            ) : (
-                                "Show Code"
-                            )}
-                        </button>
+                        isRevealed ? (
+                            <div className="relative inline-flex w-full items-stretch overflow-hidden rounded-full bg-coupon-dark sm:w-auto">
+                                <input
+                                    type="text"
+                                    readOnly
+                                    value={coupon.code || ""}
+                                    onFocus={(e) => e.target.select()}
+                                    onClick={(e) => (e.target as HTMLInputElement).select()}
+                                    aria-label="Coupon code"
+                                    className="w-full min-w-0 flex-1 cursor-text bg-transparent px-5 py-3 text-center text-sm font-bold text-white outline-none sm:min-w-30 sm:py-2.5"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleCopyAgain}
+                                    aria-label="Copy code"
+                                    className="flex shrink-0 items-center justify-center border-l border-white/25 px-4 text-white transition hover:bg-coupon cursor-pointer"
+                                >
+                                    {justCopied ? (
+                                        <span className="text-xs font-semibold whitespace-nowrap">✓ Copied</span>
+                                    ) : (
+                                        <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                        </svg>
+                                    )}
+                                </button>
+                            </div>
+                        ) : (
+                            <button
+                                type="button"
+                                onClick={handleShowCode}
+                                className="inline-flex w-full items-center justify-center rounded-full bg-coupon-dark px-5 py-3 text-sm font-bold text-white transition-all duration-300 hover:bg-coupon active:scale-95 cursor-pointer whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5"
+                            >
+                                Show Code
+                            </button>
+                        )
                     ) : (
                         <a
                             href={affiliateUrl}
@@ -178,7 +214,7 @@ export default function CouponItem({
                                     coupon_type: "deal",
                                 });
                             }}
-                            className={`inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold  transition active:scale-95 whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5 ${isExpired ? "bg-ink/10 text-ink/70 hover:bg-ink/15" : "bg-coupon hover:bg-coupon/90"
+                            className={`inline-flex w-full items-center justify-center rounded-full px-5 py-3 text-sm font-semibold text-white transition active:scale-95 whitespace-nowrap sm:w-auto sm:min-w-30 sm:py-2.5 ${isExpired ? "bg-ink/10 text-ink/70 hover:bg-ink/15" : "bg-coupon-dark hover:bg-coupon"
                                 }`}
                         >
                             {isExpired ? "Expired Deal" : "Get Deal"}
