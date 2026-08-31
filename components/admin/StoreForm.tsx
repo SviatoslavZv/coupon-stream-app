@@ -111,25 +111,36 @@ export default function StoreForm({
                 />
             </div>
 
-            <div ref={slugFieldRef}>
-                {showSlugField ? (
-                    <div>
-                        <label htmlFor="slug" className="mb-1 block text-sm font-medium text-ink">
-                            URL Slug
-                        </label>
+            <div ref={logoFieldRef}>
+                {showLogoField ? (
+                    <>
                         <input
-                            id="slug"
-                            name="slug"
+                            id="logoUrl"
+                            name="logoUrl"
                             type="text"
                             required
-                            value={slug}
+                            value={logoUrl}
                             onChange={(e) => {
-                                setSlug(e.target.value);
-                                setIsSlugTouched(true);
+                                setLogoUrl(e.target.value);
+                                setIsLogoTouched(true);
                             }}
-                            className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                         />
-                    </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                const domain = extractDomain(websiteUrl);
+                                if (domain) {
+                                    setLogoUrl(faviconUrl(domain));
+                                }
+                                setIsLogoTouched(false);
+                                setShowLogoField(false);
+                            }}
+                            className="mt-1 text-xs font-medium text-ink/40 underline hover:text-ink"
+                        >
+                            Reset to automatic favicon
+                        </button>
+                    </>
                 ) : (
                     <>
                         <input type="hidden" name="slug" value={slug} />
