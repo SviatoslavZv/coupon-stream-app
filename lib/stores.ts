@@ -94,6 +94,8 @@ export interface AdminStoreRow {
   logoUrl: string;
   affiliateLink: string | null;
   websiteUrl: string | null;
+  bannerUrl: string | null;
+  bannerLink: string | null;
 }
 
 interface StoreByIdDbRow {
@@ -103,14 +105,16 @@ interface StoreByIdDbRow {
   logo_url: string;
   affiliate_link: string | null;
   website_url: string | null;
+  banner_url: string | null;
+  banner_link: string | null;
 }
 
 export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+    const { data, error } = await supabase
     .from("stores")
-    .select("id, slug, name, logo_url, affiliate_link, website_url")
+    .select("id, slug, name, logo_url, affiliate_link, website_url, banner_url, banner_link")
     .eq("id", id)
     .maybeSingle();
 
@@ -131,5 +135,7 @@ export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
     logoUrl: row.logo_url,
     affiliateLink: row.affiliate_link,
     websiteUrl: row.website_url,
+    bannerUrl: row.banner_url,
+    bannerLink: row.banner_link,
   };
 }

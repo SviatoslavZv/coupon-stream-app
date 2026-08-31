@@ -31,7 +31,7 @@ export default function StoreForm({
 
     const [name, setName] = useState(initialValues?.name ?? "");
     const [slug, setSlug] = useState(initialValues?.slug ?? "");
-    const [websiteUrl, setWebsiteUrl] = useState(initialValues?.websiteUrl ?? "https://www.");
+    const [websiteUrl, setWebsiteUrl] = useState(initialValues?.websiteUrl ?? "");
     const [logoUrl, setLogoUrl] = useState(initialValues?.logoUrl ?? "");
 
     const [isSlugTouched, setIsSlugTouched] = useState(isEditing);
