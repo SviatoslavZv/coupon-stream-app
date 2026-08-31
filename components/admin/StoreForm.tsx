@@ -39,7 +39,6 @@ export default function StoreForm({
     const [showSlugField, setShowSlugField] = useState(false);
     const [showLogoField, setShowLogoField] = useState(false);
 
-
     const slugFieldRef = useRef<HTMLDivElement>(null);
     const logoFieldRef = useRef<HTMLDivElement>(null);
 
@@ -64,7 +63,6 @@ export default function StoreForm({
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showSlugField, showLogoField]);
-
 
     const handleNameChange = (value: string) => {
         setName(value);
@@ -111,36 +109,25 @@ export default function StoreForm({
                 />
             </div>
 
-            <div ref={logoFieldRef}>
-                {showLogoField ? (
-                    <>
+            <div ref={slugFieldRef}>
+                {showSlugField ? (
+                    <div>
+                        <label htmlFor="slug" className="mb-1 block text-sm font-medium text-ink">
+                            URL Slug
+                        </label>
                         <input
-                            id="logoUrl"
-                            name="logoUrl"
+                            id="slug"
+                            name="slug"
                             type="text"
                             required
-                            value={logoUrl}
+                            value={slug}
                             onChange={(e) => {
-                                setLogoUrl(e.target.value);
-                                setIsLogoTouched(true);
+                                setSlug(e.target.value);
+                                setIsSlugTouched(true);
                             }}
-                            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                            className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                         />
-                        <button
-                            type="button"
-                            onClick={() => {
-                                const domain = extractDomain(websiteUrl);
-                                if (domain) {
-                                    setLogoUrl(faviconUrl(domain));
-                                }
-                                setIsLogoTouched(false);
-                                setShowLogoField(false);
-                            }}
-                            className="mt-1 text-xs font-medium text-ink/40 underline hover:text-ink"
-                        >
-                            Reset to automatic favicon
-                        </button>
-                    </>
+                    </div>
                 ) : (
                     <>
                         <input type="hidden" name="slug" value={slug} />
@@ -186,7 +173,7 @@ export default function StoreForm({
                         </div>
                     )}
                     <p className="text-xs text-ink/60">
-                        {websiteUrl && websiteUrl !== "https://www."
+                        {websiteUrl
                             ? "Fetched automatically from the website above."
                             : "Add a website URL to fetch a logo automatically."}
                     </p>
@@ -194,18 +181,34 @@ export default function StoreForm({
 
                 <div ref={logoFieldRef}>
                     {showLogoField ? (
-                        <input
-                            id="logoUrl"
-                            name="logoUrl"
-                            type="text"
-                            required
-                            value={logoUrl}
-                            onChange={(e) => {
-                                setLogoUrl(e.target.value);
-                                setIsLogoTouched(true);
-                            }}
-                            className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
-                        />
+                        <>
+                            <input
+                                id="logoUrl"
+                                name="logoUrl"
+                                type="text"
+                                required
+                                value={logoUrl}
+                                onChange={(e) => {
+                                    setLogoUrl(e.target.value);
+                                    setIsLogoTouched(true);
+                                }}
+                                className="mt-2 w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    const domain = extractDomain(websiteUrl);
+                                    if (domain) {
+                                        setLogoUrl(faviconUrl(domain));
+                                    }
+                                    setIsLogoTouched(false);
+                                    setShowLogoField(false);
+                                }}
+                                className="mt-1 text-xs font-medium text-ink/40 underline hover:text-ink"
+                            >
+                                Reset to automatic favicon
+                            </button>
+                        </>
                     ) : (
                         <>
                             <input type="hidden" name="logoUrl" value={logoUrl} />
