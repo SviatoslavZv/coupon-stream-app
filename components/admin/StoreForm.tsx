@@ -44,17 +44,25 @@ export default function StoreForm({
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
+            const target = event.target as HTMLElement;
+
+            // Не схлопываем поля, если клик пришёлся на кнопку отправки формы —
+            // пусть форма отправится с уже введённым значением сразу, за один клик
+            if (target.closest('button[type="submit"]')) {
+                return;
+            }
+
             if (
                 showSlugField &&
                 slugFieldRef.current &&
-                !slugFieldRef.current.contains(event.target as Node)
+                !slugFieldRef.current.contains(target)
             ) {
                 setShowSlugField(false);
             }
             if (
                 showLogoField &&
                 logoFieldRef.current &&
-                !logoFieldRef.current.contains(event.target as Node)
+                !logoFieldRef.current.contains(target)
             ) {
                 setShowLogoField(false);
             }
@@ -63,6 +71,7 @@ export default function StoreForm({
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, [showSlugField, showLogoField]);
+
 
     const handleNameChange = (value: string) => {
         setName(value);
