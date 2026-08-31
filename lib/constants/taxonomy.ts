@@ -118,6 +118,8 @@ export const BRANDS = [
   { slug: "birkenstock", label: "Birkenstock" },
   { slug: "carolina-herrera", label: "Carolina Herrera" },
   { slug: "brixton", label: "Brixton" },
+  { slug: "giuseppe-zanotti", label: "Giuseppe Zanotti" },
+  { slug: "rowe-and-taylor", label: "Rowe and Taylor" },
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
