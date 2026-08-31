@@ -31,6 +31,8 @@ export default async function EditStorePage({
                     logoUrl: store.logoUrl,
                     websiteUrl: store.websiteUrl,
                     affiliateLink: store.affiliateLink,
+                    bannerUrl: store.bannerUrl,
+                    bannerLink: store.bannerLink,
                 }}
             />
         </div>
