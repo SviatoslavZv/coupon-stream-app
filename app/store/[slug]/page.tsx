@@ -40,9 +40,14 @@ export async function generateMetadata({
     const activeCount = activeCoupons.length;
     const countBadge = activeCount > 0 ? `(${activeCount} Active) ` : "";
 
+    const description =
+        activeCount > 0
+            ? `${activeCount} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`
+            : `Find the latest ${store.name} promo codes and deals on CouponCreek. Checked and updated regularly for ${monthYear}.`;
+
     return buildPageMetadata({
         title: `${store.name} Promo Codes & Coupons ${countBadge}— ${monthYear}`,
-        description: `${activeCount} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`,
+        description,
         path: `/store/${slug}`,
     });
 }
@@ -125,7 +130,6 @@ export default async function StorePage({
 
             {/* Баннер магазина — только на десктопе, опционально */}
             {store.bannerUrl && store.bannerLink && (
-
                 <a
                     href={store.bannerLink}
                     target="_blank"
@@ -152,7 +156,9 @@ export default async function StorePage({
                     ) : (
                         <div className="rounded-2xl border border-line bg-paper p-6 text-center text-sm text-ink/60">
                             <p>No active promo codes for {store.name} right now.</p>
-                            <p className="mt-1 text-xs">Try expired codes below, as some of them might still work!</p>
+                            {expiredCoupons.length > 0 && (
+                                <p className="mt-1 text-xs">Try expired codes below, as some of them might still work!</p>
+                            )}
                         </div>
                     )}
                 </section>
