@@ -97,23 +97,6 @@ export default async function StorePage({
 
             <FaqStructuredData items={faqItems} />
 
-            {/* Баннер магазина — только на десктопе, опционально, размещён над шапкой */}
-            {store.bannerUrl && store.bannerLink && (
-                <a
-                    href={store.bannerLink}
-                    target="_blank"
-                    rel="noopener noreferrer sponsored"
-                    className="mb-6 hidden overflow-hidden rounded-2xl border border-line/60 md:block"
-                >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                        src={store.bannerUrl}
-                        alt={`${store.name} promotional banner`}
-                        className="w-full object-cover"
-                    />
-                </a>
-            )}
-
             {/* Шапка магазина */}
             <div className="mb-6 sm:mb-8 flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5 sm:gap-4">
@@ -144,6 +127,25 @@ export default async function StorePage({
                     className="flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-line px-3.5 py-1.5 sm:px-4 sm:py-2 text-xs sm:text-sm font-medium text-ink transition hover:border-coupon hover:text-coupon"
                 />
             </div>
+
+            {/* Баннер магазина — только на десктопе, опционально */}
+            {store.bannerUrl && store.bannerLink && (
+                <a
+                    href={store.bannerLink}
+                    target="_blank"
+                    rel="noopener noreferrer sponsored"
+                    className="mb-6 hidden overflow-hidden rounded-2xl border border-line/60 md:block"
+                >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={store.bannerUrl}
+                        alt={`${store.name} promotional banner`}
+                        className="w-full object-cover"
+                    />
+                </a>
+            )}
+
+
             {/* Список купонов */}
             <div className="flex flex-col gap-8">
                 {/* 1. СЕКЦИЯ: Активные купоны */}
