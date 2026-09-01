@@ -131,18 +131,18 @@ export default async function StorePage({
             {/* Баннер магазина — только на десктопе, опционально */}
             {store.bannerUrl && store.bannerLink && (
                 <a
+
                     href={store.bannerLink}
                     target="_blank"
                     rel="noopener noreferrer sponsored"
                     className="mb-6 hidden overflow-hidden rounded-2xl border border-line/60 md:block"
+                    style={{ aspectRatio: "976 / 251" }}
                 >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img
                         src={store.bannerUrl}
                         alt={`${store.name} promotional banner`}
-                        width={976}
-                        height={251}
-                        className="w-full h-auto object-cover"
+                        className="h-full w-full object-cover"
                     />
                 </a>
             )}
