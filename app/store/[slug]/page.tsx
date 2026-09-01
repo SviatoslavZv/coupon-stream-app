@@ -140,7 +140,9 @@ export default async function StorePage({
                     <img
                         src={store.bannerUrl}
                         alt={`${store.name} promotional banner`}
-                        className="w-full object-cover"
+                        width={976}
+                        height={251}
+                        className="w-full h-auto object-cover"
                     />
                 </a>
             )}
