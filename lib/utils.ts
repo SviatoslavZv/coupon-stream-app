@@ -20,3 +20,10 @@ export function extractDomain(url: string): string | null {
 export function faviconUrl(domain: string): string {
   return `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
 }
+
+
+export function isCouponExpired(expiresAt?: string | null): boolean {
+  if (!expiresAt) return false;
+  const expiryDate = new Date(expiresAt).getTime();
+  return !isNaN(expiryDate) && expiryDate < Date.now();
+}

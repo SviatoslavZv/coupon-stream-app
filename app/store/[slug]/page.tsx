@@ -10,13 +10,8 @@ import FaqSection from "@/components/ui/FaqSection";
 import FaqStructuredData from "@/components/seo/FaqStructuredData";
 import { getStoreFaq } from "@/lib/constants/faq";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
+import { isCouponExpired } from "@/lib/utils";
 
-// Вспомогательная функция проверки на истечение срока
-function isCouponExpired(expiresAt?: string | null): boolean {
-    if (!expiresAt) return false;
-    const expiryDate = new Date(expiresAt).getTime();
-    return !isNaN(expiryDate) && expiryDate < Date.now();
-}
 
 export async function generateMetadata({
     params,

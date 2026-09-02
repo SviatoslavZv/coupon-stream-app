@@ -1,6 +1,7 @@
 // lib/stores.ts
 
 import { createClient } from "@/lib/supabase/server";
+import { isCouponExpired } from "@/lib/utils";
 import type { Store } from "@/types";
 
 interface StoreRow {
@@ -13,11 +14,6 @@ interface StoreRow {
   coupons: { discount_label: string; expires_at?: string | null; updated_at?: string; created_at?: string }[];
 }
 
-function isCouponExpired(expiresAt?: string | null): boolean {
-  if (!expiresAt) return false;
-  const expiryDate = new Date(expiresAt).getTime();
-  return !isNaN(expiryDate) && expiryDate < Date.now();
-}
 
 function mapStoreFromDb(row: StoreRow): Store {
   const storeDate = row.updated_at ?? row.created_at;
