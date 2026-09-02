@@ -25,7 +25,6 @@ export default async function EditCouponPage({
             <h1 className="mb-6 font-display text-2xl font-black text-ink">
                 Edit Coupon
             </h1>
-
             <CouponForm
                 action={updateCoupon}
                 storeOptions={storeOptions}
@@ -42,6 +41,7 @@ export default async function EditCouponPage({
                     subcategory: coupon.subcategory,
                     gender: coupon.gender,
                     brand: coupon.brand,
+                    affiliateLink: coupon.affiliate_link,
                 }}
             />
         </div>
