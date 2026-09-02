@@ -36,7 +36,7 @@ export default function StoreCard({ store }: { store: Store }) {
         </div>
 
         <span className="font-mono text-xs text-ink/80">
-          {store.offerCount} offers
+          {store.offerCount > 0 ? `${store.offerCount} offers` : "No offers"}
         </span>
       </div>
 
@@ -44,7 +44,15 @@ export default function StoreCard({ store }: { store: Store }) {
         <h2 className="font-display text-lg font-bold text-ink">
           {store.name}
         </h2>
-        <p className="text-sm font-medium text-coupon-dark">{store.bestOffer}</p>
+        <p
+          className={
+            store.offerCount > 0
+              ? "text-sm font-medium text-coupon-dark"
+              : "text-sm font-medium text-ink/40"
+          }
+        >
+          {store.offerCount > 0 ? store.bestOffer : "Check back soon"}
+        </p>
       </div>
 
       <div

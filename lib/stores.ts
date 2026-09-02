@@ -10,7 +10,13 @@ interface StoreRow {
   logo_url: string;
   created_at?: string;
   updated_at?: string;
-  coupons: { discount_label: string; updated_at?: string; created_at?: string }[];
+  coupons: { discount_label: string; expires_at?: string | null; updated_at?: string; created_at?: string }[];
+}
+
+function isCouponExpired(expiresAt?: string | null): boolean {
+  if (!expiresAt) return false;
+  const expiryDate = new Date(expiresAt).getTime();
+  return !isNaN(expiryDate) && expiryDate < Date.now();
 }
 
 function mapStoreFromDb(row: StoreRow): Store {
@@ -30,13 +36,15 @@ function mapStoreFromDb(row: StoreRow): Store {
         : latestCouponDate
       : storeDate ?? latestCouponDate;
 
+  const activeCoupons = row.coupons.filter((c) => !isCouponExpired(c.expires_at));
+
   return {
     id: row.id,
     slug: row.slug,
     name: row.name,
     logoUrl: row.logo_url,
-    offerCount: row.coupons.length,
-    bestOffer: row.coupons[0]?.discount_label ?? "No offers yet",
+    offerCount: activeCoupons.length,
+    bestOffer: activeCoupons[0]?.discount_label ?? "No offers yet",
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     lastModified,
@@ -49,9 +57,8 @@ export async function getStores(): Promise<Store[]> {
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "id, slug, name, logo_url, created_at, updated_at, coupons(discount_label, updated_at, created_at)"
+      "id, slug, name, logo_url, created_at, updated_at, coupons(discount_label, expires_at, updated_at, created_at)"
     );
-
   if (error) {
     throw new Error(`Failed to fetch stores: ${error.message}`);
   }
