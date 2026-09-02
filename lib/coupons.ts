@@ -169,6 +169,7 @@ interface CategoryCouponDbRow {
   subcategory: string | null;
   gender: string | null;
   brand: string | null;
+  expires_at: string | null;
   stores: { name: string; slug: string } | null;
 }
 
@@ -182,7 +183,7 @@ export const getCouponsByCategory = cache(
     let query = supabase
       .from("coupons")
       .select(
-        "id, discount_label, title, subcategory, gender, brand, stores(name, slug)"
+        "id, discount_label, title, subcategory, gender, brand, expires_at, stores(name, slug)"
       )
       .eq("category", category.toLowerCase())
 
@@ -202,22 +203,23 @@ export const getCouponsByCategory = cache(
       throw new Error(`Failed to fetch category coupons: ${error.message}`);
     }
 
-    return (data as unknown as CategoryCouponDbRow[]).map((row) => ({
-      id: row.id,
-      discountLabel: row.discount_label,
-      title: row.title,
-      storeName: row.stores?.name ?? "Unknown store",
-      storeSlug: row.stores?.slug ?? "",
-      subcategory: row.subcategory,
-      gender: row.gender,
-      brand: row.brand,
-      brandSlug: row.brand
-        ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
-        : null,
-    }));
+    return (data as unknown as CategoryCouponDbRow[])
+      .filter((row) => !isCouponExpired(row.expires_at))
+      .map((row) => ({
+        id: row.id,
+        discountLabel: row.discount_label,
+        title: row.title,
+        storeName: row.stores?.name ?? "Unknown store",
+        storeSlug: row.stores?.slug ?? "",
+        subcategory: row.subcategory,
+        gender: row.gender,
+        brand: row.brand,
+        brandSlug: row.brand
+          ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
+          : null,
+      }));
   }
 );
-
 
 export interface FilterOption {
   value: string;
@@ -271,6 +273,7 @@ interface BrandCouponDbRow {
   discount_label: string;
   title: string;
   category: string | null;
+  expires_at: string | null;
   stores: { name: string; slug: string } | null;
 }
 
@@ -283,7 +286,7 @@ export const getCouponsByBrand = cache(
 
     let query = supabase
       .from("coupons")
-      .select("id, discount_label, title, category, stores(name, slug)")
+      .select("id, discount_label, title, category, expires_at, stores(name, slug)")
       .eq("brand", brand);
 
     if (filters.category) {
@@ -296,17 +299,18 @@ export const getCouponsByBrand = cache(
       throw new Error(`Failed to fetch brand coupons: ${error.message}`);
     }
 
-    return (data as unknown as BrandCouponDbRow[]).map((row) => ({
-      id: row.id,
-      discountLabel: row.discount_label,
-      title: row.title,
-      storeName: row.stores?.name ?? "Unknown store",
-      storeSlug: row.stores?.slug ?? "",
-      category: row.category,
-    }));
+    return (data as unknown as BrandCouponDbRow[])
+      .filter((row) => !isCouponExpired(row.expires_at))
+      .map((row) => ({
+        id: row.id,
+        discountLabel: row.discount_label,
+        title: row.title,
+        storeName: row.stores?.name ?? "Unknown store",
+        storeSlug: row.stores?.slug ?? "",
+        category: row.category,
+      }));
   }
 );
-
 export function extractCategoryOptions(
   coupons: { category: string | null }[]
 ): FilterOption[] {
