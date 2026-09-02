@@ -3,6 +3,7 @@
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
+import { isCouponExpired } from "@/lib/utils";
 import type { Store, Coupon } from "@/types";
 
 interface CouponRow {
@@ -338,7 +339,7 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
 
   const { data, error } = await supabase
     .from("coupons")
-    .select("brand, updated_at, created_at")
+    .select("brand, expires_at, updated_at, created_at")
     .not("brand", "is", null);
 
   if (error) {
@@ -347,7 +348,14 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
 
   const brandMeta = new Map<string, { count: number; lastModified?: string }>();
 
-  for (const row of data as { brand: string; updated_at?: string; created_at?: string }[]) {
+  for (const row of data as {
+    brand: string;
+    expires_at?: string | null;
+    updated_at?: string;
+    created_at?: string;
+  }[]) {
+    if (isCouponExpired(row.expires_at)) continue;
+
     const existing = brandMeta.get(row.brand);
     const rowDate = row.updated_at || row.created_at;
 
@@ -385,7 +393,7 @@ export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
 
   const { data, error } = await supabase
     .from("coupons")
-    .select("category, updated_at, created_at")
+    .select("category, expires_at, updated_at, created_at")
     .not("category", "is", null);
 
   if (error) {
@@ -394,7 +402,14 @@ export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
 
   const categoryMeta = new Map<string, { count: number; lastModified?: string }>();
 
-  for (const row of data as { category: string; updated_at?: string; created_at?: string }[]) {
+  for (const row of data as {
+    category: string;
+    expires_at?: string | null;
+    updated_at?: string;
+    created_at?: string;
+  }[]) {
+    if (isCouponExpired(row.expires_at)) continue;
+
     const existing = categoryMeta.get(row.category);
     const rowDate = row.updated_at || row.created_at;
 
