@@ -35,6 +35,7 @@ export const CATEGORIES = [
     label: "Accessories",
     subcategories: [
       { slug: "handbags-wallets-backpacks", label: "Handbags, Wallets & Backpacks" },
+      { slug: "luggage-travel", label: "Luggage & Travel" },
       { slug: "jewelry", label: "Jewelry" },
       { slug: "watches", label: "Watches" },
       { slug: "belts", label: "Belts" },
@@ -127,6 +128,7 @@ export const BRANDS = [
   { slug: "oakley", label: "Oakley" },
   { slug: "ray-ban", label: "Ray-Ban" },
   { slug: "costa-del-mar", label: "Costa Del Mar" },
+  { slug: "tucci", label: "TUCCI" },
   
 ] as const;
 
