@@ -125,6 +125,7 @@ export const BRANDS = [
   { slug: "maceoo", label: "Maceoo" },
   { slug: "vy-jewelry", label: "VY Jewelry" },
   { slug: "oakley", label: "Oakley" },
+  { slug: "ray-ban", label: "Ray-Ban" },
   
 ] as const;
 
