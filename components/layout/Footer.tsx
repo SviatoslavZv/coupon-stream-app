@@ -4,11 +4,7 @@ export default function Footer() {
     return (
         <footer className="border-t border-line bg-paper">
             <div className="mx-auto max-w-6xl px-4 pt-4 pb-8">
-                {/* Верхняя секция: Юридическое уведомление (Affiliate Disclaimer) */}
-                <p className="text-xs leading-relaxed text-ink/70">
-                    CouponCreek may earn a commission when you buy through links on our
-                    site. This does not affect the price you pay. All promo codes and deals are 100% free for users.
-                </p>
+
 
                 {/* Средняя секция: Навигация и Копирайт */}
                 <div className="mt-3 flex flex-col gap-4 border-t border-line/40 pt-3 sm:flex-row sm:items-center sm:justify-between">
@@ -52,6 +48,14 @@ export default function Footer() {
                         <span className="sr-only"> (opens in a new tab)</span>
                     </a>
                 </div>
+
+
+                {/* Верхняя секция: Юридическое уведомление (Affiliate Disclaimer) */}
+                <p className="text-xs leading-relaxed text-ink/70">
+                    CouponCreek may earn a commission when you buy through links on our
+                    site. This does not affect the price you pay. All promo codes and deals are 100% free for users.
+                </p>
+
             </div>
         </footer>
     );
