@@ -24,6 +24,14 @@ export function faviconUrl(domain: string): string {
 
 export function isCouponExpired(expiresAt?: string | null): boolean {
   if (!expiresAt) return false;
-  const expiryDate = new Date(expiresAt).getTime();
-  return !isNaN(expiryDate) && expiryDate < Date.now();
+
+  // Дата хранится без времени, поэтому по умолчанию JS интерпретирует её
+  // как начало суток (00:00 UTC). Купон должен оставаться действующим
+  // весь указанный день — переключаем точку отсчёта на конец суток
+  // (23:59:59.999 UTC), а не на начало.
+  const expiryDate = new Date(expiresAt);
+  if (isNaN(expiryDate.getTime())) return false;
+
+  expiryDate.setUTCHours(23, 59, 59, 999);
+  return expiryDate.getTime() < Date.now();
 }
