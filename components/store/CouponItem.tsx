@@ -3,13 +3,9 @@ import { sendGAEvent } from "@next/third-parties/google";
 import { useEffect, useState } from "react";
 import type { Coupon } from "@/types";
 import ShareButton from "@/components/ui/ShareButton";
+import { isCouponExpired } from "@/lib/utils";
 
-// 1. Проверка на истечение срока действия
-function isCouponExpired(expiresAt?: string | null): boolean {
-    if (!expiresAt) return false;
-    const expiryDate = new Date(expiresAt).getTime();
-    return !isNaN(expiryDate) && expiryDate < Date.now();
-}
+
 
 // 2. Форматирование метки верификации и статуса
 function formatVerifiedLabel(isoDate?: string | null, expiresAt?: string | null): {
