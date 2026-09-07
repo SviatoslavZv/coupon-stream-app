@@ -132,6 +132,7 @@ export const BRANDS = [
   { slug: "bvlgari", label: "Bvlgari" },
   { slug: "lancome", label: "Lancôme" },
   { slug: "sachin-and-babi", label: "Sachin and Babi" },
+  { slug: "dream-pairs", label: "Dream Pairs" },
   
 ] as const;
 
