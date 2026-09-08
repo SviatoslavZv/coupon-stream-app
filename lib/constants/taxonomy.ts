@@ -135,6 +135,7 @@ export const BRANDS = [
   { slug: "dream-pairs", label: "Dream Pairs" },
   { slug: "nortiv-8", label: "Nortiv 8" },
   { slug: "bruno-marc", label: "Bruno Marc" },
+  { slug: "coofandy", label: "Coofandy" },
   
 ] as const;
 
