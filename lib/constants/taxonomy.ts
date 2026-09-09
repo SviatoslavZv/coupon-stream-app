@@ -136,7 +136,7 @@ export const BRANDS = [
   { slug: "nortiv-8", label: "Nortiv 8" },
   { slug: "bruno-marc", label: "Bruno Marc" },
   { slug: "coofandy", label: "Coofandy" },
-  
+  { slug: "kxkshop", label: "KXKshop" },  
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
