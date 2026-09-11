@@ -137,7 +137,8 @@ export const BRANDS = [
   { slug: "bruno-marc", label: "Bruno Marc" },
   { slug: "coofandy", label: "Coofandy" },
   { slug: "kxkshop", label: "KXKshop" },
-  { slug: "crazy-shirts", label: "Crazy Shirts" },  
+  { slug: "crazy-shirts", label: "Crazy Shirts" }, 
+  { slug: "ecko-unltd", label: "Ecko Unltd" }, 
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
