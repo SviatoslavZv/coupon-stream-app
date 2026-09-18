@@ -140,7 +140,8 @@ export const BRANDS = [
   { slug: "crazy-shirts", label: "Crazy Shirts" }, 
   { slug: "ecko-unltd", label: "Ecko Unltd" }, 
   { slug: "musinsa", label: "Musinsa" },
-    { slug: "dancewear-solutions", label: "Dancewear Solutions" },
+  { slug: "dancewear-solutions", label: "Dancewear Solutions" },
+  { slug: "marathon-watch", label: "Marathon Watch" },
 
 ] as const;
 
