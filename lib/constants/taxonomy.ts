@@ -143,6 +143,15 @@ export const BRANDS = [
   { slug: "dancewear-solutions", label: "Dancewear Solutions" },
   { slug: "marathon-watch", label: "Marathon Watch" },
   { slug: "belle-fare", label: "Belle Fare" },
+  { slug: "citizen", label: "Citizen" },
+  { slug: "gevril", label: "Gevril" },
+  { slug: "hamilton", label: "Hamilton" },
+  { slug: "mido", label: "Mido" },
+  { slug: "tissot", label: "Tissot" },
+  { slug: "zodiac", label: "Zodiac" },
+  { slug: "certina", label: "Certina" },
+  { slug: "ball", label: "Ball" },
+  { slug: "longines", label: "Longines" },
 
 ] as const;
 
