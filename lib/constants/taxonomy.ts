@@ -156,6 +156,23 @@ export const BRANDS = [
   { slug: "ecco", label: "Ecco" },
   { slug: "abeo", label: "ABEO" },
   { slug: "clarks", label: "Clarks" },
+  { slug: "mbt", label: "MBT" },
+  { slug: "aetrex", label: "Aetrex" },
+  { slug: "beautifeel", label: "Beautifeel" },
+  { slug: "born", label: "Born" },
+  { slug: "earth", label: "Earth" },
+  { slug: "keen", label: "Keen" },
+  { slug: "mephisto", label: "Mephisto" },
+  { slug: "naot", label: "Naot" },
+  { slug: "pikolinos", label: "Pikolinos" },
+  { slug: "sanita", label: "Sanita" },
+  { slug: "sofft", label: "Sofft" },
+  { slug: "taos", label: "Taos" },
+  { slug: "teva", label: "Teva" },
+  { slug: "merrell", label: "Merrell" },
+  { slug: "rieker", label: "Rieker" },
+  { slug: "propet", label: "Propet" },
+  { slug: "walking-cradles", label: "Walking Cradles" },
 
 ] as const;
 
