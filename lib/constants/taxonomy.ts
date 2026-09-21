@@ -155,6 +155,7 @@ export const BRANDS = [
   { slug: "dansko", label: "Dansko" },
   { slug: "ecco", label: "Ecco" },
   { slug: "abeo", label: "ABEO" },
+  { slug: "clarks", label: "Clarks" },
 
 ] as const;
 
