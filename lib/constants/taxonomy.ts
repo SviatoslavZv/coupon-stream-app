@@ -207,6 +207,7 @@ export const BRANDS = [
   { slug: "bcbg", label: "BCBG" },
   { slug: "reef", label: "REEF" },
   { slug: "dv-dolce-vita", label: "DV Dolce Vita" },
+  { slug: "on-running", label: "On" },
 
 ] as const;
 
