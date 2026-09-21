@@ -154,6 +154,7 @@ export const BRANDS = [
   { slug: "longines", label: "Longines" },
   { slug: "dansko", label: "Dansko" },
   { slug: "ecco", label: "Ecco" },
+  { slug: "abeo", label: "ABEO" },
 
 ] as const;
 
