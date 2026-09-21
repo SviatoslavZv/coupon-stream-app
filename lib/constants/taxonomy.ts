@@ -173,6 +173,15 @@ export const BRANDS = [
   { slug: "rieker", label: "Rieker" },
   { slug: "propet", label: "Propet" },
   { slug: "walking-cradles", label: "Walking Cradles" },
+  { slug: "brooks", label: "Brooks" },
+  { slug: "jordan", label: "Jordan" },
+  { slug: "asics", label: "Asics" },
+  { slug: "hoka", label: "Hoka" },
+  { slug: "saucony", label: "Saucony" },
+  { slug: "dr-martens", label: "Dr. Martens" },
+  { slug: "sperry", label: "Sperry" },
+  { slug: "sam-edelman", label: "Sam Edelman" },
+  { slug: "toms", label: "TOMS" },
 
 ] as const;
 
