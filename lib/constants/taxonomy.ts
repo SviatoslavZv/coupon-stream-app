@@ -208,6 +208,18 @@ export const BRANDS = [
   { slug: "reef", label: "REEF" },
   { slug: "dv-dolce-vita", label: "DV Dolce Vita" },
   { slug: "on-running", label: "On" },
+  { slug: "gucci", label: "Gucci" },
+  { slug: "chanel", label: "Chanel" },
+  { slug: "hermes", label: "Hermès" },
+  { slug: "rolex", label: "Rolex" },
+  { slug: "cartier", label: "Cartier" },
+  { slug: "dior", label: "Dior" },
+  { slug: "prada", label: "Prada" },
+  { slug: "valentino", label: "Valentino" },
+  { slug: "balenciaga", label: "Balenciaga" },
+  { slug: "saint-laurent", label: "Saint Laurent" },
+  { slug: "fendi", label: "Fendi" },
+  { slug: "burberry", label: "Burberry" },
 
 ] as const;
 
