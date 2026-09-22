@@ -70,6 +70,7 @@ export default function CouponForm({
                 </div>
             )}
 
+
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label htmlFor="storeId" className="mb-1 block text-sm font-medium text-ink">
@@ -143,7 +144,6 @@ export default function CouponForm({
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
                 </div>
-
                 <div className="col-span-2">
                     <label htmlFor="title" className="mb-1 block text-sm font-medium text-ink">
                         Title
@@ -298,7 +298,7 @@ export default function CouponForm({
                             className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                         >
                             <option value="">None</option>
-                            {BRANDS.map((b) => (
+                            {[...BRANDS].sort((a, b) => a.label.localeCompare(b.label)).map((b) => (
                                 <option key={b.slug} value={b.label}>
                                     {b.label}
                                 </option>

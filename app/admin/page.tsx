@@ -8,10 +8,18 @@ import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 
 
 export default async function AdminDashboard() {
-    const [stores, coupons] = await Promise.all([
+    const [storesRaw, coupons] = await Promise.all([
         getStores(),
         getAllCouponsForAdmin(),
     ]);
+
+    const stores = [...storesRaw].sort((a, b) => a.name.localeCompare(b.name));
+
+    const sortedCoupons = [...coupons].sort((a, b) => {
+        const storeCompare = a.storeName.localeCompare(b.storeName);
+        if (storeCompare !== 0) return storeCompare;
+        return a.title.localeCompare(b.title);
+    });
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
@@ -91,7 +99,7 @@ export default async function AdminDashboard() {
                         </tr>
                     </thead>
                     <tbody>
-                        {coupons.map((coupon) => (
+                        {sortedCoupons.map((coupon) => (
                             <tr key={coupon.id} className="border-b border-line last:border-0">
                                 <td className="px-5 py-3 font-medium text-ink">
                                     {coupon.storeName}
