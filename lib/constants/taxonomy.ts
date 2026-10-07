@@ -222,6 +222,7 @@ export const BRANDS = [
   { slug: "burberry", label: "Burberry" },
   { slug: "patek-philippe", label: "Patek Philippe" },
   { slug: "dyson", label: "Dyson" },
+  { slug: "estee-lauder", label: "Estée Lauder" },
 
 ] as const;
 
