@@ -41,7 +41,7 @@ A few decisions worth calling out for anyone reading the code:
 
 ### Prerequisites
 
-- Node.js 18+
+- Node.js 20.9 or later (required by Next.js 16)
 - A [Supabase](https://supabase.com) project (free tier is enough for local development)
 
 ### Setup
@@ -55,10 +55,16 @@ npm install
 Create a `.env.local` file in the project root with your own Supabase credentials:
 
 ```bash
+
 NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
 NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
-SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+NEXT_PUBLIC_SITE_URL=http://localhost:3000
 CRON_SECRET=any_random_string_for_local_dev
+
+# Optional: analytics and Search Console
+NEXT_PUBLIC_GA_ID=
+NEXT_PUBLIC_CLARITY_ID=
+NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION=
 ```
 
 Then run the dev server:
