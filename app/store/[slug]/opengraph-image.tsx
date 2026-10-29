@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { getStoreWithCoupons } from "@/lib/coupons";
 
-export const runtime = "edge";
 export const alt = "Store Promo Codes — CouponCreek";
 export const size = {
     width: 1200,

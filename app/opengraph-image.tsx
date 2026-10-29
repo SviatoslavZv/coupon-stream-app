@@ -1,6 +1,5 @@
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
 export const alt = "CouponCreek — Promo Codes & Deals for Top Fashion Stores";
 export const size = {
     width: 1200,
