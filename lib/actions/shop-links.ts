@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
+import { extractNetworkLinkId } from "@/lib/network-links";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { ShopLinkSchema, type ShopLinkInput } from "@/lib/schemas/shop-links";
 
@@ -24,7 +25,7 @@ function toRow(input: ShopLinkInput) {
     brand: input.brand,
     asin: input.asin,
     image_url: input.imageUrl,
-    network_link_id: input.networkLinkId,
+    network_link_id: input.networkLinkId ?? extractNetworkLinkId(input.url),
     commission_rate: input.commissionRate,
     is_active: input.isActive,
   };

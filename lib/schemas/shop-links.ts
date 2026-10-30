@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { SHOP_LINK_KINDS } from "@/lib/constants/shop-links";
+import { BRANDS } from "@/lib/constants/taxonomy";
 import {
   checkbox,
   emptyToNull,
@@ -11,13 +12,20 @@ import {
   requiredText,
 } from "@/lib/schemas/common";
 
+const BRAND_LABELS = new Set<string>(BRANDS.map((brand) => brand.label));
+
 export const ShopLinkSchema = z
   .object({
     storeId: z.uuid("Choose a store"),
     kind: z.enum(SHOP_LINK_KINDS, "Choose a link type"),
     title: requiredText("Title is required"),
     url: httpsUrl("Tracking link must start with https://"),
-    brand: optionalText,
+    brand: optionalText.refine(
+      (value) => value === null || BRAND_LABELS.has(value),
+      {
+        message: "Choose a brand from the list",
+      },
+    ),
     asin: z.preprocess(
       emptyToNull,
       z

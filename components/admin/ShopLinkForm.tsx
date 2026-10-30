@@ -1,14 +1,22 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import type { ShopLinkFormState } from "@/lib/actions/shop-links";
-import { SHOP_LINK_KINDS, SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
+import {
+    SHOP_LINK_KINDS,
+    SHOP_LINK_KIND_LABELS,
+    type ShopLinkKind,
+} from "@/lib/constants/shop-links";
+import { BRANDS } from "@/lib/constants/taxonomy";
+import { extractNetworkLinkId } from "@/lib/network-links";
 import type { AdminShopLink } from "@/lib/shop-links";
 import type { StoreOption } from "@/lib/stores";
 
 const INPUT_CLASS =
     "w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none";
 const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
+
+const SORTED_BRANDS = [...BRANDS].sort((a, b) => a.label.localeCompare(b.label));
 
 export default function ShopLinkForm({
     action,
@@ -20,6 +28,27 @@ export default function ShopLinkForm({
     initialValues?: AdminShopLink;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);
+
+    const [kind, setKind] = useState<ShopLinkKind>(initialValues?.kind ?? "section");
+    const [networkLinkId, setNetworkLinkId] = useState(initialValues?.networkLinkId ?? "");
+    const [detectedLinkId, setDetectedLinkId] = useState<string | null>(() =>
+        extractNetworkLinkId(initialValues?.url ?? "")
+    );
+
+    const hasAdvancedValues = Boolean(
+        initialValues?.imageUrl ||
+        initialValues?.networkLinkId ||
+        (initialValues?.commissionRate ?? null) !== null
+    );
+
+    function handleUrlChange(url: string) {
+        const linkId = extractNetworkLinkId(url);
+        const isAutoFilled = networkLinkId === "" || networkLinkId === detectedLinkId;
+        setDetectedLinkId(linkId);
+        if (isAutoFilled) {
+            setNetworkLinkId(linkId ?? "");
+        }
+    }
 
     return (
         <form action={formAction} className="flex flex-col gap-4">
@@ -56,12 +85,13 @@ export default function ShopLinkForm({
                         id="kind"
                         name="kind"
                         required
-                        defaultValue={initialValues?.kind ?? "section"}
+                        value={kind}
+                        onChange={(e) => setKind(e.target.value as ShopLinkKind)}
                         className={INPUT_CLASS}
                     >
-                        {SHOP_LINK_KINDS.map((kind) => (
-                            <option key={kind} value={kind}>
-                                {SHOP_LINK_KIND_LABELS[kind]}
+                        {SHOP_LINK_KINDS.map((option) => (
+                            <option key={option} value={option}>
+                                {SHOP_LINK_KIND_LABELS[option]}
                             </option>
                         ))}
                     </select>
@@ -90,74 +120,95 @@ export default function ShopLinkForm({
                     required
                     placeholder="https://click.linksynergy.com/deeplink?…"
                     defaultValue={initialValues?.url}
+                    onChange={(e) => handleUrlChange(e.target.value)}
                     className={INPUT_CLASS}
                 />
+                {detectedLinkId && (
+                    <p className="mt-1 text-xs text-green-700">
+                        Network link ID detected: {detectedLinkId}
+                    </p>
+                )}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className={kind === "product" ? "grid grid-cols-2 gap-4" : undefined}>
                 <div>
                     <label htmlFor="brand" className={LABEL_CLASS}>Brand (optional)</label>
-                    <input
+                    <select
                         id="brand"
                         name="brand"
-                        type="text"
                         defaultValue={initialValues?.brand ?? ""}
                         className={INPUT_CLASS}
-                    />
+                    >
+                        <option value="">No brand</option>
+                        {SORTED_BRANDS.map((brand) => (
+                            <option key={brand.slug} value={brand.label}>
+                                {brand.label}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
-                <div>
-                    <label htmlFor="asin" className={LABEL_CLASS}>ASIN (Amazon products only)</label>
-                    <input
-                        id="asin"
-                        name="asin"
-                        type="text"
-                        maxLength={10}
-                        placeholder="B0CXXXXXXX"
-                        defaultValue={initialValues?.asin ?? ""}
-                        className={INPUT_CLASS}
-                    />
-                </div>
+                {kind === "product" && (
+                    <div>
+                        <label htmlFor="asin" className={LABEL_CLASS}>ASIN (Amazon only)</label>
+                        <input
+                            id="asin"
+                            name="asin"
+                            type="text"
+                            maxLength={10}
+                            placeholder="B0CXXXXXXX"
+                            defaultValue={initialValues?.asin ?? ""}
+                            className={INPUT_CLASS}
+                        />
+                    </div>
+                )}
             </div>
 
-            <div>
-                <label htmlFor="imageUrl" className={LABEL_CLASS}>Image URL (optional)</label>
-                <input
-                    id="imageUrl"
-                    name="imageUrl"
-                    type="url"
-                    placeholder="https://…"
-                    defaultValue={initialValues?.imageUrl ?? ""}
-                    className={INPUT_CLASS}
-                />
-            </div>
+            <details open={hasAdvancedValues} className="rounded-lg border border-line px-3 py-2">
+                <summary className="cursor-pointer text-sm font-medium text-ink/70">More options</summary>
 
-            <div className="grid grid-cols-2 gap-4">
-                <div>
-                    <label htmlFor="networkLinkId" className={LABEL_CLASS}>Network link ID (optional)</label>
-                    <input
-                        id="networkLinkId"
-                        name="networkLinkId"
-                        type="text"
-                        defaultValue={initialValues?.networkLinkId ?? ""}
-                        className={INPUT_CLASS}
-                    />
-                </div>
+                <div className="mt-3 flex flex-col gap-4">
+                    <div>
+                        <label htmlFor="imageUrl" className={LABEL_CLASS}>Image URL</label>
+                        <input
+                            id="imageUrl"
+                            name="imageUrl"
+                            type="url"
+                            placeholder="https://…"
+                            defaultValue={initialValues?.imageUrl ?? ""}
+                            className={INPUT_CLASS}
+                        />
+                    </div>
 
-                <div>
-                    <label htmlFor="commissionRate" className={LABEL_CLASS}>Commission % (private)</label>
-                    <input
-                        id="commissionRate"
-                        name="commissionRate"
-                        type="number"
-                        min={0}
-                        max={100}
-                        step={0.01}
-                        defaultValue={initialValues?.commissionRate ?? ""}
-                        className={INPUT_CLASS}
-                    />
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label htmlFor="networkLinkId" className={LABEL_CLASS}>Network link ID</label>
+                            <input
+                                id="networkLinkId"
+                                name="networkLinkId"
+                                type="text"
+                                value={networkLinkId}
+                                onChange={(e) => setNetworkLinkId(e.target.value)}
+                                className={INPUT_CLASS}
+                            />
+                        </div>
+
+                        <div>
+                            <label htmlFor="commissionRate" className={LABEL_CLASS}>Commission % (private)</label>
+                            <input
+                                id="commissionRate"
+                                name="commissionRate"
+                                type="number"
+                                min={0}
+                                max={100}
+                                step={0.01}
+                                defaultValue={initialValues?.commissionRate ?? ""}
+                                className={INPUT_CLASS}
+                            />
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </details>
 
             <label className="flex items-center gap-2 text-sm text-ink">
                 <input
