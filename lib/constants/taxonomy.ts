@@ -34,7 +34,10 @@ export const CATEGORIES = [
     slug: "accessories",
     label: "Accessories",
     subcategories: [
-      { slug: "handbags-wallets-backpacks", label: "Handbags, Wallets & Backpacks" },
+      {
+        slug: "handbags-wallets-backpacks",
+        label: "Handbags, Wallets & Backpacks",
+      },
       { slug: "luggage-travel", label: "Luggage & Travel" },
       { slug: "jewelry", label: "Jewelry" },
       { slug: "watches", label: "Watches" },
@@ -137,8 +140,8 @@ export const BRANDS = [
   { slug: "bruno-marc", label: "Bruno Marc" },
   { slug: "coofandy", label: "Coofandy" },
   { slug: "kxkshop", label: "KXKshop" },
-  { slug: "crazy-shirts", label: "Crazy Shirts" }, 
-  { slug: "ecko-unltd", label: "Ecko Unltd" }, 
+  { slug: "crazy-shirts", label: "Crazy Shirts" },
+  { slug: "ecko-unltd", label: "Ecko Unltd" },
   { slug: "musinsa", label: "Musinsa" },
   { slug: "dancewear-solutions", label: "Dancewear Solutions" },
   { slug: "marathon-watch", label: "Marathon Watch" },
@@ -224,7 +227,6 @@ export const BRANDS = [
   { slug: "dyson", label: "Dyson" },
   { slug: "estee-lauder", label: "Estée Lauder" },
   { slug: "all-clad", label: "All-Clad" },
-
 ] as const;
 
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];

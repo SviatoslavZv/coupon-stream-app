@@ -5,6 +5,7 @@ import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
 import { deleteStore } from "@/lib/actions/stores";
 import LogoutButton from "@/components/admin/LogoutButton";
 import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
+import AdminTableFrame from "@/components/admin/AdminTableFrame";
 
 
 export default async function AdminDashboard() {
@@ -31,7 +32,9 @@ export default async function AdminDashboard() {
             </div>
 
             <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-display text-xl font-black text-ink">Stores</h2>
+                <h2 className="font-display text-xl font-black text-ink">
+                    Stores <span className="font-mono text-sm font-normal text-ink/50">({stores.length})</span>
+                </h2>
                 <Link
                     href="/admin/stores/new"
                     className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
@@ -40,7 +43,7 @@ export default async function AdminDashboard() {
                 </Link>
             </div>
 
-            <div className="mb-10 overflow-hidden rounded-2xl border border-line bg-white">
+            <AdminTableFrame className="mb-10">
                 <table className="w-full text-left text-sm">
                     <thead className="border-b border-line bg-paper">
                         <tr>
@@ -76,10 +79,12 @@ export default async function AdminDashboard() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </AdminTableFrame>
 
             <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-display text-xl font-black text-ink">Coupons</h2>
+                <h2 className="font-display text-xl font-black text-ink">
+                    Coupons <span className="font-mono text-sm font-normal text-ink/50">({sortedCoupons.length})</span>
+                </h2>
                 <Link
                     href="/admin/coupons/new"
                     className="rounded-full bg-coupon px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
@@ -88,7 +93,7 @@ export default async function AdminDashboard() {
                 </Link>
             </div>
 
-            <div className="overflow-hidden rounded-2xl border border-line bg-white">
+            <AdminTableFrame>
                 <table className="w-full text-left text-sm">
                     <thead className="border-b border-line bg-paper">
                         <tr>
@@ -140,7 +145,7 @@ export default async function AdminDashboard() {
                         ))}
                     </tbody>
                 </table>
-            </div>
+            </AdminTableFrame>
         </div>
     );
 }
