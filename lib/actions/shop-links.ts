@@ -86,3 +86,34 @@ export async function updateShopLink(
   revalidatePath("/admin");
   redirect("/admin");
 }
+
+const FOREIGN_KEY_VIOLATION = "23503";
+
+export async function deleteShopLink(
+  _prevState: ShopLinkFormState | null,
+  formData: FormData,
+): Promise<ShopLinkFormState> {
+  const supabase = await requireAdmin();
+
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    return { error: "Link not found." };
+  }
+
+  const { error } = await supabase
+    .from("shop_links")
+    .delete()
+    .eq("id", id.data);
+  if (error) {
+    if (error.code === FOREIGN_KEY_VIOLATION) {
+      return {
+        error:
+          "Used in a guide. Remove it from the guide first, or hide it instead.",
+      };
+    }
+    return { error: "Could not delete the link. Please try again." };
+  }
+
+  revalidatePath("/admin");
+  return {};
+}

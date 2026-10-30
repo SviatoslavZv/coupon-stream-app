@@ -8,6 +8,7 @@ import { deleteStore } from "@/lib/actions/stores";
 import LogoutButton from "@/components/admin/LogoutButton";
 import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
+import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
 
 
 export default async function AdminDashboard() {
@@ -182,13 +183,16 @@ export default async function AdminDashboard() {
                                 <td className={`px-5 py-3 text-xs font-medium ${link.isActive ? "text-green-600" : "text-ink/40"}`}>
                                     {link.isActive ? "Active" : "Hidden"}
                                 </td>
-                                <td className="px-5 py-3 text-right">
-                                    <Link
-                                        href={`/admin/shop-links/${link.id}/edit`}
-                                        className="text-xs font-medium text-ink/60 hover:text-ink"
-                                    >
-                                        Edit
-                                    </Link>
+                                <td className="px-5 py-3">
+                                    <div className="flex items-start justify-end gap-3">
+                                        <Link
+                                            href={`/admin/shop-links/${link.id}/edit`}
+                                            className="text-xs font-medium text-ink/60 hover:text-ink"
+                                        >
+                                            Edit
+                                        </Link>
+                                        <DeleteShopLinkButton id={link.id} />
+                                    </div>
                                 </td>
                             </tr>
                         ))}
