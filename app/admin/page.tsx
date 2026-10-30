@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { getStores } from "@/lib/stores";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
+import { getShopLinksForAdmin } from "@/lib/shop-links";
+import { SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
 import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
 import { deleteStore } from "@/lib/actions/stores";
 import LogoutButton from "@/components/admin/LogoutButton";
@@ -9,9 +11,10 @@ import AdminTableFrame from "@/components/admin/AdminTableFrame";
 
 
 export default async function AdminDashboard() {
-    const [storesRaw, coupons] = await Promise.all([
+    const [storesRaw, coupons, shopLinks] = await Promise.all([
         getStores(),
         getAllCouponsForAdmin(),
+        getShopLinksForAdmin(),
     ]);
 
     const stores = [...storesRaw].sort((a, b) => a.name.localeCompare(b.name));
@@ -146,6 +149,53 @@ export default async function AdminDashboard() {
                     </tbody>
                 </table>
             </AdminTableFrame>
+
+            <div className="mb-4 mt-10 flex items-center justify-between">
+                <h2 className="font-display text-xl font-black text-ink">
+                    Shop Links <span className="font-mono text-sm font-normal text-ink/50">({shopLinks.length})</span>
+                </h2>
+                <Link
+                    href="/admin/shop-links/new"
+                    className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
+                >
+                    + Add Link
+                </Link>
+            </div>
+
+            <AdminTableFrame>
+                <table className="w-full text-left text-sm">
+                    <thead className="border-b border-line bg-paper">
+                        <tr>
+                            <th className="px-5 py-3 font-medium text-ink/60">Store</th>
+                            <th className="px-5 py-3 font-medium text-ink/60">Title</th>
+                            <th className="px-5 py-3 font-medium text-ink/60">Type</th>
+                            <th className="px-5 py-3 font-medium text-ink/60">Status</th>
+                            <th className="px-5 py-3 font-medium text-ink/60"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {shopLinks.map((link) => (
+                            <tr key={link.id} className="border-b border-line last:border-0">
+                                <td className="px-5 py-3 font-medium text-ink">{link.storeName}</td>
+                                <td className="px-5 py-3 text-ink/80">{link.title}</td>
+                                <td className="px-5 py-3 text-ink/60">{SHOP_LINK_KIND_LABELS[link.kind]}</td>
+                                <td className={`px-5 py-3 text-xs font-medium ${link.isActive ? "text-green-600" : "text-ink/40"}`}>
+                                    {link.isActive ? "Active" : "Hidden"}
+                                </td>
+                                <td className="px-5 py-3 text-right">
+                                    <Link
+                                        href={`/admin/shop-links/${link.id}/edit`}
+                                        className="text-xs font-medium text-ink/60 hover:text-ink"
+                                    >
+                                        Edit
+                                    </Link>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </AdminTableFrame>
+
         </div>
     );
 }
