@@ -229,6 +229,10 @@ export const BRANDS = [
   { slug: "all-clad", label: "All-Clad" },
 ] as const;
 
+export const BRANDS_BY_LABEL = [...BRANDS].sort((a, b) =>
+  a.label.localeCompare(b.label),
+);
+
 export type CategorySlug = (typeof CATEGORIES)[number]["slug"];
 export type GenderSlug = (typeof GENDERS)[number]["slug"];
 export type BrandSlug = (typeof BRANDS)[number]["slug"];

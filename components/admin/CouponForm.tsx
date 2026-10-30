@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { CATEGORIES, GENDERS, BRANDS, getSubcategories } from "@/lib/constants/taxonomy";
+import { CATEGORIES, GENDERS, BRANDS_BY_LABEL, getSubcategories } from "@/lib/constants/taxonomy";
 import type { CouponFormState } from "@/lib/actions/coupons";
 import { DISCOUNT_LABEL_PRESETS, DESCRIPTION_PRESETS, buildTitleSuggestions } from "@/lib/constants/coupon-presets";
 
@@ -298,7 +298,7 @@ export default function CouponForm({
                             className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                         >
                             <option value="">None</option>
-                            {[...BRANDS].sort((a, b) => a.label.localeCompare(b.label)).map((b) => (
+                            {BRANDS_BY_LABEL.map((b) => (
                                 <option key={b.slug} value={b.label}>
                                     {b.label}
                                 </option>

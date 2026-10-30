@@ -7,7 +7,7 @@ import {
     SHOP_LINK_KIND_LABELS,
     type ShopLinkKind,
 } from "@/lib/constants/shop-links";
-import { BRANDS } from "@/lib/constants/taxonomy";
+import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
 import { extractNetworkLinkId } from "@/lib/network-links";
 import type { AdminShopLink } from "@/lib/shop-links";
 import type { StoreOption } from "@/lib/stores";
@@ -15,8 +15,6 @@ import type { StoreOption } from "@/lib/stores";
 const INPUT_CLASS =
     "w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none";
 const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
-
-const SORTED_BRANDS = [...BRANDS].sort((a, b) => a.label.localeCompare(b.label));
 
 export default function ShopLinkForm({
     action,
@@ -140,7 +138,7 @@ export default function ShopLinkForm({
                         className={INPUT_CLASS}
                     >
                         <option value="">No brand</option>
-                        {SORTED_BRANDS.map((brand) => (
+                        {BRANDS_BY_LABEL.map((brand) => (
                             <option key={brand.slug} value={brand.label}>
                                 {brand.label}
                             </option>
