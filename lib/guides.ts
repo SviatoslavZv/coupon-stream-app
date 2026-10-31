@@ -248,3 +248,86 @@ export async function getGuideForEdit(
     isPublished: row.is_published,
   };
 }
+
+export interface AdminGuideItem {
+  id: string;
+  sortOrder: number;
+  comment: string;
+  source: "shop_link" | "coupon";
+  targetId: string | null;
+  title: string;
+  storeName: string;
+  detail: string;
+  isVisible: boolean;
+}
+
+interface AdminGuideItemDbRow {
+  id: string;
+  sort_order: number;
+  comment: string;
+  shop_links: {
+    id: string;
+    title: string;
+    is_active: boolean;
+    stores: { name: string } | null;
+  } | null;
+  coupons: {
+    id: string;
+    title: string;
+    discount_label: string;
+    expires_at: string;
+    stores: { name: string } | null;
+  } | null;
+}
+
+function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
+  const base = { id: row.id, sortOrder: row.sort_order, comment: row.comment };
+
+  if (row.shop_links) {
+    return {
+      ...base,
+      source: "shop_link",
+      targetId: row.shop_links.id,
+      title: row.shop_links.title,
+      storeName: row.shop_links.stores?.name ?? "Unknown store",
+      detail: row.shop_links.is_active
+        ? ""
+        : "Hidden link — not shown on the site",
+      isVisible: row.shop_links.is_active,
+    };
+  }
+
+  const coupon = row.coupons;
+  const isExpired = isCouponExpired(coupon?.expires_at);
+  return {
+    ...base,
+    source: "coupon",
+    targetId: coupon?.id ?? null,
+    title: coupon
+      ? `${coupon.discount_label} · ${coupon.title}`
+      : "Missing coupon",
+    storeName: coupon?.stores?.name ?? "Unknown store",
+    detail: isExpired ? "Expired coupon — not shown on the site" : "",
+    isVisible: Boolean(coupon) && !isExpired,
+  };
+}
+
+export async function getGuideItemsForAdmin(
+  guideId: string,
+): Promise<AdminGuideItem[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("guide_items")
+    .select(
+      "id, sort_order, comment, shop_links(id, title, is_active, stores(name)), coupons(id, title, discount_label, expires_at, stores(name))",
+    )
+    .eq("guide_id", guideId)
+    .order("sort_order");
+
+  if (error) {
+    throw new Error(`Failed to fetch guide items: ${error.message}`);
+  }
+
+  return (data as unknown as AdminGuideItemDbRow[]).map(mapAdminGuideItem);
+}
