@@ -45,7 +45,7 @@ export default async function GuidePage(props: PageProps<"/guides/[slug]">) {
         notFound();
     }
 
-    const paragraphs = guide.intro.split(/\n{2,}/).filter((p) => p.trim() !== "");
+    const paragraphs = guide.intro.split(/\r?\n\s*\r?\n/).filter((p) => p.trim() !== "");
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10 animate-fade-in-up">

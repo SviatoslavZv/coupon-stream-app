@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import { CATEGORIES, GENDERS } from "@/lib/constants/taxonomy";
+import { META_DESCRIPTION_MAX } from "@/lib/constants/guides";
 import { SALES_CALENDAR } from "@/lib/constants/sales-calendar";
 import { slugify } from "@/lib/utils";
 import {
@@ -12,13 +13,13 @@ import {
   requiredText,
 } from "@/lib/schemas/common";
 
-export const META_DESCRIPTION_MAX = 160;
-
 export const GuideSchema = z
   .object({
     title: requiredText("Title is required"),
     slug: optionalText,
-    intro: requiredText("Intro is required"),
+    intro: requiredText("Intro is required").transform((value) =>
+      value.replace(/\r\n?/g, "\n"),
+    ),
     metaDescription: optionalText.refine(
       (value) => value === null || value.length <= META_DESCRIPTION_MAX,
       {
