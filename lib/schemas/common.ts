@@ -22,6 +22,15 @@ export const httpsUrl = (message: string) =>
 export const optionalHttpsUrl = (message: string) =>
   z.preprocess(emptyToNull, httpsUrl(message).nullable());
 
+export const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+
+export function optionalOneOf(values: readonly string[], message: string) {
+  const allowed = new Set(values);
+  return optionalText.refine((value) => value === null || allowed.has(value), {
+    message,
+  });
+}
+
 export const checkbox = z.preprocess((value) => value === "on", z.boolean());
 
 export function firstErrorMessage(error: z.ZodError): string {

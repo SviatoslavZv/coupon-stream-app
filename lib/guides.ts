@@ -149,3 +149,102 @@ export const getPublishedGuide = cache(
     return data ? mapGuide(data as unknown as GuideRow) : null;
   },
 );
+
+export interface AdminGuideRow {
+  id: string;
+  slug: string;
+  title: string;
+  isPublished: boolean;
+  itemCount: number;
+  updatedAt: string;
+}
+
+interface AdminGuideDbRow {
+  id: string;
+  slug: string;
+  title: string;
+  is_published: boolean;
+  updated_at: string;
+  guide_items: { count: number }[];
+}
+
+export async function getGuidesForAdmin(): Promise<AdminGuideRow[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("guides")
+    .select("id, slug, title, is_published, updated_at, guide_items(count)")
+    .order("updated_at", { ascending: false });
+
+  if (error) {
+    throw new Error(`Failed to fetch guides: ${error.message}`);
+  }
+
+  return (data as unknown as AdminGuideDbRow[]).map((row) => ({
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    isPublished: row.is_published,
+    itemCount: row.guide_items[0]?.count ?? 0,
+    updatedAt: row.updated_at,
+  }));
+}
+
+export interface GuideFormValues {
+  id: string;
+  title: string;
+  slug: string;
+  intro: string;
+  metaDescription: string | null;
+  category: string | null;
+  gender: string | null;
+  eventSlug: string | null;
+  isPublished: boolean;
+}
+
+interface GuideFormDbRow {
+  id: string;
+  title: string;
+  slug: string;
+  intro: string;
+  meta_description: string | null;
+  category: string | null;
+  gender: string | null;
+  event_slug: string | null;
+  is_published: boolean;
+}
+
+export async function getGuideForEdit(
+  id: string,
+): Promise<GuideFormValues | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("guides")
+    .select(
+      "id, title, slug, intro, meta_description, category, gender, event_slug, is_published",
+    )
+    .eq("id", id)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to fetch guide: ${error.message}`);
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  const row = data as GuideFormDbRow;
+  return {
+    id: row.id,
+    title: row.title,
+    slug: row.slug,
+    intro: row.intro,
+    metaDescription: row.meta_description,
+    category: row.category,
+    gender: row.gender,
+    eventSlug: row.event_slug,
+    isPublished: row.is_published,
+  };
+}
