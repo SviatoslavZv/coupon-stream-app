@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getGuideForEdit } from "@/lib/guides";
 import { updateGuide } from "@/lib/actions/guides";
 import GuideForm from "@/components/admin/GuideForm";
+import GuideItemsEditor from "@/components/admin/GuideItemsEditor";
 
 export default async function EditGuidePage(props: PageProps<"/admin/guides/[id]/edit">) {
     const { id } = await props.params;
@@ -27,6 +28,7 @@ export default async function EditGuidePage(props: PageProps<"/admin/guides/[id]
                 )}
             </div>
             <GuideForm action={updateGuide} initialValues={guide} />
+            <GuideItemsEditor guideId={guide.id} />
         </div>
     );
 }
