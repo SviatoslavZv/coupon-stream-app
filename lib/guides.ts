@@ -331,3 +331,33 @@ export async function getGuideItemsForAdmin(
 
   return (data as unknown as AdminGuideItemDbRow[]).map(mapAdminGuideItem);
 }
+
+interface GuideSitemapRow {
+  slug: string;
+  updated_at: string;
+}
+
+export interface GuideSitemapEntry {
+  slug: string;
+  updatedAt: string;
+}
+
+export async function getPublishedGuidesForSitemap(): Promise<
+  GuideSitemapEntry[]
+> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("guides")
+    .select("slug, updated_at")
+    .eq("is_published", true);
+
+  if (error) {
+    throw new Error(`Failed to fetch guides for sitemap: ${error.message}`);
+  }
+
+  return (data as GuideSitemapRow[]).map((row) => ({
+    slug: row.slug,
+    updatedAt: row.updated_at,
+  }));
+}
