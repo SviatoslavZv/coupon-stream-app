@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { getStores } from "@/lib/stores";
 import { getCategoriesWithCoupons, getBrandsWithCoupons } from "@/lib/coupons";
-import { getPublishedGuidesForSitemap } from "@/lib/guides";
+import { getPublishedGuides } from "@/lib/guides";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://couponcreek.com";
@@ -70,7 +70,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getStores(),
     getCategoriesWithCoupons(),
     getBrandsWithCoupons(),
-    getPublishedGuidesForSitemap(),
+    getPublishedGuides(),
   ]);
 
   // Страницы магазинов (самый высокий приоритет среди внутренних)
@@ -90,6 +90,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: "weekly",
     priority: 0.8,
   }));
+
+  // Хаб гайдов: «изменился» тогда, когда обновился самый свежий гайд
+  const guidesHubPage: MetadataRoute.Sitemap = [
+    {
+      url: `${siteUrl}/guides`,
+      lastModified: guides[0] ? new Date(guides[0].updatedAt) : now,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
+  ];
 
   // Страницы категорий
   const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
@@ -113,6 +123,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
+    ...guidesHubPage,
     ...storePages,
     ...guidePages,
     ...categoryPages,

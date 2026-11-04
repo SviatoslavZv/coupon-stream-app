@@ -35,3 +35,20 @@ export function isCouponExpired(expiresAt?: string | null): boolean {
   expiryDate.setUTCHours(23, 59, 59, 999);
   return expiryDate.getTime() < Date.now();
 }
+
+export function truncateAtWord(text: string, maxLength: number): string {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= maxLength) return clean;
+
+  const lastSpace = clean.lastIndexOf(" ", maxLength);
+  const cutAt = lastSpace > 0 ? lastSpace : maxLength;
+  return `${clean.slice(0, cutAt)}…`;
+}
+
+export function formatLongDate(iso: string): string {
+  return new Date(iso).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}

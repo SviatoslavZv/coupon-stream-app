@@ -5,22 +5,9 @@ import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import GuideItemCard from "@/components/guides/GuideItemCard";
 import GuideStructuredData from "@/components/seo/GuideStructuredData";
+import { truncateAtWord, formatLongDate } from "@/lib/utils";
+import { META_DESCRIPTION_MAX } from "@/lib/constants/guides";
 
-const META_DESCRIPTION_LENGTH = 155;
-
-function buildDescription(intro: string): string {
-    const text = intro.replace(/\s+/g, " ").trim();
-    if (text.length <= META_DESCRIPTION_LENGTH) return text;
-    return `${text.slice(0, text.lastIndexOf(" ", META_DESCRIPTION_LENGTH))}…`;
-}
-
-function formatDate(iso: string): string {
-    return new Date(iso).toLocaleDateString("en-US", {
-        month: "long",
-        day: "numeric",
-        year: "numeric",
-    });
-}
 
 export async function generateMetadata(props: PageProps<"/guides/[slug]">): Promise<Metadata> {
     const { slug } = await props.params;
@@ -32,7 +19,7 @@ export async function generateMetadata(props: PageProps<"/guides/[slug]">): Prom
 
     return buildPageMetadata({
         title: guide.title,
-        description: guide.metaDescription ?? buildDescription(guide.intro),
+        description: guide.metaDescription ?? truncateAtWord(guide.intro, META_DESCRIPTION_MAX - 5),
         path: `/guides/${guide.slug}`,
     });
 }
@@ -52,7 +39,7 @@ export default async function GuidePage(props: PageProps<"/guides/[slug]">) {
             <Breadcrumbs
                 items={[
                     { label: "Home", href: "/" },
-                    { label: "Guides" },
+                    { label: "Guides", href: "/guides" },
                     { label: guide.title },
                 ]}
             />
@@ -67,7 +54,7 @@ export default async function GuidePage(props: PageProps<"/guides/[slug]">) {
             <header className="mb-8">
                 <h1 className="font-display text-2xl font-black text-ink sm:text-3xl">{guide.title}</h1>
                 <p className="mt-2 text-xs text-ink/60">
-                    Updated <time dateTime={guide.updatedAt}>{formatDate(guide.updatedAt)}</time>
+                    Updated <time dateTime={guide.updatedAt}>{formatLongDate(guide.updatedAt)}</time>
                 </p>
                 <div className="mt-4 flex flex-col gap-3 text-base leading-relaxed text-ink/80">
                     {paragraphs.map((paragraph, index) => (

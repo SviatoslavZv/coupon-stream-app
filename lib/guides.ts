@@ -3,7 +3,13 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import { isCouponExpired } from "@/lib/utils";
-import type { Coupon, Guide, GuideItem, GuideStore } from "@/types";
+import type {
+  Coupon,
+  Guide,
+  GuideItem,
+  GuideStore,
+  GuideSummary,
+} from "@/types";
 
 interface StoreRef {
   name: string;
@@ -332,32 +338,32 @@ export async function getGuideItemsForAdmin(
   return (data as unknown as AdminGuideItemDbRow[]).map(mapAdminGuideItem);
 }
 
-interface GuideSitemapRow {
+interface GuideSummaryRow {
   slug: string;
+  title: string;
+  intro: string;
+  meta_description: string | null;
   updated_at: string;
 }
 
-export interface GuideSitemapEntry {
-  slug: string;
-  updatedAt: string;
-}
-
-export async function getPublishedGuidesForSitemap(): Promise<
-  GuideSitemapEntry[]
-> {
+export async function getPublishedGuides(): Promise<GuideSummary[]> {
   const supabase = await createClient();
 
   const { data, error } = await supabase
     .from("guides")
-    .select("slug, updated_at")
-    .eq("is_published", true);
+    .select("slug, title, intro, meta_description, updated_at")
+    .eq("is_published", true)
+    .order("updated_at", { ascending: false });
 
   if (error) {
-    throw new Error(`Failed to fetch guides for sitemap: ${error.message}`);
+    throw new Error(`Failed to fetch guides: ${error.message}`);
   }
 
-  return (data as GuideSitemapRow[]).map((row) => ({
+  return (data as GuideSummaryRow[]).map((row) => ({
     slug: row.slug,
+    title: row.title,
+    intro: row.intro,
+    metaDescription: row.meta_description,
     updatedAt: row.updated_at,
   }));
 }

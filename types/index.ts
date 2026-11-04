@@ -75,3 +75,8 @@ export interface Guide {
   updatedAt: string;
   items: GuideItem[];
 }
+
+export type GuideSummary = Pick<
+  Guide,
+  "slug" | "title" | "intro" | "metaDescription" | "updatedAt"
+>;
