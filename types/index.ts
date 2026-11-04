@@ -49,6 +49,7 @@ export interface GuideCoupon {
   code: string | null;
   description: string;
   expiresAt: string;
+  imageUrl: string | null;
   store: GuideStore;
 }
 

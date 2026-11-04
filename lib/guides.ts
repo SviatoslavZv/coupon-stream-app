@@ -35,6 +35,7 @@ interface CouponRow {
   code: string | null;
   description: string;
   expires_at: string;
+  image_url: string | null;
   stores: StoreRef | null;
 }
 
@@ -66,7 +67,7 @@ const GUIDE_SELECT = `
   guide_items (
     id, sort_order, comment,
     shop_links ( id, kind, title, url, brand, asin, image_url, stores ( name, slug ) ),
-    coupons ( id, type, discount_label, title, code, description, expires_at, stores ( name, slug ) )
+        coupons ( id, type, discount_label, title, code, description, expires_at, image_url, stores ( name, slug ) )
   )
 `;
 
@@ -108,6 +109,7 @@ function mapGuideItem(row: GuideItemRow): GuideItem | null {
         code: coupon.code,
         description: coupon.description,
         expiresAt: coupon.expires_at,
+        imageUrl: coupon.image_url,
         store: mapStore(coupon.stores),
       },
     };

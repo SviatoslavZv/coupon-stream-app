@@ -9,17 +9,18 @@ const ACTION_LABEL = {
 export default function GuideItemCard({ item, index }: { item: GuideItem; index: number }) {
     const storeName = item.source === "shop_link" ? item.link.store.name : item.coupon.store.name;
     const title = item.source === "shop_link" ? item.link.title : item.coupon.title;
+    const imageUrl = item.source === "shop_link" ? item.link.imageUrl : item.coupon.imageUrl;
 
     return (
         <article
             id={`item-${item.id}`}
             className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-4 sm:flex-row sm:p-5"
         >
-            {item.source === "shop_link" && item.link.imageUrl && (
+            {imageUrl && (
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
-                    src={item.link.imageUrl}
-                    alt={item.link.title}
+                    src={imageUrl}
+                    alt={title}
                     loading="lazy"
                     className="h-32 w-full rounded-xl object-contain sm:h-28 sm:w-28 sm:shrink-0"
                 />
