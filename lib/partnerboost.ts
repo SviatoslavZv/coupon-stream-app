@@ -25,7 +25,8 @@ function getConfig(): PartnerBoostConfig {
 
 const REQUEST_SOURCE = "cj";
 const COUNTRY_CODE = "US";
-const DEFAULT_PAGE_SIZE = 50;
+// API не отдаёт больше 50 товаров за один запрос
+const MAX_PAGE_SIZE = 50;
 const REQUEST_TIMEOUT_MS = 20_000;
 
 // Флаги фильтров API: 1 — «да», 2 — «не важно»
@@ -210,7 +211,7 @@ export async function searchAmazonProducts(
 ): Promise<AmazonProductPage> {
   const data = await callApi("/get_products", {
     cursor: search.cursor ?? "",
-    limit: search.limit ?? DEFAULT_PAGE_SIZE,
+    limit: Math.min(search.limit ?? MAX_PAGE_SIZE, MAX_PAGE_SIZE),
     brand_id: search.brandId ?? 0,
     asins: search.asins?.join(",") ?? "",
     category: search.category ?? "",
