@@ -62,6 +62,7 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Amazon Import</h1>
 
             <Form
+                key={buildImportHref(filters)}
                 action="/admin/amazon-import"
                 className="grid grid-cols-2 gap-4 rounded-2xl border border-line bg-white p-4 sm:grid-cols-3"
             >

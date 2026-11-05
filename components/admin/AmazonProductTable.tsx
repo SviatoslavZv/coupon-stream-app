@@ -56,7 +56,10 @@ export default function AmazonProductTable({
 
 
                         return (
-                            <tr key={product.parentAsin} className="border-b border-line last:border-0">
+                            <tr
+                                key={product.parentAsin}
+                                className={`border-b border-line last:border-0 ${hasCoupon || hasLink ? "bg-green-50" : ""}`}
+                            >
                                 <td className={CELL_CLASS}>
                                     {product.imageUrl ? (
                                         // eslint-disable-next-line @next/next/no-img-element
@@ -74,9 +77,17 @@ export default function AmazonProductTable({
                                 <td className={`${CELL_CLASS} max-w-xs`}>
                                     <p className="font-medium leading-snug text-ink">{product.name}</p>
                                     <p className="mt-1 text-xs text-ink/60">
-                                        <Link href={brandHref} prefetch={false} className="underline hover:text-coupon-dark">
-                                            {product.brandName}
-                                        </Link>{" "}
+                                        {filters.brand === product.brandId ? (
+                                            <span>{product.brandName}</span>
+                                        ) : (
+                                            <Link
+                                                href={brandHref}
+                                                prefetch={false}
+                                                className="underline hover:text-coupon-dark"
+                                            >
+                                                {product.brandName}
+                                            </Link>
+                                        )}{" "}
                                         #{product.brandId} · {product.asin} · {variantAsins.length}{" "}
                                         {variantAsins.length === 1 ? "variant" : "variants"}
                                         {!product.inStock && (
@@ -94,19 +105,18 @@ export default function AmazonProductTable({
                                     {(hasCoupon || hasLink) && (
                                         <p className="mt-1 flex flex-wrap gap-1">
                                             {hasCoupon && (
-                                                <span className="rounded-full bg-coupon/10 px-2 py-0.5 text-xs font-semibold text-coupon-dark">
-                                                    Coupon added
+                                                <span className="rounded-full bg-green-600 px-2 py-0.5 text-xs font-semibold text-white">
+                                                    ✓ Coupon added
                                                 </span>
                                             )}
                                             {hasLink && (
-                                                <span className="rounded-full bg-ink/10 px-2 py-0.5 text-xs font-semibold text-ink/70">
-                                                    Product link added
+                                                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">
+                                                    ✓ Product link added
                                                 </span>
                                             )}
                                         </p>
                                     )}
                                 </td>
-
                                 <td className={`${CELL_CLASS} font-semibold text-coupon-dark`}>
                                     {product.couponPercent ? `${product.couponPercent}%` : "—"}
                                 </td>
