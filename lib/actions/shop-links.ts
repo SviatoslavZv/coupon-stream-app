@@ -6,9 +6,9 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
-import { extractNetworkLinkId } from "@/lib/network-links";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { ShopLinkSchema, type ShopLinkInput } from "@/lib/schemas/shop-links";
+import { extractAmazonAsin, extractNetworkLinkId } from "@/lib/network-links";
 
 export interface ShopLinkFormState {
   error?: string;
@@ -23,7 +23,7 @@ function toRow(input: ShopLinkInput) {
     title: input.title,
     url: input.url,
     brand: input.brand,
-    asin: input.asin,
+    asin: input.asin ?? extractAmazonAsin(input.url),
     image_url: input.imageUrl,
     network_link_id: input.networkLinkId ?? extractNetworkLinkId(input.url),
     commission_rate: input.commissionRate,
