@@ -5,6 +5,7 @@ import {
   AMAZON_CATEGORIES,
   AMAZON_IMPORT_SORTS,
   AMAZON_IMPORT_PATH,
+  ASIN_PATTERN,
 } from "@/lib/constants/amazon";
 import {
   requiredText,
@@ -12,6 +13,7 @@ import {
   httpsUrl,
   optionalHttpsUrl,
   optionalOneOf,
+  emptyToNull,
 } from "@/lib/schemas/common";
 import {
   BRANDS,
@@ -83,11 +85,7 @@ export const AmazonCouponSchema = z
       "Unknown brand.",
     ),
     affiliateLink: httpsUrl("An https affiliate link is required."),
-    asin: z
-      .string()
-      .trim()
-      .toUpperCase()
-      .regex(/^[A-Z0-9]{10}$/, "Invalid ASIN."),
+    asin: z.string().trim().toUpperCase().regex(ASIN_PATTERN, "Invalid ASIN."),
     imageUrl: optionalHttpsUrl("Image URL must start with https://"),
     returnTo: z
       .string()
@@ -107,3 +105,34 @@ export const AmazonCouponSchema = z
   );
 
 export type AmazonCouponInput = z.infer<typeof AmazonCouponSchema>;
+
+export const AmazonLinkSchema = z
+  .object({
+    title: requiredText("Title is required."),
+    brand: optionalOneOf(
+      BRANDS.map((item) => item.label),
+      "Unknown brand.",
+    ),
+    asin: z.string().trim().toUpperCase().regex(ASIN_PATTERN, "Invalid ASIN."),
+    imageUrl: optionalHttpsUrl("Image URL must start with https://"),
+    commissionRate: z.preprocess(
+      emptyToNull,
+      z.coerce.number().min(0).max(100).nullable(),
+    ),
+    couponPercent: z.preprocess(
+      emptyToNull,
+      z.coerce.number().gt(0).lt(100).nullable(),
+    ),
+    guideId: z.preprocess(emptyToNull, z.uuid().nullable()),
+    comment: optionalText,
+    returnTo: z
+      .string()
+      .startsWith(AMAZON_IMPORT_PATH)
+      .catch(AMAZON_IMPORT_PATH),
+  })
+  .refine((input) => input.guideId === null || input.comment !== null, {
+    message: "Write a comment for the guide.",
+    path: ["comment"],
+  });
+
+export type AmazonLinkInput = z.infer<typeof AmazonLinkSchema>;

@@ -20,27 +20,49 @@ function formatTaxonomy(suggestion: TaxonomySuggestion): string {
     return `${category?.label ?? "—"} / ${subcategory?.label ?? "—"}`;
 }
 
-function importAction(product: AmazonProduct, hasCoupon: boolean, href: string): ReactNode {
-    if (hasCoupon) {
-        return <span className="text-xs font-semibold text-green-700">✓ Added</span>;
-    }
-    if (product.couponPercent === null) {
-        return <span className="text-xs text-ink/40">No coupon</span>;
-    }
+function importActions({
+    product,
+    hasCoupon,
+    hasLink,
+    couponHref,
+    linkHref,
+}: {
+    product: AmazonProduct;
+    hasCoupon: boolean;
+    hasLink: boolean;
+    couponHref: string;
+    linkHref: string;
+}): ReactNode {
     if (product.commissionPercent === null) {
         return <span className="text-xs font-semibold text-coupon">No commission</span>;
     }
     if (!product.inStock) {
         return <span className="text-xs font-semibold text-coupon">Out of stock</span>;
     }
+
     return (
-        <Link
-            href={href}
-            prefetch={false}
-            className="inline-block whitespace-nowrap rounded-full bg-coupon-dark px-3 py-1.5 text-xs font-bold text-white transition hover:bg-coupon"
-        >
-            Import coupon →
-        </Link>
+        <div className="flex flex-col items-start gap-1.5">
+            <Link
+                href={linkHref}
+                prefetch={false}
+                className="inline-block whitespace-nowrap rounded-full bg-coupon-dark px-3 py-1.5 text-xs font-bold text-white transition hover:bg-coupon"
+            >
+                {hasLink ? "Add to guide →" : "Product link →"}
+            </Link>
+            {hasCoupon ? (
+                <span className="text-xs font-semibold text-green-700">✓ Coupon added</span>
+            ) : (
+                product.couponPercent !== null && (
+                    <Link
+                        href={couponHref}
+                        prefetch={false}
+                        className="inline-block whitespace-nowrap rounded-full border border-coupon-dark px-3 py-1.5 text-xs font-bold text-coupon-dark transition hover:bg-coupon/10"
+                    >
+                        Coupon →
+                    </Link>
+                )
+            )}
+        </div>
     );
 }
 
@@ -81,7 +103,9 @@ export default function AmazonProductTable({
                         });
                         const hasCoupon = variantAsins.some((asin) => imported.coupons.has(asin));
                         const hasLink = variantAsins.some((asin) => imported.links.has(asin));
-                        const importHref = `${AMAZON_IMPORT_PATH}/coupon/${product.asin}?returnTo=${encodeURIComponent(currentHref)}`;
+                        const returnParam = `returnTo=${encodeURIComponent(currentHref)}`;
+                        const couponHref = `${AMAZON_IMPORT_PATH}/coupon/${product.asin}?${returnParam}`;
+                        const linkHref = `${AMAZON_IMPORT_PATH}/link/${product.asin}?${returnParam}`;
 
                         return (
                             <tr
@@ -176,7 +200,9 @@ export default function AmazonProductTable({
                                     </span>
                                 </td>
 
-                                <td className={CELL_CLASS}>{importAction(product, hasCoupon, importHref)}</td>
+                                <td className={CELL_CLASS}>
+                                    {importActions({ product, hasCoupon, hasLink, couponHref, linkHref })}
+                                </td>
 
                             </tr>
                         );

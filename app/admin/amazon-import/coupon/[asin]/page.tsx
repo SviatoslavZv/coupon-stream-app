@@ -17,12 +17,12 @@ import { importAmazonCoupon } from "@/lib/actions/amazon-import";
 import {
     AMAZON_STORE_SLUG,
     AMAZON_STORE_SID,
+    ASIN_PATTERN,
     amazonProductUrl,
 } from "@/lib/constants/amazon";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import CouponForm from "@/components/admin/CouponForm";
 
-const ASIN_PATTERN = /^[A-Z0-9]{10}$/;
 const brandLabels = BRANDS.map((brand) => brand.label);
 
 type Preparation =

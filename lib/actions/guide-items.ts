@@ -2,11 +2,9 @@
 
 "use server";
 
-import { revalidatePath } from "next/cache";
-import type { SupabaseClient } from "@supabase/supabase-js";
 import { requireAdmin } from "@/lib/auth";
-import { SORT_ORDER_STEP } from "@/lib/constants/guides";
 import { firstErrorMessage } from "@/lib/schemas/common";
+import { appendGuideItem, revalidateGuidePages } from "@/lib/guide-items";
 import {
   AddGuideItemSchema,
   MoveGuideItemSchema,
@@ -16,22 +14,6 @@ import {
 export interface GuideItemFormState {
   error?: string;
   success?: boolean;
-}
-
-const UNIQUE_VIOLATION = "23505";
-
-async function revalidateGuidePages(supabase: SupabaseClient, guideId: string) {
-  const { data } = await supabase
-    .from("guides")
-    .select("slug")
-    .eq("id", guideId)
-    .maybeSingle();
-
-  revalidatePath("/admin");
-  revalidatePath(`/admin/guides/${guideId}/edit`);
-  if (data?.slug) {
-    revalidatePath(`/guides/${data.slug}`);
-  }
 }
 
 export async function addGuideItem(
@@ -46,27 +28,14 @@ export async function addGuideItem(
   }
   const { guideId, source, itemId, comment } = parsed.data;
 
-  const { data: last } = await supabase
-    .from("guide_items")
-    .select("sort_order")
-    .eq("guide_id", guideId)
-    .order("sort_order", { ascending: false })
-    .limit(1)
-    .maybeSingle();
-
-  const { error } = await supabase.from("guide_items").insert({
-    guide_id: guideId,
-    shop_link_id: source === "shop_link" ? itemId : null,
-    coupon_id: source === "coupon" ? itemId : null,
-    sort_order: (last?.sort_order ?? -SORT_ORDER_STEP) + SORT_ORDER_STEP,
+  const error = await appendGuideItem(supabase, {
+    guideId,
+    source,
+    itemId,
     comment,
   });
-
   if (error) {
-    if (error.code === UNIQUE_VIOLATION) {
-      return { error: "This item is already in the guide." };
-    }
-    return { error: "Could not add the item. Please try again." };
+    return { error };
   }
 
   await revalidateGuidePages(supabase, guideId);

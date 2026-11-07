@@ -116,6 +116,17 @@ export function shortProductName(
   return short || name.trim();
 }
 
+export function buildProductTitle(
+  product: AmazonProduct,
+  suggestion: TaxonomySuggestion,
+): string {
+  const brandNames = [suggestion.brand, product.brandName].filter(
+    (brand): brand is string => Boolean(brand),
+  );
+  const name = shortProductName(product.name, brandNames);
+  return [suggestion.brand, name].filter(Boolean).join(" ");
+}
+
 export interface AmazonCouponDraft {
   storeId: string;
   type: "sale";
@@ -144,11 +155,7 @@ export function buildAmazonCouponDraft({
   const percent = product.couponPercent;
   if (percent === null) return null;
 
-  const brandNames = [suggestion.brand, product.brandName].filter(
-    (brand): brand is string => Boolean(brand),
-  );
-  const name = shortProductName(product.name, brandNames);
-  const title = [suggestion.brand, name].filter(Boolean).join(" ");
+  const title = buildProductTitle(product, suggestion);
 
   return {
     storeId,

@@ -36,3 +36,11 @@ export const AMAZON_STORE_SID = "store-amazon";
 export const AMAZON_TITLE_MAX_WORDS = 6;
 
 export const AMAZON_IMPORT_PATH = "/admin/amazon-import";
+
+export const ASIN_PATTERN = /^[A-Z0-9]{10}$/;
+
+// SID для ссылок, добавленных в каталог без гайда
+export const AMAZON_PICKS_SID = "amazon-picks";
+
+// Ограничение длины SID: метка должна оставаться короткой
+export const AMAZON_SID_MAX_LENGTH = 50;
