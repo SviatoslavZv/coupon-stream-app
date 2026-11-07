@@ -1,6 +1,7 @@
 // lib/schemas/shop-links.ts
 
 import { z } from "zod";
+import { ASIN_PATTERN } from "@/lib/constants/amazon";
 import { SHOP_LINK_KINDS } from "@/lib/constants/shop-links";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import {
@@ -29,7 +30,7 @@ export const ShopLinkSchema = z
         .string()
         .trim()
         .toUpperCase()
-        .regex(/^[A-Z0-9]{10}$/, "ASIN must be 10 letters or digits")
+        .regex(ASIN_PATTERN, "ASIN must be 10 letters or digits")
         .nullable(),
     ),
     imageUrl: optionalHttpsUrl("Image URL must start with https://"),
