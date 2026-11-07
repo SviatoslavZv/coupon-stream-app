@@ -12,6 +12,7 @@ import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
 import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
+import { AMAZON_IMPORT_PATH } from "@/lib/constants/amazon"
 
 
 export default async function AdminDashboard() {
@@ -36,7 +37,15 @@ export default async function AdminDashboard() {
                 <h1 className="font-display text-2xl font-black text-ink">
                     Dashboard
                 </h1>
-                <LogoutButton />
+                <div className="flex items-center gap-3">
+                    <Link
+                        href={AMAZON_IMPORT_PATH}
+                        className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
+                    >
+                        Amazon Import
+                    </Link>
+                    <LogoutButton />
+                </div>
             </div>
 
             <div className="mb-4 flex items-center justify-between">

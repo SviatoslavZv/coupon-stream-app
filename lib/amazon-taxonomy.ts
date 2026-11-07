@@ -6,6 +6,7 @@ import {
   type GenderSlug,
 } from "@/lib/constants/taxonomy";
 import type { AmazonProduct } from "@/lib/partnerboost";
+import { escapeRegExp } from "@/lib/utils";
 
 type SubcategorySlug =
   (typeof CATEGORIES)[number]["subcategories"][number]["slug"];
@@ -183,10 +184,6 @@ export interface TaxonomySuggestion {
   subcategory: SubcategorySlug | null;
   gender: GenderSlug | null;
   brand: string | null;
-}
-
-function escapeRegExp(text: string): string {
-  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function matchesKeyword(text: string, keyword: string): boolean {

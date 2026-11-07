@@ -8,6 +8,7 @@ import { getImportedAsins } from "@/lib/amazon-imported";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
 import AmazonProductTable from "@/components/admin/AmazonProductTable";
+
 import {
     AMAZON_CATEGORIES,
     AMAZON_IMPORT_SORTS,
@@ -59,6 +60,11 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
 
     return (
         <div className="mx-auto max-w-6xl px-4 py-10">
+
+            <Link href="/admin" className="mb-4 inline-block text-sm text-ink/60 hover:text-coupon-dark">
+                ← Dashboard
+            </Link>
+
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Amazon Import</h1>
 
             <Form

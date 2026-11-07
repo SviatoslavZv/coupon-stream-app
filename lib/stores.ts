@@ -11,28 +11,37 @@ interface StoreRow {
   logo_url: string;
   created_at?: string;
   updated_at?: string;
-  coupons: { discount_label: string; expires_at?: string | null; updated_at?: string; created_at?: string }[];
+  coupons: {
+    discount_label: string;
+    expires_at?: string | null;
+    updated_at?: string;
+    created_at?: string;
+  }[];
 }
-
 
 function mapStoreFromDb(row: StoreRow): Store {
   const storeDate = row.updated_at ?? row.created_at;
 
-  const latestCouponDate = row.coupons.reduce<string | undefined>((latest, coupon) => {
-    const couponDate = coupon.updated_at ?? coupon.created_at;
-    if (!couponDate) return latest;
-    if (!latest || new Date(couponDate) > new Date(latest)) return couponDate;
-    return latest;
-  }, undefined);
+  const latestCouponDate = row.coupons.reduce<string | undefined>(
+    (latest, coupon) => {
+      const couponDate = coupon.updated_at ?? coupon.created_at;
+      if (!couponDate) return latest;
+      if (!latest || new Date(couponDate) > new Date(latest)) return couponDate;
+      return latest;
+    },
+    undefined,
+  );
 
   const lastModified =
     storeDate && latestCouponDate
       ? new Date(storeDate) > new Date(latestCouponDate)
         ? storeDate
         : latestCouponDate
-      : storeDate ?? latestCouponDate;
+      : (storeDate ?? latestCouponDate);
 
-  const activeCoupons = row.coupons.filter((c) => !isCouponExpired(c.expires_at));
+  const activeCoupons = row.coupons.filter(
+    (c) => !isCouponExpired(c.expires_at),
+  );
 
   return {
     id: row.id,
@@ -53,7 +62,7 @@ export async function getStores(): Promise<Store[]> {
   const { data, error } = await supabase
     .from("stores")
     .select(
-      "id, slug, name, logo_url, created_at, updated_at, coupons(discount_label, expires_at, updated_at, created_at)"
+      "id, slug, name, logo_url, created_at, updated_at, coupons(discount_label, expires_at, updated_at, created_at)",
     );
   if (error) {
     throw new Error(`Failed to fetch stores: ${error.message}`);
@@ -115,9 +124,11 @@ interface StoreByIdDbRow {
 export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
   const supabase = await createClient();
 
-    const { data, error } = await supabase
+  const { data, error } = await supabase
     .from("stores")
-    .select("id, slug, name, logo_url, affiliate_link, website_url, banner_url, banner_link")
+    .select(
+      "id, slug, name, logo_url, affiliate_link, website_url, banner_url, banner_link",
+    )
     .eq("id", id)
     .maybeSingle();
 
@@ -141,4 +152,20 @@ export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
     bannerUrl: row.banner_url,
     bannerLink: row.banner_link,
   };
+}
+
+export async function getStoreIdBySlug(slug: string): Promise<string | null> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("stores")
+    .select("id")
+    .eq("slug", slug)
+    .maybeSingle();
+
+  if (error) {
+    throw new Error(`Failed to fetch store: ${error.message}`);
+  }
+
+  return (data as { id: string } | null)?.id ?? null;
 }

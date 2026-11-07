@@ -52,3 +52,13 @@ export function formatLongDate(iso: string): string {
     year: "numeric",
   });
 }
+
+export function escapeRegExp(text: string): string {
+  return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+export function isoDateInDays(days: number, from: Date = new Date()): string {
+  const date = new Date(from.getTime());
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}

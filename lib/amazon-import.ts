@@ -1,8 +1,15 @@
 // lib/amazon-import.ts
 
 import type { AmazonProduct } from "@/lib/partnerboost";
-import type { AmazonImportSort } from "@/lib/constants/amazon";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
+import type { TaxonomySuggestion } from "@/lib/amazon-taxonomy";
+import { escapeRegExp, isoDateInDays } from "@/lib/utils";
+import {
+  AmazonImportSort,
+  AMAZON_COUPON_TTL_DAYS,
+  AMAZON_TITLE_MAX_WORDS,
+  AMAZON_IMPORT_PATH,
+} from "@/lib/constants/amazon";
 
 export interface AmazonModel {
   product: AmazonProduct;
@@ -82,5 +89,84 @@ export function buildImportHref(
   params.set("sort", merged.sort);
   if (merged.cursor) params.set("cursor", merged.cursor);
 
-  return `/admin/amazon-import?${params.toString()}`;
+  return `${AMAZON_IMPORT_PATH}?${params.toString()}`;
+}
+
+// Слова о поле убираем из заголовка: пол уже указан в фильтрах купона
+const GENDER_WORDS =
+  /(?:\bfor\s+)?\b(?:women['’]?s?|men['’]?s?|ladies|unisex|girls['’]?|boys['’]?|kids['’]?|toddlers?)(?=\s|$)/gi;
+
+export function shortProductName(
+  name: string,
+  brandNames: readonly string[],
+): string {
+  // Всё после первой запятой, скобки или черты — обычно размер, цвет или перечень свойств
+  let text = name.split(/[,|(]/)[0] ?? name;
+
+  for (const brand of brandNames) {
+    text = text.replace(new RegExp(`^\\s*${escapeRegExp(brand)}\\s+`, "i"), "");
+  }
+
+  const words = text
+    .replace(GENDER_WORDS, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .split(" ");
+  const short = words.slice(0, AMAZON_TITLE_MAX_WORDS).join(" ");
+  return short || name.trim();
+}
+
+export interface AmazonCouponDraft {
+  storeId: string;
+  type: "sale";
+  discountLabel: string;
+  title: string;
+  description: string;
+  expiresAt: string;
+  category: string | null;
+  subcategory: string | null;
+  gender: string | null;
+  brand: string | null;
+  affiliateLink: string;
+}
+
+export function buildAmazonCouponDraft({
+  product,
+  suggestion,
+  storeId,
+  affiliateLink,
+}: {
+  product: AmazonProduct;
+  suggestion: TaxonomySuggestion;
+  storeId: string;
+  affiliateLink: string;
+}): AmazonCouponDraft | null {
+  const percent = product.couponPercent;
+  if (percent === null) return null;
+
+  const brandNames = [suggestion.brand, product.brandName].filter(
+    (brand): brand is string => Boolean(brand),
+  );
+  const name = shortProductName(product.name, brandNames);
+  const title = [suggestion.brand, name].filter(Boolean).join(" ");
+
+  return {
+    storeId,
+    type: "sale",
+    discountLabel: `${percent}% OFF`,
+    title: `${title}: Extra ${percent}% Off with Amazon Coupon`,
+    description: `Clip the ${percent}% coupon on the Amazon product page before adding to cart, and the discount is applied at checkout. Colors and sizes vary.`,
+    expiresAt: isoDateInDays(AMAZON_COUPON_TTL_DAYS),
+    category: suggestion.category,
+    subcategory: suggestion.subcategory,
+    gender: suggestion.gender,
+    brand: suggestion.brand,
+    affiliateLink,
+  };
+}
+
+export function safeImportReturnTo(value: unknown): string {
+  return typeof value === "string" && value.startsWith(AMAZON_IMPORT_PATH)
+    ? value
+    : AMAZON_IMPORT_PATH;
 }

@@ -1,11 +1,13 @@
 import Link from "next/link";
 import { getSubcategories, CATEGORIES } from "@/lib/constants/taxonomy";
-import { amazonProductUrl } from "@/lib/constants/amazon";
 import { buildImportHref, type AmazonModel } from "@/lib/amazon-import";
 import { suggestTaxonomy, type TaxonomySuggestion } from "@/lib/amazon-taxonomy";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
 import type { ImportedAsins } from "@/lib/amazon-imported";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
+import type { ReactNode } from "react";
+import type { AmazonProduct } from "@/lib/partnerboost";
+import { AMAZON_IMPORT_PATH, amazonProductUrl } from "@/lib/constants/amazon";
 
 const CELL_CLASS = "px-3 py-3 align-top";
 const HEAD_CLASS = "px-3 py-3 font-medium text-ink/60";
@@ -16,6 +18,30 @@ function formatTaxonomy(suggestion: TaxonomySuggestion): string {
         (item) => item.slug === suggestion.subcategory,
     );
     return `${category?.label ?? "—"} / ${subcategory?.label ?? "—"}`;
+}
+
+function importAction(product: AmazonProduct, hasCoupon: boolean, href: string): ReactNode {
+    if (hasCoupon) {
+        return <span className="text-xs font-semibold text-green-700">✓ Added</span>;
+    }
+    if (product.couponPercent === null) {
+        return <span className="text-xs text-ink/40">No coupon</span>;
+    }
+    if (product.commissionPercent === null) {
+        return <span className="text-xs font-semibold text-coupon">No commission</span>;
+    }
+    if (!product.inStock) {
+        return <span className="text-xs font-semibold text-coupon">Out of stock</span>;
+    }
+    return (
+        <Link
+            href={href}
+            prefetch={false}
+            className="inline-block whitespace-nowrap rounded-full bg-coupon-dark px-3 py-1.5 text-xs font-bold text-white transition hover:bg-coupon"
+        >
+            Import coupon →
+        </Link>
+    );
 }
 
 export default function AmazonProductTable({
@@ -29,6 +55,7 @@ export default function AmazonProductTable({
     brandLabels: readonly string[];
     imported: ImportedAsins;
 }) {
+    const currentHref = buildImportHref(filters);
     return (
         <AdminTableFrame>
             <table className="w-full text-left text-sm">
@@ -41,6 +68,7 @@ export default function AmazonProductTable({
                         <th className={HEAD_CLASS}>Rating</th>
                         <th className={HEAD_CLASS}>Price</th>
                         <th className={HEAD_CLASS}>Suggested</th>
+                        <th className={HEAD_CLASS}>Import</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -53,7 +81,7 @@ export default function AmazonProductTable({
                         });
                         const hasCoupon = variantAsins.some((asin) => imported.coupons.has(asin));
                         const hasLink = variantAsins.some((asin) => imported.links.has(asin));
-
+                        const importHref = `${AMAZON_IMPORT_PATH}/coupon/${product.asin}?returnTo=${encodeURIComponent(currentHref)}`;
 
                         return (
                             <tr
@@ -147,6 +175,9 @@ export default function AmazonProductTable({
                                         {suggestion.gender ?? "—"} · {suggestion.brand ?? "no brand"}
                                     </span>
                                 </td>
+
+                                <td className={CELL_CLASS}>{importAction(product, hasCoupon, importHref)}</td>
+
                             </tr>
                         );
                     })}

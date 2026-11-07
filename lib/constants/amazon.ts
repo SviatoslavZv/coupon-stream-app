@@ -22,3 +22,17 @@ export const AMAZON_IMPORT_SORT_LABELS: Record<AmazonImportSort, string> = {
 export function amazonProductUrl(asin: string): string {
   return `https://www.amazon.com/dp/${asin}`;
 }
+
+// Магазин, к которому привязываются все купоны и товары Amazon
+export const AMAZON_STORE_SLUG = "amazon";
+
+// Купоны Amazon пропадают без предупреждения — короткий срок и перепроверка
+export const AMAZON_COUPON_TTL_DAYS = 14;
+
+// Метка в отчётах CJ: откуда пришла продажа
+export const AMAZON_STORE_SID = "store-amazon";
+
+// Сколько слов названия товара оставлять в заголовке купона
+export const AMAZON_TITLE_MAX_WORDS = 6;
+
+export const AMAZON_IMPORT_PATH = "/admin/amazon-import";

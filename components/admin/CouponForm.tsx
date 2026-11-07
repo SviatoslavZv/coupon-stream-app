@@ -10,7 +10,7 @@ interface StoreOption {
     name: string;
 }
 
-interface CouponFormValues {
+export interface CouponFormValues {
     id?: string;
     storeId?: string;
     type?: string;
@@ -34,6 +34,7 @@ export default function CouponForm({
     action,
     storeOptions,
     initialValues,
+    hiddenFields,
 }: {
     action: (
         prevState: CouponFormState | null,
@@ -41,6 +42,7 @@ export default function CouponForm({
     ) => Promise<CouponFormState>;
     storeOptions: StoreOption[];
     initialValues?: CouponFormValues;
+    hiddenFields?: Record<string, string>;
 }) {
     const [selectedCategory, setSelectedCategory] = useState(
         initialValues?.category ?? ""
@@ -63,6 +65,11 @@ export default function CouponForm({
             {initialValues?.id && (
                 <input type="hidden" name="id" value={initialValues.id} />
             )}
+
+            {hiddenFields &&
+                Object.entries(hiddenFields).map(([name, value]) => (
+                    <input key={name} type="hidden" name={name} value={value} />
+                ))}
 
             {state?.error && (
                 <div className="rounded-lg border border-coupon bg-coupon/5 px-3 py-2 text-sm text-coupon">
