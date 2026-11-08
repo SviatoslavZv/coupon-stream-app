@@ -28,7 +28,7 @@ export async function generateMetadata({
 
     return buildPageMetadata({
         title: `${category.label} Deals & Promo Codes — ${monthYear}`,
-        description: `${allCoupons.length} verified ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
+        description: `${allCoupons.length} active ${category.label.toLowerCase()} deals and coupons across top department stores for ${monthYear}. Compare offers on CouponCreek.`,
         path: `/category/${lowerSlug}`,
     });
 }

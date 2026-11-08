@@ -37,8 +37,8 @@ export async function generateMetadata({
 
     const description =
         activeCount > 0
-            ? `${activeCount} verified ${store.name} promo codes and deals for ${monthYear}. Save with the latest ${store.name} coupons, updated daily on CouponCreek.`
-            : `Find the latest ${store.name} promo codes and deals on CouponCreek. Checked and updated regularly for ${monthYear}.`;
+            ? `${activeCount} active ${store.name} promo codes and deals for ${monthYear}. Save with hand-picked ${store.name} coupons on CouponCreek.`
+            : `Find the latest ${store.name} promo codes and deals for ${monthYear} on CouponCreek.`;
 
     return buildPageMetadata({
         title: `${store.name} Promo Codes & Coupons ${countBadge}— ${monthYear}`,
@@ -111,7 +111,7 @@ export default async function StorePage({
                         </h1>
                         <p className="text-xs sm:text-sm text-ink/70">
                             {activeCoupons.length > 0
-                                ? `${activeCoupons.length} verified ${activeCoupons.length === 1 ? "offer" : "offers"} available`
+                                ? `${activeCoupons.length} active ${activeCoupons.length === 1 ? "offer" : "offers"} available`
                                 : "No active offers currently"}
                         </p>
                     </div>

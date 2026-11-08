@@ -6,7 +6,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
     title: "All Coupon Categories",
     description:
-        "Explore promo codes and discounts by category. Find verified deals on fashion, shoes, accessories, and more.",
+        "Explore promo codes and discounts by category. Find hand-picked deals on fashion, shoes, accessories, and more.",
     alternates: {
         canonical: "/categories",
     },
@@ -28,7 +28,7 @@ export default async function CategoriesPage() {
                 All Categories
             </h1>
             <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ink/70">
-                Browse verified promo codes and deals by product category.
+                Browse hand-picked promo codes and deals by product category.
             </p>
 
             {/* Мобильная адаптивная сетка: 2 колонки на смартфонах, 3 на планшетах/десктопе */}

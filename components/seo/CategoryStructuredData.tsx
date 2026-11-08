@@ -21,7 +21,7 @@ export default function CategoryStructuredData({
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         name: `${categoryName} Promo Codes & Deals`,
-        description: `Verified promo codes, sales, and discounts for ${categoryName}.`,
+        description: `Promo codes, sales, and discounts for ${categoryName}.`,
         url: `${siteUrl}/category/${categorySlug.toLowerCase()}`,
         mainEntity: {
             "@type": "ItemList",

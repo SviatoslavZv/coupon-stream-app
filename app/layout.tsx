@@ -7,6 +7,7 @@ import Script from "next/script";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import "./globals.css";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/constants/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,25 +30,22 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
-    template: "%s | CouponCreek",
+    default: SITE_TITLE,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+  description: SITE_DESCRIPTION,
   openGraph: {
-    title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
-    description:
-      "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
     url: siteUrl,
-    siteName: "CouponCreek",
+    siteName: SITE_NAME,
     locale: "en_US",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
-    description:
-      "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+    title: SITE_TITLE,
+    description: SITE_DESCRIPTION,
   },
   robots: {
     index: true,

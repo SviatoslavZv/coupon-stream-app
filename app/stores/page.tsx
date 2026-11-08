@@ -6,7 +6,7 @@ import { getStores } from "@/lib/stores";
 export const metadata: Metadata = {
     title: "All Stores & Promo Codes",
     description:
-        "Browse our complete directory of stores offering verified promo codes, discount coupons, and daily deals.",
+        "Browse our complete directory of stores with hand-picked promo codes, discount coupons and sales.",
     alternates: {
         canonical: "/stores",
     },

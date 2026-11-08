@@ -69,7 +69,7 @@ export default async function Image({
                     }}
                 >
                     {offerCount > 0
-                        ? `${offerCount} verified ${offerCount === 1 ? "offer" : "offers"}`
+                        ? `${offerCount} active ${offerCount === 1 ? "offer" : "offers"}`
                         : "New deals coming soon"}
                 </div>
 

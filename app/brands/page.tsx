@@ -6,7 +6,7 @@ import Link from "next/link";
 export const metadata: Metadata = {
     title: "All Brands & Promo Codes",
     description:
-        "Browse top fashion and lifestyle brands with active promo codes, exclusive discounts, and verified coupon deals.",
+        "Browse top fashion and lifestyle brands with active promo codes, exclusive discounts, and hand-picked coupon deals.",
     alternates: {
         canonical: "/brands",
     },
@@ -28,7 +28,7 @@ export default async function BrandsPage() {
                 All Brands
             </h1>
             <p className="mt-1 sm:mt-2 text-sm sm:text-base text-ink/70">
-                Discover verified promo codes and sales for leading fashion brands.
+                Discover hand-picked promo codes and sales for leading fashion brands.
             </p>
 
             {/* Сетка брендов: 2 колонки на мобилках */}

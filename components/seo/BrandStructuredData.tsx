@@ -21,7 +21,7 @@ export default function BrandStructuredData({
         "@context": "https://schema.org",
         "@type": "CollectionPage",
         name: `${brandName} Promo Codes & Deals`,
-        description: `Verified promo codes, discount codes, and special offers for ${brandName}.`,
+        description: `Promo codes, discount codes, and special offers for ${brandName}.`,
         url: `${siteUrl}/brand/${brandSlug.toLowerCase()}`,
         mainEntity: {
             "@type": "ItemList",

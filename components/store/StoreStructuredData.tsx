@@ -21,7 +21,7 @@ export default function StoreStructuredData({
         "@context": "https://schema.org",
         "@type": "ItemList",
         name: `${store.name} Promo Codes & Discounts`,
-        description: `Active verified coupon codes and promo deals for ${store.name}.`,
+        description: `Active coupon codes and promo deals for ${store.name}.`,
         url: storeUrl,
         numberOfItems: coupons.length,
         itemListElement: coupons.map((coupon, index) => {

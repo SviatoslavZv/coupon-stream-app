@@ -6,9 +6,9 @@ import { getTopStores } from "@/lib/stores";
 
 
 export const metadata: Metadata = {
-  title: "CouponCreek — Verified Promo Codes & Discounts for Top Stores",
+  title: "CouponCreek — Hand-Picked Promo Codes & Deals for Fashion Stores",
   description:
-    "Discover daily updated promo codes, discount coupons, and exclusive sales for your favorite fashion and retail stores on CouponCreek.",
+    "Discover hand-picked promo codes, sales and shopping guides for your favorite fashion, shoe and apparel stores on CouponCreek.",
   alternates: {
     canonical: "/",
   },
@@ -23,7 +23,7 @@ export default async function Home() {
         Top Stores
       </h1>
       <p className="mt-2 text-ink/70">
-        Verified promo codes and deals, updated daily.
+        Hand-picked promo codes and deals from top fashion stores.
       </p>
 
       <StoreGrid stores={stores} />

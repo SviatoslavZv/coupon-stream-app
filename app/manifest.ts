@@ -1,11 +1,13 @@
+// app/manifest.ts
+
 import type { MetadataRoute } from "next";
+import { SITE_DESCRIPTION, SITE_NAME, SITE_TITLE } from "@/lib/constants/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "CouponCreek — Promo Codes & Deals for Top Fashion Stores",
-    short_name: "CouponCreek",
-    description:
-      "Find verified promo codes and deals for your favorite fashion and apparel brands, updated daily.",
+    name: SITE_TITLE,
+    short_name: SITE_NAME,
+    description: SITE_DESCRIPTION,
     start_url: "/",
     display: "standalone",
     background_color: "#FBFAF7",

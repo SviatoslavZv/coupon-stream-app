@@ -28,7 +28,7 @@ export async function generateMetadata({
 
     return buildPageMetadata({
         title: `${brand.label} Coupons & Promo Codes at Department Stores — ${monthYear}`,
-        description: `${allCoupons.length} verified ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
+        description: `${allCoupons.length} active ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
         path: `/brand/${lowerSlug}`,
     });
 }

@@ -10,8 +10,8 @@ export function getStoreFaq(storeName: string, offerCount: number): FaqItem[] {
       answer: `To use a promo code for ${storeName}, copy the discount code from CouponCreek, head to ${storeName}'s official website, and paste it into the promo code or coupon field during checkout. Your order total will automatically update.`,
     },
     {
-      question: `Are the ${storeName} coupons on CouponCreek free and verified?`,
-      answer: `Yes, all ${storeName} promo codes and deals on CouponCreek are 100% free to use. Our team tests and verifies available offers regularly to ensure you get active savings.`,
+      question: `Are the ${storeName} coupons on CouponCreek free to use?`,
+      answer: `Yes, all ${storeName} promo codes and deals on CouponCreek are 100% free to use. Every offer is picked by hand, and deals we have checked show the date of the last check on the deal card.`,
     },
     {
       question: `Why is my ${storeName} promo code not working?`,
