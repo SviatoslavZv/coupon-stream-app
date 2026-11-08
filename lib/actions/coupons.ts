@@ -4,48 +4,49 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { requireAdmin } from "@/lib/auth";
+import { firstErrorMessage } from "@/lib/schemas/common";
+import { CouponSchema, type CouponInput } from "@/lib/schemas/coupons";
 
 export interface CouponFormState {
   error?: string;
 }
 
+function toRow(input: CouponInput) {
+  return {
+    store_id: input.storeId,
+    type: input.type,
+    discount_label: input.discountLabel,
+    title: input.title,
+    code: input.code,
+    description: input.description,
+    expires_at: input.expiresAt,
+    category: input.category,
+    subcategory: input.subcategory,
+    gender: input.gender,
+    brand: input.brand,
+    affiliate_link: input.affiliateLink,
+  };
+}
+
 export async function createCoupon(
-  prevState: CouponFormState | null,
-  formData: FormData
+  _prevState: CouponFormState | null,
+  formData: FormData,
 ): Promise<CouponFormState> {
-  const storeId = formData.get("storeId") as string;
-  const type = formData.get("type") as string;
-  const discountLabel = formData.get("discountLabel") as string;
-  const title = formData.get("title") as string;
-  const code = formData.get("code") as string;
-  const description = formData.get("description") as string;
-  const expiresAt = formData.get("expiresAt") as string;
-  const category = formData.get("category") as string;
-  const subcategory = formData.get("subcategory") as string;
-  const gender = formData.get("gender") as string;
-    const brand = formData.get("brand") as string;
-  const affiliateLink = formData.get("affiliateLink") as string;
+  const supabase = await requireAdmin();
 
-  const supabase = await createClient();
+  const parsed = CouponSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { error: firstErrorMessage(parsed.error) };
+  }
 
-  const { error } = await supabase.from("coupons").insert({
-    store_id: storeId,
-    type,
-    discount_label: discountLabel,
-    title,
-    code: code || null,
-    description,
-    expires_at: expiresAt,
-    category: category || null,
-    subcategory: subcategory || null,
-    gender: gender || null,
-    brand: brand || null,
-    affiliate_link: affiliateLink || null,
-  });
-
+  const { error } = await supabase.from("coupons").insert(toRow(parsed.data));
   if (error) {
-    return { error: "Could not create the coupon. Please check the fields and try again." };
+    return {
+      error:
+        "Could not create the coupon. Please check the fields and try again.",
+    };
   }
 
   revalidatePath("/admin");
@@ -53,58 +54,44 @@ export async function createCoupon(
 }
 
 export async function updateCoupon(
-  prevState: CouponFormState | null,
-  formData: FormData
+  _prevState: CouponFormState | null,
+  formData: FormData,
 ): Promise<CouponFormState> {
-  const id = formData.get("id") as string;
-  const storeId = formData.get("storeId") as string;
-  const type = formData.get("type") as string;
-  const discountLabel = formData.get("discountLabel") as string;
-  const title = formData.get("title") as string;
-  const code = formData.get("code") as string;
-  const description = formData.get("description") as string;
-  const expiresAt = formData.get("expiresAt") as string;
-  const category = formData.get("category") as string;
-  const subcategory = formData.get("subcategory") as string;
-  const gender = formData.get("gender") as string;
-    const brand = formData.get("brand") as string;
-  const affiliateLink = formData.get("affiliateLink") as string;
+  const supabase = await requireAdmin();
 
-  const supabase = await createClient();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    return { error: "Coupon not found." };
+  }
+
+  const parsed = CouponSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { error: firstErrorMessage(parsed.error) };
+  }
 
   const { error } = await supabase
     .from("coupons")
-    .update({
-      store_id: storeId,
-      type,
-      discount_label: discountLabel,
-      title,
-      code: code || null,
-      description,
-      expires_at: expiresAt,
-      category: category || null,
-      subcategory: subcategory || null,
-      gender: gender || null,
-      brand: brand || null,
-      affiliate_link: affiliateLink || null,
-    })
-    .eq("id", id);
-
+    .update(toRow(parsed.data))
+    .eq("id", id.data);
   if (error) {
-    return { error: "Could not save changes. Please check the fields and try again." };
+    return {
+      error: "Could not save changes. Please check the fields and try again.",
+    };
   }
 
   revalidatePath("/admin");
   redirect("/admin");
 }
 
-export async function deleteCoupon(formData: FormData) {
-  const id = formData.get("id") as string;
+export async function deleteCoupon(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
 
-  const supabase = await createClient();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    throw new Error("Coupon not found.");
+  }
 
-  const { error } = await supabase.from("coupons").delete().eq("id", id);
-
+  const { error } = await supabase.from("coupons").delete().eq("id", id.data);
   if (error) {
     throw new Error(`Failed to delete coupon: ${error.message}`);
   }
@@ -112,17 +99,18 @@ export async function deleteCoupon(formData: FormData) {
   revalidatePath("/admin");
 }
 
+export async function markCouponVerified(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
 
-export async function markCouponVerified(formData: FormData) {
-  const id = formData.get("id") as string;
-
-  const supabase = await createClient();
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    throw new Error("Coupon not found.");
+  }
 
   const { error } = await supabase
     .from("coupons")
     .update({ last_verified_at: new Date().toISOString() })
-    .eq("id", id);
-
+    .eq("id", id.data);
   if (error) {
     throw new Error(`Failed to verify coupon: ${error.message}`);
   }
