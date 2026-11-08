@@ -4,120 +4,105 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { z } from "zod";
+import { requireAdmin } from "@/lib/auth";
+import { firstErrorMessage } from "@/lib/schemas/common";
+import { StoreSchema, type StoreInput } from "@/lib/schemas/stores";
 
 export interface StoreFormState {
   error?: string;
 }
 
-export async function createStore(
-  prevState: StoreFormState | null,
-  formData: FormData
-): Promise<StoreFormState> {
-  const slug = (formData.get("slug") as string)?.trim().toLowerCase();
-  const name = (formData.get("name") as string)?.trim();
-  const logoUrl = (formData.get("logoUrl") as string)?.trim();
-  const affiliateLink = (formData.get("affiliateLink") as string)?.trim();
-  const websiteUrl = (formData.get("websiteUrl") as string)?.trim();
-  const bannerUrl = (formData.get("bannerUrl") as string)?.trim();
-  const bannerLink = (formData.get("bannerLink") as string)?.trim();
+const UNIQUE_VIOLATION = "23505";
 
-  // Простая проверка обязательных полей
-  if (!slug || !name) {
-    return { error: "Name and Slug are required fields." };
+function toRow(input: StoreInput) {
+  return {
+    slug: input.slug,
+    name: input.name,
+    logo_url: input.logoUrl,
+    affiliate_link: input.affiliateLink,
+    website_url: input.websiteUrl,
+    banner_url: input.bannerUrl,
+    banner_link: input.bannerLink,
+  };
+}
+
+function saveErrorMessage(code: string | undefined): string {
+  if (code === UNIQUE_VIOLATION) {
+    return "A store with this slug already exists. Please choose a different one.";
   }
+  return "Could not save the store. Please check the fields and try again.";
+}
 
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("stores").insert({
-    slug,
-    name,
-    logo_url: logoUrl || null,
-    affiliate_link: affiliateLink || null,
-    website_url: websiteUrl || null,
-    banner_url: bannerUrl || null,
-    banner_link: bannerLink || null,
-  });
-
-  if (error) {
-    if (error.code === "23505") {
-      return { error: "A store with this slug already exists. Please choose a different one." };
-    }
-    return { error: "Could not create the store. Please check the fields and try again." };
-  }
-
-  // 💡 Сбрасываем кэш не только админки, но и публичных страниц!
+function revalidateStorePages(slug?: string): void {
   revalidatePath("/admin");
   revalidatePath("/stores");
-  revalidatePath(`/store/${slug}`);
   revalidatePath("/sitemap.xml");
+  if (slug) {
+    revalidatePath(`/store/${slug}`);
+  }
+}
 
+export async function createStore(
+  _prevState: StoreFormState | null,
+  formData: FormData,
+): Promise<StoreFormState> {
+  const supabase = await requireAdmin();
+
+  const parsed = StoreSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { error: firstErrorMessage(parsed.error) };
+  }
+
+  const { error } = await supabase.from("stores").insert(toRow(parsed.data));
+  if (error) {
+    return { error: saveErrorMessage(error.code) };
+  }
+
+  revalidateStorePages(parsed.data.slug);
   redirect("/admin");
 }
 
 export async function updateStore(
-  prevState: StoreFormState | null,
-  formData: FormData
+  _prevState: StoreFormState | null,
+  formData: FormData,
 ): Promise<StoreFormState> {
-  const id = formData.get("id") as string;
-  const slug = (formData.get("slug") as string)?.trim().toLowerCase();
-  const name = (formData.get("name") as string)?.trim();
-  const logoUrl = (formData.get("logoUrl") as string)?.trim();
-  const affiliateLink = (formData.get("affiliateLink") as string)?.trim();
-  const websiteUrl = (formData.get("websiteUrl") as string)?.trim();
-  const bannerUrl = (formData.get("bannerUrl") as string)?.trim();
-  const bannerLink = (formData.get("bannerLink") as string)?.trim();
+  const supabase = await requireAdmin();
 
-  if (!id || !slug || !name) {
-    return { error: "Store ID, Name and Slug are required fields." };
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    return { error: "Store not found." };
   }
 
-  const supabase = await createClient();
+  const parsed = StoreSchema.safeParse(Object.fromEntries(formData));
+  if (!parsed.success) {
+    return { error: firstErrorMessage(parsed.error) };
+  }
 
   const { error } = await supabase
     .from("stores")
-    .update({
-      slug,
-      name,
-      logo_url: logoUrl || null,
-      affiliate_link: affiliateLink || null,
-      website_url: websiteUrl || null,
-      banner_url: bannerUrl || null,
-      banner_link: bannerLink || null,
-    })
-    .eq("id", id);
-
+    .update(toRow(parsed.data))
+    .eq("id", id.data);
   if (error) {
-    if (error.code === "23505") {
-      return { error: "A store with this slug already exists. Please choose a different one." };
-    }
-    return { error: "Could not save changes. Please check the fields and try again." };
+    return { error: saveErrorMessage(error.code) };
   }
 
-  // 💡 Инвалидация кэша для публичных страниц при обновлении
-  revalidatePath("/admin");
-  revalidatePath("/stores");
-  revalidatePath(`/store/${slug}`);
-  revalidatePath("/sitemap.xml");
-
+  revalidateStorePages(parsed.data.slug);
   redirect("/admin");
 }
 
-export async function deleteStore(formData: FormData) {
-  const id = formData.get("id") as string;
+export async function deleteStore(formData: FormData): Promise<void> {
+  const supabase = await requireAdmin();
 
-  if (!id) return;
+  const id = z.uuid().safeParse(formData.get("id"));
+  if (!id.success) {
+    throw new Error("Store not found.");
+  }
 
-  const supabase = await createClient();
-
-  const { error } = await supabase.from("stores").delete().eq("id", id);
-
+  const { error } = await supabase.from("stores").delete().eq("id", id.data);
   if (error) {
     throw new Error(`Failed to delete store: ${error.message}`);
   }
 
-  // 💡 Инвалидируем кэш после удаления
-  revalidatePath("/admin");
-  revalidatePath("/stores");
-  revalidatePath("/sitemap.xml");
+  revalidateStorePages();
 }
