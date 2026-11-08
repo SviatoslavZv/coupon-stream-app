@@ -3,29 +3,37 @@ import { sendGAEvent } from "@next/third-parties/google";
 import { useEffect, useState } from "react";
 import type { Coupon } from "@/types";
 import ShareButton from "@/components/ui/ShareButton";
-import { isCouponExpired } from "@/lib/utils";
-
-
+import { formatShortDate, isCouponExpired } from "@/lib/utils";
 
 // 2. Форматирование метки верификации и статуса
-function formatVerifiedLabel(isoDate?: string | null, expiresAt?: string | null): {
+interface StatusLabel {
     text: string;
     isExpired: boolean;
-} {
+}
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+const RECENT_DAYS = 3;
+
+function formatVerifiedLabel(
+    isoDate?: string | null,
+    expiresAt?: string | null,
+): StatusLabel | null {
     if (isCouponExpired(expiresAt)) {
         return { text: "Expired", isExpired: true };
     }
 
-    if (!isoDate) return { text: "Verified", isExpired: false };
+    if (!isoDate) return null;
 
     const diffMs = Date.now() - new Date(isoDate).getTime();
-    const diffDays = Math.max(0, Math.floor(diffMs / (1000 * 60 * 60 * 24)));
+    const diffDays = Math.max(0, Math.floor(diffMs / MS_PER_DAY));
 
     if (diffDays === 0) return { text: "Verified today", isExpired: false };
     if (diffDays === 1) return { text: "Verified yesterday", isExpired: false };
-    if (diffDays <= 3) return { text: `Verified ${diffDays} days ago`, isExpired: false };
+    if (diffDays <= RECENT_DAYS) {
+        return { text: `Verified ${diffDays} days ago`, isExpired: false };
+    }
 
-    return { text: "Verified", isExpired: false };
+    return { text: `Verified ${formatShortDate(isoDate)}`, isExpired: false };
 }
 
 export default function CouponItem({
@@ -133,10 +141,12 @@ export default function CouponItem({
                         <span className="font-mono text-[11px] uppercase tracking-wide text-ink/80">
                             {isCodeType ? "Code" : "Sale"}
                         </span>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
-                            }`}>
-                            {!status.isExpired && <span>✓</span>} {status.text}
-                        </span>
+                        {status && (
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
+                                }`}>
+                                {!status.isExpired && <span>✓</span>} {status.text}
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -146,10 +156,12 @@ export default function CouponItem({
                         <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
                             {isCodeType ? "Code" : "Sale"}
                         </span>
-                        <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
-                            }`}>
-                            {!status.isExpired && <span>✓</span>} {status.text}
-                        </span>
+                        {status && (
+                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
+                                }`}>
+                                {!status.isExpired && <span>✓</span>} {status.text}
+                            </span>
+                        )}
                     </div>
 
                     <h2 className="mt-1 font-medium text-ink text-base sm:text-lg leading-snug">
