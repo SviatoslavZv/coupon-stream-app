@@ -101,6 +101,7 @@ export default async function StorePage({
                             alt={`${store.name} logo`}
                             width={48}
                             height={48}
+                            loading="eager"
                             className="h-10 w-10 object-contain"
                         />
                     </div>
