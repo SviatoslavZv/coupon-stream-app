@@ -78,7 +78,7 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
                 ← Back to import
             </Link>
 
-            <h1 className="mb-6 font-display text-2xl font-black text-ink">Import Amazon Product</h1>
+            <h1 className="mb-6 font-display text-2xl font-black text-ink">Add Amazon Product</h1>
 
             {product && (
                 <div className="mb-6 flex gap-4 rounded-2xl border border-line bg-white p-4">

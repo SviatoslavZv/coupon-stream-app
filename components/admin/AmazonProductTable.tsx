@@ -12,6 +12,14 @@ import { AMAZON_IMPORT_PATH, amazonProductUrl } from "@/lib/constants/amazon";
 const CELL_CLASS = "px-3 py-3 align-top";
 const HEAD_CLASS = "px-3 py-3 font-medium text-ink/60";
 
+const IMPORT_LABELS = {
+    addProduct: "Add product →",
+    addToGuide: "Add to guide →",
+    storeCoupon: "Store coupon →",
+    storeCouponAdded: "✓ Store coupon added",
+    productAdded: "✓ Product added",
+} as const;
+
 function formatTaxonomy(suggestion: TaxonomySuggestion): string {
     const category = CATEGORIES.find((item) => item.slug === suggestion.category);
     const subcategory = getSubcategories(suggestion.category ?? "").find(
@@ -47,18 +55,19 @@ function importActions({
                 prefetch={false}
                 className="inline-block whitespace-nowrap rounded-full bg-coupon-dark px-3 py-1.5 text-xs font-bold text-white transition hover:bg-coupon"
             >
-                {hasLink ? "Add to guide →" : "Product link →"}
+                {hasLink ? IMPORT_LABELS.addToGuide : IMPORT_LABELS.addProduct}
             </Link>
             {hasCoupon ? (
-                <span className="text-xs font-semibold text-green-700">✓ Coupon added</span>
+                <span className="text-xs font-semibold text-green-700">{IMPORT_LABELS.storeCouponAdded}</span>
             ) : (
                 product.couponPercent !== null && (
                     <Link
                         href={couponHref}
                         prefetch={false}
-                        className="inline-block whitespace-nowrap rounded-full border border-coupon-dark px-3 py-1.5 text-xs font-bold text-coupon-dark transition hover:bg-coupon/10"
+                        title="Adds a separate coupon to the Amazon store page, not to a guide"
+                        className="whitespace-nowrap text-xs text-ink/60 underline hover:text-coupon-dark"
                     >
-                        Coupon →
+                        {IMPORT_LABELS.storeCoupon}
                     </Link>
                 )
             )}
@@ -154,19 +163,15 @@ export default function AmazonProductTable({
                                     >
                                         Check on Amazon ↗
                                     </a>
-                                    {(hasCoupon || hasLink) && (
-                                        <p className="mt-1 flex flex-wrap gap-1">
-                                            {hasCoupon && (
-                                                <span className="rounded-full bg-green-600 px-2 py-0.5 text-xs font-semibold text-white">
-                                                    ✓ Coupon added
-                                                </span>
-                                            )}
-                                            {hasLink && (
-                                                <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">
-                                                    ✓ Product link added
-                                                </span>
-                                            )}
-                                        </p>
+                                    {hasLink && (
+                                        <span className="rounded-full bg-green-600 px-2 py-0.5 text-xs font-semibold text-white">
+                                            {IMPORT_LABELS.productAdded}
+                                        </span>
+                                    )}
+                                    {hasCoupon && (
+                                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-xs font-semibold text-green-800">
+                                            {IMPORT_LABELS.storeCouponAdded}
+                                        </span>
                                     )}
                                 </td>
                                 <td className={`${CELL_CLASS} font-semibold text-coupon-dark`}>

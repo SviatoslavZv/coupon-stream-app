@@ -104,7 +104,11 @@ export default async function ImportAmazonCouponPage(
                 ← Back to import
             </Link>
 
-            <h1 className="mb-6 font-display text-2xl font-black text-ink">Import Amazon Coupon</h1>
+            <h1 className="mb-2 font-display text-2xl font-black text-ink">Add Store Coupon</h1>
+            <p className="mb-6 text-sm text-ink/70">
+                Adds a separate coupon to the Amazon store page. To feature this product in a guide, go back and use
+                “Add product” instead.
+            </p>
 
             {product && (
                 <div className="mb-6 flex gap-4 rounded-2xl border border-line bg-white p-4">
