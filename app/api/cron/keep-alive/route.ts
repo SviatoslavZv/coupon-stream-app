@@ -1,19 +1,16 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { isAuthorizedCronRequest } from "@/lib/cron";
 
 export async function GET(request: Request) {
   // Проверяем авторизацию запроса от Vercel Cron (для защиты от спама)
-  const authHeader = request.headers.get("authorization");
-  if (
-    process.env.CRON_SECRET &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
+  if (!isAuthorizedCronRequest(request)) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
   try {
     const supabase = await createClient();
-    
+
     // Простейший быстрый запрос для "пробуждения" БД
     const { error } = await supabase.from("stores").select("id").limit(1);
 
@@ -30,7 +27,7 @@ export async function GET(request: Request) {
     const errorMessage = err instanceof Error ? err.message : "Unknown error";
     return NextResponse.json(
       { status: "error", message: errorMessage },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

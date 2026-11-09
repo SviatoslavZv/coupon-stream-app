@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/keep-alive",
       "schedule": "0 0 */4 * *"
+    },
+    {
+      "path": "/api/cron/amazon-recheck",
+      "schedule": "0 5 * * *"
     }
   ]
 }
