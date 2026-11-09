@@ -8,3 +8,5 @@ export const SHOP_LINK_KIND_LABELS: Record<ShopLinkKind, string> = {
   product: "Product",
   section: "Store section",
 };
+
+export const SHOP_LINK_COUPON_FRESH_DAYS = 3;

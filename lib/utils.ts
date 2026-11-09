@@ -69,3 +69,10 @@ export function isoDateInDays(days: number, from: Date = new Date()): string {
   date.setUTCDate(date.getUTCDate() + days);
   return date.toISOString().slice(0, 10);
 }
+
+const MS_PER_DAY = 1000 * 60 * 60 * 24;
+
+export function daysSince(iso: string, now: Date = new Date()): number {
+  const diffMs = now.getTime() - new Date(iso).getTime();
+  return Math.max(0, Math.floor(diffMs / MS_PER_DAY));
+}

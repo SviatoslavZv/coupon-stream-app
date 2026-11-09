@@ -2,11 +2,13 @@
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { isCouponExpired } from "@/lib/utils";
+import { SHOP_LINK_COUPON_FRESH_DAYS } from "@/lib/constants/shop-links";
+import { daysSince, isCouponExpired } from "@/lib/utils";
 import type {
   Coupon,
   Guide,
   GuideItem,
+  GuideLinkCoupon,
   GuideStore,
   GuideSummary,
 } from "@/types";
@@ -24,6 +26,8 @@ interface ShopLinkRow {
   brand: string | null;
   asin: string | null;
   image_url: string | null;
+  coupon_percent: number | null;
+  last_checked_at: string | null;
   stores: StoreRef | null;
 }
 
@@ -66,13 +70,29 @@ const GUIDE_SELECT = `
   published_at, updated_at,
   guide_items (
     id, sort_order, comment,
-    shop_links ( id, kind, title, url, brand, asin, image_url, stores ( name, slug ) ),
-        coupons ( id, type, discount_label, title, code, description, expires_at, image_url, stores ( name, slug ) )
+    shop_links (
+      id, kind, title, url, brand, asin, image_url, coupon_percent, last_checked_at,
+      stores ( name, slug )
+    ),
+    coupons (
+      id, type, discount_label, title, code, description, expires_at, image_url,
+      stores ( name, slug )
+    )
   )
 `;
 
 function mapStore(store: StoreRef): GuideStore {
   return { name: store.name, slug: store.slug };
+}
+
+function mapLinkCoupon(link: ShopLinkRow): GuideLinkCoupon | null {
+  if (link.coupon_percent === null || link.last_checked_at === null) {
+    return null;
+  }
+  if (daysSince(link.last_checked_at) > SHOP_LINK_COUPON_FRESH_DAYS) {
+    return null;
+  }
+  return { percent: link.coupon_percent, checkedAt: link.last_checked_at };
 }
 
 function mapGuideItem(row: GuideItemRow): GuideItem | null {
@@ -91,6 +111,7 @@ function mapGuideItem(row: GuideItemRow): GuideItem | null {
         brand: link.brand,
         asin: link.asin,
         imageUrl: link.image_url,
+        coupon: mapLinkCoupon(link),
         store: mapStore(link.stores),
       },
     };

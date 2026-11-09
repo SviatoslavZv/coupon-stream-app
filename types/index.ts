@@ -30,6 +30,11 @@ export interface GuideStore {
   slug: string;
 }
 
+export interface GuideLinkCoupon {
+  percent: number;
+  checkedAt: string;
+}
+
 export interface GuideShopLink {
   id: string;
   kind: "product" | "section";
@@ -38,6 +43,7 @@ export interface GuideShopLink {
   brand: string | null;
   asin: string | null;
   imageUrl: string | null;
+  coupon: GuideLinkCoupon | null;
   store: GuideStore;
 }
 

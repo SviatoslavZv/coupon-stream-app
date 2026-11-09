@@ -1,5 +1,6 @@
 import Link from "next/link";
 import type { GuideItem } from "@/types";
+import { formatShortDate } from "@/lib/utils";
 
 const ACTION_LABEL = {
     product: "View product",
@@ -35,6 +36,18 @@ export default function GuideItemCard({ item, index }: { item: GuideItem; index:
                 </p>
 
                 <h2 className="font-display text-lg font-bold leading-snug text-ink">{title}</h2>
+
+                {item.source === "shop_link" && item.link.coupon && (
+                    <p className="flex w-fit flex-wrap items-baseline gap-x-2 gap-y-0.5 rounded-lg bg-coupon/10 px-3 py-1.5 text-sm">
+                        <span className="font-bold text-coupon-dark">
+                            Extra {item.link.coupon.percent}% off with coupon
+                        </span>
+                        <span className="text-ink/70">
+                            Apply it on the {storeName} product page · checked{" "}
+                            {formatShortDate(item.link.coupon.checkedAt)}
+                        </span>
+                    </p>
+                )}
 
                 <p className="text-sm leading-relaxed text-ink/80">{item.comment}</p>
 
