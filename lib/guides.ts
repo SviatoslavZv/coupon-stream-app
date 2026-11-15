@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants/shop-links";
 import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
 import { amazonProductUrl } from "@/lib/constants/amazon";
+import { extractDestinationUrl } from "@/lib/network-links";
 
 import type {
   Coupon,
@@ -309,18 +310,35 @@ export interface AdminGuideItem {
   title: string;
   storeName: string;
   detail: AdminItemDetail | null;
-  checkLink: AdminCheckLink | null;
+  checkLinks: AdminCheckLink[];
   isVisible: boolean;
+}
+
+interface AdminStoreRef {
+  name: string;
+  slug: string;
+  website_url: string | null;
 }
 
 interface AdminShopLinkDbRow {
   id: string;
   title: string;
+  url: string;
   asin: string | null;
   is_active: boolean;
   check_status: ShopLinkCheckStatus | null;
   last_checked_at: string | null;
-  stores: { name: string } | null;
+  stores: AdminStoreRef | null;
+}
+
+interface AdminCouponDbRow {
+  id: string;
+  title: string;
+  discount_label: string;
+  expires_at: string;
+  affiliate_link: string | null;
+  asin: string | null;
+  stores: AdminStoreRef | null;
 }
 
 interface AdminGuideItemDbRow {
@@ -328,13 +346,7 @@ interface AdminGuideItemDbRow {
   sort_order: number;
   comment: string;
   shop_links: AdminShopLinkDbRow | null;
-  coupons: {
-    id: string;
-    title: string;
-    discount_label: string;
-    expires_at: string;
-    stores: { name: string; slug: string } | null;
-  } | null;
+  coupons: AdminCouponDbRow | null;
 }
 
 function shopLinkDetail(
@@ -375,12 +387,37 @@ function shopLinkDetail(
   }
 }
 
+/** Прямая ссылка для проверки — никогда не партнёрская. */
+function directCheckLink(
+  affiliateUrl: string | null,
+  asin: string | null,
+  store: AdminStoreRef | null,
+): AdminCheckLink | null {
+  const storeName = store?.name ?? "store";
+
+  if (asin) {
+    return { href: amazonProductUrl(asin), label: `Check at ${storeName} ↗` };
+  }
+
+  const destination = affiliateUrl ? extractDestinationUrl(affiliateUrl) : null;
+  if (destination) {
+    return { href: destination, label: `Check at ${storeName} ↗` };
+  }
+
+  if (store?.website_url) {
+    return { href: store.website_url, label: `${storeName} website ↗` };
+  }
+
+  return null;
+}
+
 function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
   const base = { id: row.id, sortOrder: row.sort_order, comment: row.comment };
 
   const link = row.shop_links;
   if (link) {
     const storeName = link.stores?.name ?? "Unknown store";
+    const direct = directCheckLink(link.url, link.asin, link.stores);
     return {
       ...base,
       source: "shop_link",
@@ -388,18 +425,27 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
       title: link.title,
       storeName,
       detail: shopLinkDetail(link, storeName),
-      checkLink: link.asin
-        ? {
-            href: amazonProductUrl(link.asin),
-            label: `Check on ${storeName} ↗`,
-          }
-        : null,
+      checkLinks: direct ? [direct] : [],
       isVisible: link.is_active && !isHiddenByCheck(link.check_status),
     };
   }
 
   const coupon = row.coupons;
   const isExpired = isCouponExpired(coupon?.expires_at);
+  const checkLinks: AdminCheckLink[] = [];
+  if (coupon?.stores) {
+    checkLinks.push({
+      href: `/store/${coupon.stores.slug}#coupon-${coupon.id}`,
+      label: "View on store page ↗",
+    });
+  }
+  const direct = coupon
+    ? directCheckLink(coupon.affiliate_link, coupon.asin, coupon.stores)
+    : null;
+  if (direct) {
+    checkLinks.push(direct);
+  }
+
   return {
     ...base,
     source: "coupon",
@@ -411,15 +457,12 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
     detail: isExpired
       ? { text: "Expired coupon — not shown on the site", tone: "danger" }
       : null,
-    checkLink: coupon?.stores
-      ? {
-          href: `/store/${coupon.stores.slug}#coupon-${coupon.id}`,
-          label: "View on store page ↗",
-        }
-      : null,
+    checkLinks,
     isVisible: Boolean(coupon) && !isExpired,
   };
 }
+
+const ADMIN_STORE_SELECT = "stores(name, slug, website_url)";
 
 export async function getGuideItemsForAdmin(
   guideId: string,
@@ -429,7 +472,9 @@ export async function getGuideItemsForAdmin(
   const { data, error } = await supabase
     .from("guide_items")
     .select(
-      "id, sort_order, comment, shop_links(id, title, asin, is_active, check_status, last_checked_at, stores(name)), coupons(id, title, discount_label, expires_at, stores(name, slug))",
+      `id, sort_order, comment,
+       shop_links(id, title, url, asin, is_active, check_status, last_checked_at, ${ADMIN_STORE_SELECT}),
+       coupons(id, title, discount_label, expires_at, affiliate_link, asin, ${ADMIN_STORE_SELECT})`,
     )
     .eq("guide_id", guideId)
     .order("sort_order");
@@ -440,7 +485,6 @@ export async function getGuideItemsForAdmin(
 
   return (data as unknown as AdminGuideItemDbRow[]).map(mapAdminGuideItem);
 }
-
 interface GuideSummaryRow {
   slug: string;
   title: string;

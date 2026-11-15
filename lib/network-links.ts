@@ -44,3 +44,23 @@ export function extractAmazonAsin(url: string): string | null {
 
   return page.pathname.match(AMAZON_ASIN_PATTERN)?.[1] ?? null;
 }
+
+// Параметр, в котором сеть передаёт конечный адрес: CJ, Rakuten, Impact, Awin, ShareASale
+const DESTINATION_PARAMS = ["url", "murl", "u", "ued", "urllink"] as const;
+const WEB_PROTOCOLS = new Set(["https:", "http:"]);
+
+/** Конечный адрес внутри партнёрской глубокой ссылки, без перехода по ней. */
+export function extractDestinationUrl(url: string): string | null {
+  const parsed = parseUrl(url);
+  if (!parsed) return null;
+
+  for (const param of DESTINATION_PARAMS) {
+    const target = parsed.searchParams.get(param);
+    const page = target ? parseUrl(target) : null;
+    if (page && WEB_PROTOCOLS.has(page.protocol)) {
+      return page.toString();
+    }
+  }
+
+  return null;
+}

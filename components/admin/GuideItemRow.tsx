@@ -39,15 +39,20 @@ export default function GuideItemRow({
                         {position}. {item.storeName} · {GUIDE_ITEM_SOURCE_LABELS[item.source]}
                     </p>
                     <p className="mt-0.5 font-medium text-ink">{item.title}</p>
-                    {item.checkLink && (
-                        <a
-                            href={item.checkLink.href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="mt-0.5 inline-block text-xs text-coupon-dark underline hover:text-coupon"
-                        >
-                            {item.checkLink.label}
-                        </a>
+                    {item.checkLinks.length > 0 && (
+                        <p className="mt-0.5 flex flex-wrap gap-x-3 text-xs">
+                            {item.checkLinks.map((link) => (
+                                <a
+                                    key={link.href}
+                                    href={link.href}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-coupon-dark underline hover:text-coupon"
+                                >
+                                    {link.label}
+                                </a>
+                            ))}
+                        </p>
                     )}
                     {item.detail && (
                         <p className={`mt-0.5 text-xs ${DETAIL_TONE_CLASS[item.detail.tone]}`}>
