@@ -39,6 +39,16 @@ export default function GuideItemRow({
                         {position}. {item.storeName} · {GUIDE_ITEM_SOURCE_LABELS[item.source]}
                     </p>
                     <p className="mt-0.5 font-medium text-ink">{item.title}</p>
+                    {item.checkLink && (
+                        <a
+                            href={item.checkLink.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="mt-0.5 inline-block text-xs text-coupon-dark underline hover:text-coupon"
+                        >
+                            {item.checkLink.label}
+                        </a>
+                    )}
                     {item.detail && (
                         <p className={`mt-0.5 text-xs ${DETAIL_TONE_CLASS[item.detail.tone]}`}>
                             {item.detail.text}

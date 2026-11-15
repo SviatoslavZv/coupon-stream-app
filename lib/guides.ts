@@ -8,6 +8,8 @@ import {
   type ShopLinkCheckStatus,
 } from "@/lib/constants/shop-links";
 import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
+import { amazonProductUrl } from "@/lib/constants/amazon";
+
 import type {
   Coupon,
   Guide,
@@ -293,6 +295,11 @@ export interface AdminItemDetail {
   tone: AdminDetailTone;
 }
 
+export interface AdminCheckLink {
+  href: string;
+  label: string;
+}
+
 export interface AdminGuideItem {
   id: string;
   sortOrder: number;
@@ -302,12 +309,14 @@ export interface AdminGuideItem {
   title: string;
   storeName: string;
   detail: AdminItemDetail | null;
+  checkLink: AdminCheckLink | null;
   isVisible: boolean;
 }
 
 interface AdminShopLinkDbRow {
   id: string;
   title: string;
+  asin: string | null;
   is_active: boolean;
   check_status: ShopLinkCheckStatus | null;
   last_checked_at: string | null;
@@ -324,7 +333,7 @@ interface AdminGuideItemDbRow {
     title: string;
     discount_label: string;
     expires_at: string;
-    stores: { name: string } | null;
+    stores: { name: string; slug: string } | null;
   } | null;
 }
 
@@ -379,6 +388,12 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
       title: link.title,
       storeName,
       detail: shopLinkDetail(link, storeName),
+      checkLink: link.asin
+        ? {
+            href: amazonProductUrl(link.asin),
+            label: `Check on ${storeName} ↗`,
+          }
+        : null,
       isVisible: link.is_active && !isHiddenByCheck(link.check_status),
     };
   }
@@ -396,6 +411,12 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
     detail: isExpired
       ? { text: "Expired coupon — not shown on the site", tone: "danger" }
       : null,
+    checkLink: coupon?.stores
+      ? {
+          href: `/store/${coupon.stores.slug}#coupon-${coupon.id}`,
+          label: "View on store page ↗",
+        }
+      : null,
     isVisible: Boolean(coupon) && !isExpired,
   };
 }
@@ -408,7 +429,7 @@ export async function getGuideItemsForAdmin(
   const { data, error } = await supabase
     .from("guide_items")
     .select(
-      "id, sort_order, comment, shop_links(id, title, is_active, check_status, last_checked_at, stores(name)), coupons(id, title, discount_label, expires_at, stores(name))",
+      "id, sort_order, comment, shop_links(id, title, asin, is_active, check_status, last_checked_at, stores(name)), coupons(id, title, discount_label, expires_at, stores(name, slug))",
     )
     .eq("guide_id", guideId)
     .order("sort_order");
