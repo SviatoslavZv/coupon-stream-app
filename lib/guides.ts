@@ -2,8 +2,12 @@
 
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
-import { SHOP_LINK_COUPON_FRESH_DAYS } from "@/lib/constants/shop-links";
-import { daysSince, isCouponExpired } from "@/lib/utils";
+import {
+  isHiddenByCheck,
+  SHOP_LINK_COUPON_FRESH_DAYS,
+  type ShopLinkCheckStatus,
+} from "@/lib/constants/shop-links";
+import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
 import type {
   Coupon,
   Guide,
@@ -28,6 +32,7 @@ interface ShopLinkRow {
   image_url: string | null;
   coupon_percent: number | null;
   last_checked_at: string | null;
+  check_status: ShopLinkCheckStatus | null;
   stores: StoreRef | null;
 }
 
@@ -71,7 +76,7 @@ const GUIDE_SELECT = `
   guide_items (
     id, sort_order, comment,
     shop_links (
-      id, kind, title, url, brand, asin, image_url, coupon_percent, last_checked_at,
+      id, kind, title, url, brand, asin, image_url, coupon_percent, last_checked_at, check_status,
       stores ( name, slug )
     ),
     coupons (
@@ -100,6 +105,9 @@ function mapGuideItem(row: GuideItemRow): GuideItem | null {
 
   const link = row.shop_links;
   if (link?.stores) {
+    if (isHiddenByCheck(link.check_status)) {
+      return null;
+    }
     return {
       ...base,
       source: "shop_link",
@@ -278,6 +286,13 @@ export async function getGuideForEdit(
   };
 }
 
+export type AdminDetailTone = "success" | "warning" | "danger";
+
+export interface AdminItemDetail {
+  text: string;
+  tone: AdminDetailTone;
+}
+
 export interface AdminGuideItem {
   id: string;
   sortOrder: number;
@@ -286,20 +301,24 @@ export interface AdminGuideItem {
   targetId: string | null;
   title: string;
   storeName: string;
-  detail: string;
+  detail: AdminItemDetail | null;
   isVisible: boolean;
+}
+
+interface AdminShopLinkDbRow {
+  id: string;
+  title: string;
+  is_active: boolean;
+  check_status: ShopLinkCheckStatus | null;
+  last_checked_at: string | null;
+  stores: { name: string } | null;
 }
 
 interface AdminGuideItemDbRow {
   id: string;
   sort_order: number;
   comment: string;
-  shop_links: {
-    id: string;
-    title: string;
-    is_active: boolean;
-    stores: { name: string } | null;
-  } | null;
+  shop_links: AdminShopLinkDbRow | null;
   coupons: {
     id: string;
     title: string;
@@ -309,20 +328,58 @@ interface AdminGuideItemDbRow {
   } | null;
 }
 
+function shopLinkDetail(
+  link: AdminShopLinkDbRow,
+  storeName: string,
+): AdminItemDetail | null {
+  if (!link.is_active) {
+    return { text: "Hidden link — not shown on the site", tone: "danger" };
+  }
+
+  const checked = link.last_checked_at
+    ? formatShortDate(link.last_checked_at)
+    : null;
+  const checkedNote = checked ? ` (checked ${checked})` : "";
+
+  switch (link.check_status) {
+    case "out_of_stock":
+      return {
+        text: `Out of stock at ${storeName}${checkedNote} — hidden on the site`,
+        tone: "danger",
+      };
+    case "no_commission":
+      return {
+        text: `No commission${checkedNote} — hidden on the site`,
+        tone: "danger",
+      };
+    case "not_found":
+      return {
+        text: checked
+          ? `Not returned by PartnerBoost — last confirmed ${checked}. Check the product page.`
+          : "Not returned by PartnerBoost. Check the product page.",
+        tone: "warning",
+      };
+    case "ok":
+      return checked ? { text: `✓ Checked ${checked}`, tone: "success" } : null;
+    default:
+      return null;
+  }
+}
+
 function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
   const base = { id: row.id, sortOrder: row.sort_order, comment: row.comment };
 
-  if (row.shop_links) {
+  const link = row.shop_links;
+  if (link) {
+    const storeName = link.stores?.name ?? "Unknown store";
     return {
       ...base,
       source: "shop_link",
-      targetId: row.shop_links.id,
-      title: row.shop_links.title,
-      storeName: row.shop_links.stores?.name ?? "Unknown store",
-      detail: row.shop_links.is_active
-        ? ""
-        : "Hidden link — not shown on the site",
-      isVisible: row.shop_links.is_active,
+      targetId: link.id,
+      title: link.title,
+      storeName,
+      detail: shopLinkDetail(link, storeName),
+      isVisible: link.is_active && !isHiddenByCheck(link.check_status),
     };
   }
 
@@ -336,7 +393,9 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
       ? `${coupon.discount_label} · ${coupon.title}`
       : "Missing coupon",
     storeName: coupon?.stores?.name ?? "Unknown store",
-    detail: isExpired ? "Expired coupon — not shown on the site" : "",
+    detail: isExpired
+      ? { text: "Expired coupon — not shown on the site", tone: "danger" }
+      : null,
     isVisible: Boolean(coupon) && !isExpired,
   };
 }
@@ -349,7 +408,7 @@ export async function getGuideItemsForAdmin(
   const { data, error } = await supabase
     .from("guide_items")
     .select(
-      "id, sort_order, comment, shop_links(id, title, is_active, stores(name)), coupons(id, title, discount_label, expires_at, stores(name))",
+      "id, sort_order, comment, shop_links(id, title, is_active, check_status, last_checked_at, stores(name)), coupons(id, title, discount_label, expires_at, stores(name))",
     )
     .eq("guide_id", guideId)
     .order("sort_order");

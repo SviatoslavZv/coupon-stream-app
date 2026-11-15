@@ -24,3 +24,7 @@ export const HIDDEN_CHECK_STATUSES: readonly ShopLinkCheckStatus[] = [
   "out_of_stock",
   "no_commission",
 ];
+
+export function isHiddenByCheck(status: ShopLinkCheckStatus | null): boolean {
+  return status !== null && HIDDEN_CHECK_STATUSES.includes(status);
+}

@@ -3,8 +3,15 @@
 import { useActionState, useState } from "react";
 import { moveGuideItem, removeGuideItem, updateGuideItemComment } from "@/lib/actions/guide-items";
 import { GUIDE_ITEM_SOURCE_LABELS } from "@/lib/constants/guides";
-import type { AdminGuideItem } from "@/lib/guides";
+import type { AdminDetailTone, AdminGuideItem } from "@/lib/guides";
 import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
+
+
+const DETAIL_TONE_CLASS: Record<AdminDetailTone, string> = {
+    success: "text-green-700",
+    warning: "text-amber-700",
+    danger: "text-coupon",
+};
 
 const SMALL_BUTTON_CLASS =
     "text-xs font-medium text-ink/60 hover:text-ink disabled:cursor-not-allowed disabled:opacity-30";
@@ -32,7 +39,11 @@ export default function GuideItemRow({
                         {position}. {item.storeName} · {GUIDE_ITEM_SOURCE_LABELS[item.source]}
                     </p>
                     <p className="mt-0.5 font-medium text-ink">{item.title}</p>
-                    {item.detail && <p className="mt-0.5 text-xs text-coupon">{item.detail}</p>}
+                    {item.detail && (
+                        <p className={`mt-0.5 text-xs ${DETAIL_TONE_CLASS[item.detail.tone]}`}>
+                            {item.detail.text}
+                        </p>
+                    )}
                 </div>
 
                 <div className="flex shrink-0 items-center gap-3">
