@@ -84,5 +84,5 @@ export interface Guide {
 
 export type GuideSummary = Pick<
   Guide,
-  "slug" | "title" | "intro" | "metaDescription" | "updatedAt"
+  "slug" | "title" | "intro" | "metaDescription" | "eventSlug" | "updatedAt"
 >;

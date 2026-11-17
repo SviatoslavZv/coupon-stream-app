@@ -9,6 +9,7 @@ import {
 } from "@/lib/constants/shop-links";
 import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
 import { amazonProductUrl } from "@/lib/constants/amazon";
+import { RELATED_GUIDES_LIMIT } from "@/lib/constants/guides";
 import {
   extractDestinationUrl,
   guideTrackingId,
@@ -495,6 +496,7 @@ interface GuideSummaryRow {
   title: string;
   intro: string;
   meta_description: string | null;
+  event_slug: string | null;
   updated_at: string;
 }
 
@@ -503,7 +505,7 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
 
   const { data, error } = await supabase
     .from("guides")
-    .select("slug, title, intro, meta_description, updated_at")
+    .select("slug, title, intro, meta_description, event_slug, updated_at")
     .eq("is_published", true)
     .order("updated_at", { ascending: false });
 
@@ -516,6 +518,23 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
     title: row.title,
     intro: row.intro,
     metaDescription: row.meta_description,
+    eventSlug: row.event_slug,
     updatedAt: row.updated_at,
   }));
+}
+
+/** Другие гайды: сначала того же события, затем остальные, не больше лимита. */
+export function pickRelatedGuides(
+  guides: GuideSummary[],
+  current: Pick<Guide, "slug" | "eventSlug">,
+  limit: number = RELATED_GUIDES_LIMIT,
+): GuideSummary[] {
+  const others = guides.filter((guide) => guide.slug !== current.slug);
+  const sameEvent = others.filter(
+    (guide) =>
+      current.eventSlug !== null && guide.eventSlug === current.eventSlug,
+  );
+  const rest = others.filter((guide) => !sameEvent.includes(guide));
+
+  return [...sameEvent, ...rest].slice(0, limit);
 }

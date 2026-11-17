@@ -16,3 +16,7 @@ export const GUIDE_ITEM_SOURCE_LABELS: Record<GuideItemSource, string> = {
 export const GUIDE_ITEM_MOVE_DIRECTIONS = ["up", "down"] as const;
 
 export const SORT_ORDER_STEP = 10;
+
+export const GUIDE_EXCERPT_LENGTH = 180;
+
+export const RELATED_GUIDES_LIMIT = 3;

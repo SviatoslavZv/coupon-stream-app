@@ -1,9 +1,14 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getPublishedGuide } from "@/lib/guides";
+import {
+    getPublishedGuide,
+    getPublishedGuides,
+    pickRelatedGuides,
+} from "@/lib/guides";
 import { buildPageMetadata, notFoundMetadata } from "@/lib/metadata";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import GuideItemCard from "@/components/guides/GuideItemCard";
+import RelatedGuides from "@/components/guides/RelatedGuides";
 import GuideStructuredData from "@/components/seo/GuideStructuredData";
 import { truncateAtWord, formatLongDate } from "@/lib/utils";
 import { META_DESCRIPTION_MAX } from "@/lib/constants/guides";
@@ -26,11 +31,16 @@ export async function generateMetadata(props: PageProps<"/guides/[slug]">): Prom
 
 export default async function GuidePage(props: PageProps<"/guides/[slug]">) {
     const { slug } = await props.params;
-    const guide = await getPublishedGuide(slug);
+    const [guide, allGuides] = await Promise.all([
+        getPublishedGuide(slug),
+        getPublishedGuides(),
+    ]);
 
     if (!guide) {
         notFound();
     }
+
+    const relatedGuides = pickRelatedGuides(allGuides, guide);
 
     const paragraphs = guide.intro.split(/\r?\n\s*\r?\n/).filter((p) => p.trim() !== "");
 
@@ -68,6 +78,9 @@ export default async function GuidePage(props: PageProps<"/guides/[slug]">) {
                     <GuideItemCard key={item.id} item={item} index={index} />
                 ))}
             </section>
+
+            <RelatedGuides guides={relatedGuides} />
+
         </div>
     );
 }

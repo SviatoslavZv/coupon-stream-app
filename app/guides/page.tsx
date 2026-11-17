@@ -1,11 +1,10 @@
+// app/guides/page.tsx
+
 import type { Metadata } from "next";
-import Link from "next/link";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
+import GuideSummaryCard from "@/components/guides/GuideSummaryCard";
 import { getPublishedGuides } from "@/lib/guides";
 import { buildPageMetadata } from "@/lib/metadata";
-import { formatLongDate, truncateAtWord } from "@/lib/utils";
-
-const EXCERPT_LENGTH = 180;
 
 export const metadata: Metadata = buildPageMetadata({
     title: "Shopping Guides: Curated Deals by Season and Style",
@@ -42,21 +41,7 @@ export default async function GuidesPage() {
                 <ul className="mt-6 sm:mt-8 flex flex-col gap-4">
                     {guides.map((guide) => (
                         <li key={guide.slug}>
-                            <Link
-                                href={`/guides/${guide.slug}`}
-                                className="group block rounded-2xl border border-line bg-white p-4 sm:p-5 transition-all hover:border-coupon hover:shadow-md active:scale-[0.99]"
-                            >
-                                <h2 className="font-display text-lg font-bold leading-snug text-ink transition group-hover:text-coupon">
-                                    {guide.title}
-                                </h2>
-                                <p className="mt-2 text-sm leading-relaxed text-ink/80">
-                                    {guide.metaDescription ?? truncateAtWord(guide.intro, EXCERPT_LENGTH)}
-                                </p>
-                                <p className="mt-3 text-xs text-ink/60">
-                                    Updated{" "}
-                                    <time dateTime={guide.updatedAt}>{formatLongDate(guide.updatedAt)}</time>
-                                </p>
-                            </Link>
+                            <GuideSummaryCard guide={guide} />
                         </li>
                     ))}
                 </ul>
