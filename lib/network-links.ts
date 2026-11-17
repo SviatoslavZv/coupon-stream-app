@@ -64,3 +64,29 @@ export function extractDestinationUrl(url: string): string | null {
 
   return null;
 }
+
+// Параметр для метки-источника в отчётах сети: CJ — sid, Rakuten — u1
+const CJ_TRACKING_PARAM = "sid";
+const RAKUTEN_TRACKING_PARAM = "u1";
+const TRACKING_ID_MAX_LENGTH = 50;
+
+/** Метка гайда для отчётов сетей: guide-<slug>, в пределах лимита длины. */
+export function guideTrackingId(slug: string): string {
+  return `guide-${slug}`.slice(0, TRACKING_ID_MAX_LENGTH);
+}
+
+/** Ставит метку в ссылку CJ или Rakuten. Остальные ссылки возвращает как есть. */
+export function withTrackingId(url: string, trackingId: string): string {
+  const parsed = parseUrl(url);
+  if (!parsed) return url;
+
+  if (CJ_CLICK_PATTERN.test(parsed.pathname)) {
+    parsed.searchParams.set(CJ_TRACKING_PARAM, trackingId);
+  } else if (parsed.hostname === RAKUTEN_HOST) {
+    parsed.searchParams.set(RAKUTEN_TRACKING_PARAM, trackingId);
+  } else {
+    return url;
+  }
+
+  return parsed.toString();
+}

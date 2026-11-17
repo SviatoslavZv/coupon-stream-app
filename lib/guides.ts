@@ -9,7 +9,11 @@ import {
 } from "@/lib/constants/shop-links";
 import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
 import { amazonProductUrl } from "@/lib/constants/amazon";
-import { extractDestinationUrl } from "@/lib/network-links";
+import {
+  extractDestinationUrl,
+  guideTrackingId,
+  withTrackingId,
+} from "@/lib/network-links";
 
 import type {
   Coupon,
@@ -103,7 +107,7 @@ function mapLinkCoupon(link: ShopLinkRow): GuideLinkCoupon | null {
   return { percent: link.coupon_percent, checkedAt: link.last_checked_at };
 }
 
-function mapGuideItem(row: GuideItemRow): GuideItem | null {
+function mapGuideItem(row: GuideItemRow, trackingId: string): GuideItem | null {
   const base = { id: row.id, sortOrder: row.sort_order, comment: row.comment };
 
   const link = row.shop_links;
@@ -118,7 +122,7 @@ function mapGuideItem(row: GuideItemRow): GuideItem | null {
         id: link.id,
         kind: link.kind,
         title: link.title,
-        url: link.url,
+        url: withTrackingId(link.url, trackingId),
         brand: link.brand,
         asin: link.asin,
         imageUrl: link.image_url,
@@ -151,8 +155,9 @@ function mapGuideItem(row: GuideItemRow): GuideItem | null {
 }
 
 function mapGuide(row: GuideRow): Guide {
+  const trackingId = guideTrackingId(row.slug);
   const items = row.guide_items
-    .map(mapGuideItem)
+    .map((item) => mapGuideItem(item, trackingId))
     .filter((item): item is GuideItem => item !== null)
     .sort((a, b) => a.sortOrder - b.sortOrder);
 

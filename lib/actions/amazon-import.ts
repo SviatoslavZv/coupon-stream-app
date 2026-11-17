@@ -20,11 +20,8 @@ import {
   AmazonCouponSchema,
   AmazonLinkSchema,
 } from "@/lib/schemas/amazon-import";
-import {
-  AMAZON_PICKS_SID,
-  AMAZON_SID_MAX_LENGTH,
-  AMAZON_STORE_SLUG,
-} from "@/lib/constants/amazon";
+import { AMAZON_PICKS_SID, AMAZON_STORE_SLUG } from "@/lib/constants/amazon";
+import { guideTrackingId } from "@/lib/network-links";
 
 interface ExistingCouponRow {
   expires_at: string;
@@ -99,9 +96,7 @@ async function buildLinkSid(
     .eq("id", guideId)
     .maybeSingle();
   const slug = (data as { slug: string } | null)?.slug;
-  return slug
-    ? `guide-${slug}`.slice(0, AMAZON_SID_MAX_LENGTH)
-    : AMAZON_PICKS_SID;
+  return slug ? guideTrackingId(slug) : AMAZON_PICKS_SID;
 }
 
 export async function importAmazonProductLink(
