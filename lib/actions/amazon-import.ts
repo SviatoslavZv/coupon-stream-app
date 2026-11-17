@@ -159,6 +159,7 @@ export async function importAmazonProductLink(
         commission_rate: input.commissionRate,
         coupon_percent: input.couponPercent,
         last_checked_at: new Date().toISOString(),
+        check_status: "ok",
         is_active: true,
       })
       .select("id")
