@@ -15,7 +15,6 @@ interface CouponRow {
   description: string;
   expires_at: string;
   last_verified_at: string | null;
-  click_count: number;
   affiliate_link: string | null;
 }
 interface StoreWithCouponsRow {
@@ -37,48 +36,52 @@ function mapCoupon(row: CouponRow): Coupon {
     description: row.description,
     expiresAt: row.expires_at,
     lastVerifiedAt: row.last_verified_at,
-    usageCount: row.click_count,
     affiliateLink: row.affiliate_link,
   };
 }
 
-
-
 // Оборачиваем функцию в cache
-export const getStoreWithCoupons = cache(async (slug: string): Promise<{
-  store: Pick<Store, "slug" | "name" | "logoUrl" | "bannerUrl" | "bannerLink">;
-  coupons: Coupon[];
-} | null> => {
-  const supabase = await createClient();
+export const getStoreWithCoupons = cache(
+  async (
+    slug: string,
+  ): Promise<{
+    store: Pick<
+      Store,
+      "slug" | "name" | "logoUrl" | "bannerUrl" | "bannerLink"
+    >;
+    coupons: Coupon[];
+  } | null> => {
+    const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("stores")
-.select(
-  "slug, name, logo_url, banner_url, banner_link, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, click_count, affiliate_link)"
-)
-    .eq("slug", slug.toLowerCase())
-    .maybeSingle();
+    const { data, error } = await supabase
+      .from("stores")
+      .select(
+        "slug, name, logo_url, banner_url, banner_link, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, affiliate_link)",
+      )
+      .eq("slug", slug.toLowerCase())
+      .maybeSingle();
 
-  if (error) {
-    throw new Error(`Failed to fetch store: ${error.message}`);
-  }
+    if (error) {
+      throw new Error(`Failed to fetch store: ${error.message}`);
+    }
 
-  if (!data) {
-    return null;
-  }
+    if (!data) {
+      return null;
+    }
 
-  const row = data as StoreWithCouponsRow;
-return {
-  store: {
-    slug: row.slug,
-    name: row.name,
-    logoUrl: row.logo_url,
-    bannerUrl: row.banner_url,
-    bannerLink: row.banner_link,
+    const row = data as StoreWithCouponsRow;
+    return {
+      store: {
+        slug: row.slug,
+        name: row.name,
+        logoUrl: row.logo_url,
+        bannerUrl: row.banner_url,
+        bannerLink: row.banner_link,
+      },
+      coupons: row.coupons.map((c) => mapCoupon(c)),
+    };
   },
-  coupons: row.coupons.map((c) => mapCoupon(c)),
-};
-});
+);
 
 export interface AdminCouponRow {
   id: string;
@@ -110,7 +113,7 @@ export async function getAllCouponsForAdmin(): Promise<AdminCouponRow[]> {
   const { data, error } = await supabase
     .from("coupons")
     .select(
-      "id, type, discount_label, title, code, description, expires_at, store_id, stores(name)"
+      "id, type, discount_label, title, code, description, expires_at, store_id, stores(name)",
     )
     .order("expires_at");
 
@@ -137,7 +140,7 @@ export async function getCouponById(id: string) {
   const { data, error } = await supabase
     .from("coupons")
     .select(
-      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand, affiliate_link"
+      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand, affiliate_link",
     )
     .eq("id", id)
     .maybeSingle();
@@ -148,7 +151,6 @@ export async function getCouponById(id: string) {
 
   return data;
 }
-
 
 export interface CategoryCoupon {
   id: string;
@@ -176,16 +178,16 @@ interface CategoryCouponDbRow {
 export const getCouponsByCategory = cache(
   async (
     category: string,
-    filters: { subcategory?: string; gender?: string; brand?: string }
+    filters: { subcategory?: string; gender?: string; brand?: string },
   ): Promise<CategoryCoupon[]> => {
     const supabase = await createClient();
 
     let query = supabase
       .from("coupons")
       .select(
-        "id, discount_label, title, subcategory, gender, brand, expires_at, stores(name, slug)"
+        "id, discount_label, title, subcategory, gender, brand, expires_at, stores(name, slug)",
       )
-      .eq("category", category.toLowerCase())
+      .eq("category", category.toLowerCase());
 
     if (filters.subcategory) {
       query = query.eq("subcategory", filters.subcategory);
@@ -215,10 +217,10 @@ export const getCouponsByCategory = cache(
         gender: row.gender,
         brand: row.brand,
         brandSlug: row.brand
-          ? BRANDS.find((b) => b.label === row.brand)?.slug ?? null
+          ? (BRANDS.find((b) => b.label === row.brand)?.slug ?? null)
           : null,
       }));
-  }
+  },
 );
 
 export interface FilterOption {
@@ -235,11 +237,14 @@ export function extractFilterOptions(coupons: CategoryCoupon[]) {
     if (coupon.subcategory) {
       subcategoryCounts.set(
         coupon.subcategory,
-        (subcategoryCounts.get(coupon.subcategory) ?? 0) + 1
+        (subcategoryCounts.get(coupon.subcategory) ?? 0) + 1,
       );
     }
     if (coupon.gender) {
-      genderCounts.set(coupon.gender, (genderCounts.get(coupon.gender) ?? 0) + 1);
+      genderCounts.set(
+        coupon.gender,
+        (genderCounts.get(coupon.gender) ?? 0) + 1,
+      );
     }
     if (coupon.brand) {
       brandCounts.set(coupon.brand, (brandCounts.get(coupon.brand) ?? 0) + 1);
@@ -257,7 +262,6 @@ export function extractFilterOptions(coupons: CategoryCoupon[]) {
     brands: toSortedOptions(brandCounts),
   };
 }
-
 
 export interface BrandCoupon {
   id: string;
@@ -280,13 +284,15 @@ interface BrandCouponDbRow {
 export const getCouponsByBrand = cache(
   async (
     brand: string,
-    filters: { category?: string }
+    filters: { category?: string },
   ): Promise<BrandCoupon[]> => {
     const supabase = await createClient();
 
     let query = supabase
       .from("coupons")
-      .select("id, discount_label, title, category, expires_at, stores(name, slug)")
+      .select(
+        "id, discount_label, title, category, expires_at, stores(name, slug)",
+      )
       .eq("brand", brand);
 
     if (filters.category) {
@@ -309,10 +315,10 @@ export const getCouponsByBrand = cache(
         storeSlug: row.stores?.slug ?? "",
         category: row.category,
       }));
-  }
+  },
 );
 export function extractCategoryOptions(
-  coupons: { category: string | null }[]
+  coupons: { category: string | null }[],
 ): FilterOption[] {
   const categoryCounts = new Map<string, number>();
 
@@ -320,7 +326,7 @@ export function extractCategoryOptions(
     if (coupon.category) {
       categoryCounts.set(
         coupon.category,
-        (categoryCounts.get(coupon.category) ?? 0) + 1
+        (categoryCounts.get(coupon.category) ?? 0) + 1,
       );
     }
   }
@@ -329,7 +335,6 @@ export function extractCategoryOptions(
     .map(([value, count]) => ({ value, count }))
     .sort((a, b) => b.count - a.count);
 }
-
 
 export interface BrandSummary {
   slug: string;
@@ -384,7 +389,6 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
   }));
 }
 
-
 export interface CategorySummary {
   slug: string;
   label: string;
@@ -404,7 +408,10 @@ export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
     throw new Error(`Failed to fetch categories: ${error.message}`);
   }
 
-  const categoryMeta = new Map<string, { count: number; lastModified?: string }>();
+  const categoryMeta = new Map<
+    string,
+    { count: number; lastModified?: string }
+  >();
 
   for (const row of data as {
     category: string;

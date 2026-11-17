@@ -264,12 +264,6 @@ export default function CouponItem({
                                     {isExpired ? `Expired on ${coupon.expiresAt}` : `Expires ${coupon.expiresAt}`}
                                 </p>
                             )}
-                            {!!coupon.usageCount && coupon.usageCount > 0 && (
-                                <p className="mt-1 text-xs text-ink/40">
-                                    Used {coupon.usageCount}{" "}
-                                    {coupon.usageCount === 1 ? "time" : "times"}
-                                </p>
-                            )}
                         </div>
                     </div>
                 </div>
