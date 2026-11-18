@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { CouponSchema, type CouponInput } from "@/lib/schemas/coupons";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export interface CouponFormState {
   error?: string;
@@ -49,8 +50,8 @@ export async function createCoupon(
     };
   }
 
-  revalidatePath("/admin");
-  redirect("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
+  redirect(ADMIN_ROUTES.dashboard);
 }
 
 export async function updateCoupon(
@@ -79,8 +80,8 @@ export async function updateCoupon(
     };
   }
 
-  revalidatePath("/admin");
-  redirect("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
+  redirect(ADMIN_ROUTES.dashboard);
 }
 
 export async function deleteCoupon(formData: FormData): Promise<void> {
@@ -96,7 +97,7 @@ export async function deleteCoupon(formData: FormData): Promise<void> {
     throw new Error(`Failed to delete coupon: ${error.message}`);
   }
 
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
 }
 
 export async function markCouponVerified(formData: FormData): Promise<void> {
@@ -115,5 +116,5 @@ export async function markCouponVerified(formData: FormData): Promise<void> {
     throw new Error(`Failed to verify coupon: ${error.message}`);
   }
 
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
 }

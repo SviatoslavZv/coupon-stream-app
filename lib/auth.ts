@@ -1,10 +1,13 @@
 // lib/auth.ts
 
 import "server-only";
+import { cache } from "react";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function requireAdmin() {
+// One check per page render: cache() reuses the result for every caller.
+// Server actions are not part of a render, so each action still checks on its own.
+export const requireAdmin = cache(async () => {
   const supabase = await createClient();
   const {
     data: { user },
@@ -15,4 +18,4 @@ export async function requireAdmin() {
   }
 
   return supabase;
-}
+});

@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -31,7 +32,7 @@ export default function LoginForm() {
             return;
         }
 
-        router.push("/admin");
+        router.push(ADMIN_ROUTES.dashboard);
         router.refresh();
     };
 

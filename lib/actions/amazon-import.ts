@@ -22,6 +22,7 @@ import {
 } from "@/lib/schemas/amazon-import";
 import { AMAZON_PICKS_SID, AMAZON_STORE_SLUG } from "@/lib/constants/amazon";
 import { guideTrackingId } from "@/lib/network-links";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 interface ExistingCouponRow {
   expires_at: string;
@@ -80,7 +81,7 @@ export async function importAmazonCoupon(
     };
   }
 
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
   redirect(input.returnTo);
 }
 
@@ -189,6 +190,6 @@ export async function importAmazonProductLink(
     await revalidateGuidePages(supabase, input.guideId);
   }
 
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
   redirect(input.returnTo);
 }

@@ -4,6 +4,7 @@ import "server-only";
 import { revalidatePath } from "next/cache";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { SORT_ORDER_STEP, type GuideItemSource } from "@/lib/constants/guides";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export const UNIQUE_VIOLATION = "23505";
 
@@ -17,8 +18,7 @@ export async function revalidateGuidePages(
     .eq("id", guideId)
     .maybeSingle();
 
-  revalidatePath("/admin");
-  revalidatePath(`/admin/guides/${guideId}/edit`);
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
   if (data?.slug) {
     revalidatePath(`/guides/${data.slug}`);
   }

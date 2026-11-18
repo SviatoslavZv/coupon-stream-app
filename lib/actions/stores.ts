@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { StoreSchema, type StoreInput } from "@/lib/schemas/stores";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export interface StoreFormState {
   error?: string;
@@ -35,7 +36,7 @@ function saveErrorMessage(code: string | undefined): string {
 }
 
 function revalidateStorePages(slug?: string): void {
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
   revalidatePath("/stores");
   revalidatePath("/sitemap.xml");
   if (slug) {
@@ -60,7 +61,7 @@ export async function createStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect("/admin");
+  redirect(ADMIN_ROUTES.dashboard);
 }
 
 export async function updateStore(
@@ -88,7 +89,7 @@ export async function updateStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect("/admin");
+  redirect(ADMIN_ROUTES.dashboard);
 }
 
 export async function deleteStore(formData: FormData): Promise<void> {

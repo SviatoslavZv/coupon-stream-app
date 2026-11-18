@@ -12,7 +12,7 @@ import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
 import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
-import { AMAZON_IMPORT_PATH } from "@/lib/constants/amazon"
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 
 export default async function AdminDashboard() {
@@ -39,7 +39,7 @@ export default async function AdminDashboard() {
                 </h1>
                 <div className="flex items-center gap-3">
                     <Link
-                        href={AMAZON_IMPORT_PATH}
+                        href={ADMIN_ROUTES.amazonImport}
                         className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
                     >
                         Amazon Import
@@ -53,7 +53,7 @@ export default async function AdminDashboard() {
                     Stores <span className="font-mono text-sm font-normal text-ink/50">({stores.length})</span>
                 </h2>
                 <Link
-                    href="/admin/stores/new"
+                    href={ADMIN_ROUTES.storeNew}
                     className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
                 >
                     + Add Store
@@ -81,7 +81,7 @@ export default async function AdminDashboard() {
                                 <td className="px-5 py-3">
                                     <div className="flex items-center justify-end gap-3">
                                         <Link
-                                            href={`/admin/stores/${store.id}/edit`}
+                                            href={ADMIN_ROUTES.storeEdit(store.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit
@@ -105,7 +105,7 @@ export default async function AdminDashboard() {
                     Coupons <span className="font-mono text-sm font-normal text-ink/50">({sortedCoupons.length})</span>
                 </h2>
                 <Link
-                    href="/admin/coupons/new"
+                    href={ADMIN_ROUTES.couponNew}
                     className="rounded-full bg-coupon px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
                 >
                     + Add Coupon
@@ -144,7 +144,7 @@ export default async function AdminDashboard() {
                                             </button>
                                         </form>
                                         <Link
-                                            href={`/admin/coupons/${coupon.id}/edit`}
+                                            href={ADMIN_ROUTES.couponEdit(coupon.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit
@@ -172,13 +172,13 @@ export default async function AdminDashboard() {
                 </h2>
                 <div className="flex gap-2">
                     <Link
-                        href="/admin/store-products/new"
+                        href={ADMIN_ROUTES.storeProductNew}
                         className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
                     >
                         + Add from store
                     </Link>
                     <Link
-                        href="/admin/shop-links/new"
+                        href={ADMIN_ROUTES.shopLinkNew}
                         className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
                     >
                         + Add Link
@@ -209,7 +209,7 @@ export default async function AdminDashboard() {
                                 <td className="px-5 py-3">
                                     <div className="flex items-start justify-end gap-3">
                                         <Link
-                                            href={`/admin/shop-links/${link.id}/edit`}
+                                            href={ADMIN_ROUTES.shopLinkEdit(link.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit
@@ -228,7 +228,7 @@ export default async function AdminDashboard() {
                     Guides <span className="font-mono text-sm font-normal text-ink/50">({guides.length})</span>
                 </h2>
                 <Link
-                    href="/admin/guides/new"
+                    href={ADMIN_ROUTES.guideNew}
                     className="rounded-full bg-coupon px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
                 >
                     + Add Guide
@@ -256,7 +256,7 @@ export default async function AdminDashboard() {
                                 <td className="px-5 py-3">
                                     <div className="flex items-center justify-end gap-3">
                                         <Link
-                                            href={`/admin/guides/${guide.id}/edit`}
+                                            href={ADMIN_ROUTES.guideEdit(guide.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit

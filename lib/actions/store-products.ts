@@ -19,6 +19,7 @@ import {
   StoreProductLookupSchema,
   StoreProductSchema,
 } from "@/lib/schemas/store-products";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 interface StoreLinkRow {
   affiliate_link: string | null;
@@ -161,9 +162,9 @@ export async function addStoreProduct(
       return { error: guideError };
     }
     await revalidateGuidePages(supabase, input.guideId);
-    redirect(`/admin/guides/${input.guideId}/edit`);
+    redirect(ADMIN_ROUTES.guideEdit(input.guideId));
   }
 
-  revalidatePath("/admin");
-  redirect("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
+  redirect(ADMIN_ROUTES.dashboard);
 }

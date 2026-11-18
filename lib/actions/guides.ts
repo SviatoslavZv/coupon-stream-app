@@ -8,6 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { GuideSchema, type GuideInput } from "@/lib/schemas/guides";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export interface GuideFormState {
   error?: string;
@@ -36,7 +37,7 @@ function saveErrorMessage(code: string | undefined): string {
 }
 
 function revalidateGuide(slug: string) {
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
   revalidatePath(`/guides/${slug}`);
 }
 
@@ -65,7 +66,7 @@ export async function createGuide(
   }
 
   revalidateGuide(parsed.data.slug);
-  redirect(`/admin/guides/${data.id}/edit`);
+  redirect(ADMIN_ROUTES.guideEdit(data.id));
 }
 
 export async function updateGuide(
@@ -112,7 +113,7 @@ export async function updateGuide(
   if (current.slug !== parsed.data.slug) {
     revalidateGuide(parsed.data.slug);
   }
-  redirect("/admin");
+  redirect(ADMIN_ROUTES.dashboard);
 }
 
 export async function deleteGuide(formData: FormData) {
@@ -128,5 +129,5 @@ export async function deleteGuide(formData: FormData) {
     throw new Error(`Failed to delete guide: ${error.message}`);
   }
 
-  revalidatePath("/admin");
+  revalidatePath(ADMIN_ROUTES.dashboard, "layout");
 }

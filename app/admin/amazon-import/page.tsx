@@ -4,6 +4,7 @@ import { parseAmazonImportParams } from "@/lib/schemas/amazon-import";
 import { searchAmazonProducts, type AmazonProductPage } from "@/lib/partnerboost";
 import { groupByModel, filterByMinReviews, sortModels, buildImportHref } from "@/lib/amazon-import";
 import Link from "next/link";
+import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import { getImportedAsins } from "@/lib/amazon-imported";
 import { BRANDS } from "@/lib/constants/taxonomy";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
@@ -61,7 +62,7 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     return (
         <div className="mx-auto max-w-6xl px-4 py-10">
 
-            <Link href="/admin" className="mb-4 inline-block text-sm text-ink/60 hover:text-coupon-dark">
+            <Link href={ADMIN_ROUTES.dashboard} className="mb-4 inline-block text-sm text-ink/60 hover:text-coupon-dark">
                 ← Dashboard
             </Link>
 
@@ -69,7 +70,7 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
 
             <Form
                 key={buildImportHref(filters)}
-                action="/admin/amazon-import"
+                action={ADMIN_ROUTES.amazonImport}
                 className="grid grid-cols-2 gap-4 rounded-2xl border border-line bg-white p-4 sm:grid-cols-3"
             >
                 <div>
