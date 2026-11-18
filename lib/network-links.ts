@@ -4,6 +4,8 @@ const CJ_CLICK_PATTERN = /\/click-\d+-(\d+)/;
 const CJ_DEEP_LINK_PARAM = "url";
 const RAKUTEN_HOST = "click.linksynergy.com";
 const RAKUTEN_OFFER_PARAM = "offerid";
+const IMPACT_CLICK_PATTERN = /^\/c\/\d+\/\d+\/\d+\/?$/;
+const IMPACT_DEEP_LINK_PARAM = "u";
 const AMAZON_HOST_SUFFIX = "amazon.com";
 const AMAZON_ASIN_PATTERN = /\/(?:dp|gp\/product)\/([A-Z0-9]{10})/;
 
@@ -65,9 +67,10 @@ export function extractDestinationUrl(url: string): string | null {
   return null;
 }
 
-// Параметр для метки-источника в отчётах сети: CJ — sid, Rakuten — u1
+// Tracking parameter for network reports: CJ — sid, Rakuten — u1, Impact — subId1
 const CJ_TRACKING_PARAM = "sid";
 const RAKUTEN_TRACKING_PARAM = "u1";
+const IMPACT_TRACKING_PARAM = "subId1";
 const TRACKING_ID_MAX_LENGTH = 50;
 
 /** Метка гайда для отчётов сетей: guide-<slug>, в пределах лимита длины. */
@@ -84,6 +87,8 @@ export function withTrackingId(url: string, trackingId: string): string {
     parsed.searchParams.set(CJ_TRACKING_PARAM, trackingId);
   } else if (parsed.hostname === RAKUTEN_HOST) {
     parsed.searchParams.set(RAKUTEN_TRACKING_PARAM, trackingId);
+  } else if (IMPACT_CLICK_PATTERN.test(parsed.pathname)) {
+    parsed.searchParams.set(IMPACT_TRACKING_PARAM, trackingId);
   } else {
     return url;
   }
@@ -161,6 +166,12 @@ export function buildDeepLink(
     return { ok: true, url: base.toString() };
   }
 
+  if (IMPACT_CLICK_PATTERN.test(base.pathname)) {
+    base.search = "";
+    base.searchParams.set(IMPACT_DEEP_LINK_PARAM, target);
+    return { ok: true, url: base.toString() };
+  }
+
   const publisherId = base.searchParams.get(RAKUTEN_PUBLISHER_PARAM);
   const merchantId = base.searchParams.get(RAKUTEN_MERCHANT_PARAM);
   if (
@@ -179,6 +190,6 @@ export function buildDeepLink(
   return {
     ok: false,
     error:
-      "The store's affiliate link can't make deep links. For Rakuten, use a homepage deeplink with mid=.",
+      "The store's affiliate link can't make deep links. Use a full CJ click link, a Rakuten deeplink with mid= or an Impact /c/ link.",
   };
 }
