@@ -90,3 +90,95 @@ export function withTrackingId(url: string, trackingId: string): string {
 
   return parsed.toString();
 }
+
+// Rakuten deep link: click.linksynergy.com/deeplink?id=…&mid=…&murl=…
+const RAKUTEN_DEEP_LINK_PATH = "/deeplink";
+const RAKUTEN_PUBLISHER_PARAM = "id";
+const RAKUTEN_MERCHANT_PARAM = "mid";
+const RAKUTEN_DESTINATION_PARAM = "murl";
+const MARKETING_PARAM_PREFIX = "utm_";
+
+export type DeepLinkResult =
+  | { ok: true; url: string }
+  | { ok: false; error: string };
+
+function bareHost(hostname: string): string {
+  return hostname.replace(/^www\./, "");
+}
+
+/** Same site or its subdomain: shop.example.com belongs to example.com. */
+function belongsToSite(page: URL, website: URL): boolean {
+  const pageHost = bareHost(page.hostname);
+  const siteHost = bareHost(website.hostname);
+  return pageHost === siteHost || pageHost.endsWith(`.${siteHost}`);
+}
+
+/** Drops the #anchor and utm_* tags: the network adds its own tracking. */
+function cleanProductUrl(page: URL): string {
+  const clean = new URL(page);
+  clean.hash = "";
+  for (const key of [...clean.searchParams.keys()]) {
+    if (key.startsWith(MARKETING_PARAM_PREFIX)) clean.searchParams.delete(key);
+  }
+  return clean.toString();
+}
+
+/**
+ * Builds a deep link to one product page from the store's affiliate link.
+ * CJ: click link + ?url=. Rakuten: deeplink with id and mid + &murl=.
+ */
+export function buildDeepLink(
+  storeAffiliateLink: string | null,
+  storeWebsiteUrl: string | null,
+  productUrl: string,
+): DeepLinkResult {
+  const page = parseUrl(productUrl);
+  if (!page || page.protocol !== "https:") {
+    return { ok: false, error: "Product URL must start with https://" };
+  }
+
+  const website = storeWebsiteUrl ? parseUrl(storeWebsiteUrl) : null;
+  if (!website) {
+    return { ok: false, error: "Set the store's website URL first." };
+  }
+  if (!belongsToSite(page, website)) {
+    return {
+      ok: false,
+      error: `This page is not on ${bareHost(website.hostname)}. Check the store.`,
+    };
+  }
+
+  const base = storeAffiliateLink ? parseUrl(storeAffiliateLink) : null;
+  if (!base) {
+    return { ok: false, error: "The store has no affiliate link." };
+  }
+
+  const target = cleanProductUrl(page);
+
+  if (CJ_CLICK_PATTERN.test(base.pathname)) {
+    base.search = "";
+    base.searchParams.set(CJ_DEEP_LINK_PARAM, target);
+    return { ok: true, url: base.toString() };
+  }
+
+  const publisherId = base.searchParams.get(RAKUTEN_PUBLISHER_PARAM);
+  const merchantId = base.searchParams.get(RAKUTEN_MERCHANT_PARAM);
+  if (
+    base.hostname === RAKUTEN_HOST &&
+    base.pathname === RAKUTEN_DEEP_LINK_PATH &&
+    publisherId &&
+    merchantId
+  ) {
+    base.search = "";
+    base.searchParams.set(RAKUTEN_PUBLISHER_PARAM, publisherId);
+    base.searchParams.set(RAKUTEN_MERCHANT_PARAM, merchantId);
+    base.searchParams.set(RAKUTEN_DESTINATION_PARAM, target);
+    return { ok: true, url: base.toString() };
+  }
+
+  return {
+    ok: false,
+    error:
+      "The store's affiliate link can't make deep links. For Rakuten, use a homepage deeplink with mid=.",
+  };
+}
