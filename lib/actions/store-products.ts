@@ -11,13 +11,75 @@ import {
   revalidateGuidePages,
   UNIQUE_VIOLATION,
 } from "@/lib/guide-items";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { buildDeepLink } from "@/lib/network-links";
+import { fetchProductMeta, type ProductMetaResult } from "@/lib/product-meta";
 import { firstErrorMessage } from "@/lib/schemas/common";
-import { StoreProductSchema } from "@/lib/schemas/store-products";
+import {
+  StoreProductLookupSchema,
+  StoreProductSchema,
+} from "@/lib/schemas/store-products";
 
 interface StoreLinkRow {
   affiliate_link: string | null;
   website_url: string | null;
+}
+
+type StoreLinksResult =
+  | { ok: true; store: StoreLinkRow }
+  | { ok: false; error: string };
+
+async function loadStoreLinks(
+  supabase: SupabaseClient,
+  storeId: string,
+): Promise<StoreLinksResult> {
+  const { data, error } = await supabase
+    .from("stores")
+    .select("affiliate_link, website_url")
+    .eq("id", storeId)
+    .maybeSingle();
+
+  if (error) {
+    return { ok: false, error: "Could not load the store. Please try again." };
+  }
+  if (!data) {
+    return { ok: false, error: "Store not found." };
+  }
+  return { ok: true, store: data as StoreLinkRow };
+}
+
+/** Reads the title and image from a product page of the chosen store. */
+export async function fetchStoreProductDetails(
+  storeId: string,
+  productUrl: string,
+): Promise<ProductMetaResult> {
+  const supabase = await requireAdmin();
+
+  const parsed = StoreProductLookupSchema.safeParse({ storeId, productUrl });
+  if (!parsed.success) {
+    return { ok: false, error: firstErrorMessage(parsed.error) };
+  }
+
+  const loaded = await loadStoreLinks(supabase, parsed.data.storeId);
+  if (!loaded.ok) {
+    return loaded;
+  }
+
+  // Only pages of this store's own site: the server never fetches other addresses
+  const { affiliate_link, website_url } = loaded.store;
+  const check = buildDeepLink(
+    affiliate_link,
+    website_url,
+    parsed.data.productUrl,
+  );
+  if (!check.ok) {
+    return check;
+  }
+
+  return fetchProductMeta(
+    parsed.data.productUrl,
+    (url) => buildDeepLink(affiliate_link, website_url, url).ok,
+  );
 }
 
 export async function addStoreProduct(
@@ -32,20 +94,13 @@ export async function addStoreProduct(
   }
   const input = parsed.data;
 
-  const { data: store, error: storeError } = await supabase
-    .from("stores")
-    .select("affiliate_link, website_url")
-    .eq("id", input.storeId)
-    .maybeSingle();
-
-  if (storeError) {
-    return { error: "Could not load the store. Please try again." };
-  }
-  if (!store) {
-    return { error: "Store not found." };
+  const loaded = await loadStoreLinks(supabase, input.storeId);
+  if (!loaded.ok) {
+    return { error: loaded.error };
   }
 
-  const { affiliate_link, website_url } = store as StoreLinkRow;
+  const { affiliate_link, website_url } = loaded.store;
+
   const deepLink = buildDeepLink(affiliate_link, website_url, input.productUrl);
   if (!deepLink.ok) {
     return { error: deepLink.error };

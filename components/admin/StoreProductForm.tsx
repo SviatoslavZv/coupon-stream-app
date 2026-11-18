@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState, useState, type ChangeEvent } from "react";
+import { useActionState, useState, useTransition, type ChangeEvent } from "react";
 import type { CouponFormState } from "@/lib/actions/coupons";
+import { fetchStoreProductDetails } from "@/lib/actions/store-products";
 import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
 import type { StoreOption } from "@/lib/stores";
 
@@ -28,6 +29,16 @@ const EMPTY_VALUES = {
 
 type FieldChange = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 
+interface LookupMessage {
+    tone: "success" | "error";
+    text: string;
+}
+
+const LOOKUP_TONE_CLASS: Record<LookupMessage["tone"], string> = {
+    success: "text-green-700",
+    error: "text-coupon",
+};
+
 export default function StoreProductForm({
     action,
     storeOptions,
@@ -44,6 +55,29 @@ export default function StoreProductForm({
     function handleChange(event: FieldChange) {
         const { name, value } = event.target;
         setValues((prev) => ({ ...prev, [name]: value }));
+    }
+
+    const [isFetching, startFetching] = useTransition();
+    const [lookupMessage, setLookupMessage] = useState<LookupMessage | null>(null);
+
+    function handleFetchDetails() {
+        setLookupMessage(null);
+        startFetching(async () => {
+            const result = await fetchStoreProductDetails(values.storeId, values.productUrl);
+            if (!result.ok) {
+                setLookupMessage({ tone: "error", text: result.error });
+                return;
+            }
+            setValues((prev) => ({
+                ...prev,
+                title: result.title ?? prev.title,
+                imageUrl: result.imageUrl ?? prev.imageUrl,
+            }));
+            setLookupMessage({
+                tone: "success",
+                text: "Filled in from the store page. Check the title and the picture.",
+            });
+        });
     }
 
     const { imageUrl, guideId } = values;
@@ -83,6 +117,19 @@ export default function StoreProductForm({
                     className={FIELD_CLASS}
                 />
                 <p className={HINT_CLASS}>Copy it from the address bar of the store&apos;s product page.</p>
+
+                <button
+                    type="button"
+                    onClick={handleFetchDetails}
+                    disabled={isFetching || !values.storeId || !values.productUrl}
+                    className="mt-2 rounded-full border border-line px-4 py-1.5 text-xs font-semibold text-ink transition hover:border-coupon hover:text-coupon-dark disabled:opacity-50"
+                >
+                    {isFetching ? "Fetching…" : "Fetch title and image"}
+                </button>
+                {lookupMessage && (
+                    <p className={`mt-1 text-xs ${LOOKUP_TONE_CLASS[lookupMessage.tone]}`}>{lookupMessage.text}</p>
+                )}
+
             </div>
 
             <div>

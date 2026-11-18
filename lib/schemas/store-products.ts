@@ -30,3 +30,8 @@ export const StoreProductSchema = z
   });
 
 export type StoreProductInput = z.infer<typeof StoreProductSchema>;
+
+export const StoreProductLookupSchema = z.object({
+  storeId: z.uuid("Choose a store first."),
+  productUrl: httpsUrl("Paste a product URL that starts with https://"),
+});

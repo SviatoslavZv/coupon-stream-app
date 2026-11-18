@@ -78,7 +78,7 @@ export function guideTrackingId(slug: string): string {
   return `guide-${slug}`.slice(0, TRACKING_ID_MAX_LENGTH);
 }
 
-/** Ставит метку в ссылку CJ или Rakuten. Остальные ссылки возвращает как есть. */
+/** Adds the tracking label to CJ, Rakuten and Impact links. Other links are returned as is. */
 export function withTrackingId(url: string, trackingId: string): string {
   const parsed = parseUrl(url);
   if (!parsed) return url;
@@ -130,7 +130,7 @@ function cleanProductUrl(page: URL): string {
 
 /**
  * Builds a deep link to one product page from the store's affiliate link.
- * CJ: click link + ?url=. Rakuten: deeplink with id and mid + &murl=.
+ * CJ: click link + ?url=. Impact: /c/ link + ?u=. Rakuten: deeplink with id and mid + &murl=.
  */
 export function buildDeepLink(
   storeAffiliateLink: string | null,
