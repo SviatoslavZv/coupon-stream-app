@@ -1,6 +1,7 @@
 // lib/stores.ts
 
 import { createClient } from "@/lib/supabase/server";
+import { buildDeepLink } from "@/lib/network-links";
 import { isCouponExpired } from "@/lib/utils";
 import type { Store } from "@/types";
 
@@ -168,4 +169,34 @@ export async function getStoreIdBySlug(slug: string): Promise<string | null> {
   }
 
   return (data as { id: string } | null)?.id ?? null;
+}
+
+interface DeepLinkStoreRow {
+  id: string;
+  name: string;
+  affiliate_link: string | null;
+  website_url: string | null;
+}
+
+/** Stores whose affiliate link can be turned into a product deep link. */
+export async function getDeepLinkStoreOptions(): Promise<StoreOption[]> {
+  const supabase = await createClient();
+
+  const { data, error } = await supabase
+    .from("stores")
+    .select("id, name, affiliate_link, website_url")
+    .order("name");
+
+  if (error) {
+    throw new Error(`Failed to fetch store options: ${error.message}`);
+  }
+
+  // The homepage is a page of the store too: if it works, any product page will
+  return (data as DeepLinkStoreRow[])
+    .filter(
+      (row) =>
+        row.website_url !== null &&
+        buildDeepLink(row.affiliate_link, row.website_url, row.website_url).ok,
+    )
+    .map(({ id, name }) => ({ id, name }));
 }

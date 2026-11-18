@@ -170,12 +170,20 @@ export default async function AdminDashboard() {
                 <h2 className="font-display text-xl font-black text-ink">
                     Shop Links <span className="font-mono text-sm font-normal text-ink/50">({shopLinks.length})</span>
                 </h2>
-                <Link
-                    href="/admin/shop-links/new"
-                    className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
-                >
-                    + Add Link
-                </Link>
+                <div className="flex gap-2">
+                    <Link
+                        href="/admin/store-products/new"
+                        className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
+                    >
+                        + Add from store
+                    </Link>
+                    <Link
+                        href="/admin/shop-links/new"
+                        className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
+                    >
+                        + Add Link
+                    </Link>
+                </div>
             </div>
 
             <AdminTableFrame>
