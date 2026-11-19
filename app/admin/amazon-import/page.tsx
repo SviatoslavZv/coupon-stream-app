@@ -62,10 +62,6 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     return (
         <div className="mx-auto max-w-6xl px-4 py-10">
 
-            <Link href={ADMIN_ROUTES.dashboard} className="mb-4 inline-block text-sm text-ink/60 hover:text-coupon-dark">
-                ← Dashboard
-            </Link>
-
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Amazon Import</h1>
 
             <Form

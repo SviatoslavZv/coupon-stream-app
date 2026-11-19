@@ -7,7 +7,6 @@ import { SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
 import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
 import { deleteStore } from "@/lib/actions/stores";
 import { deleteGuide } from "@/lib/actions/guides";
-import LogoutButton from "@/components/admin/LogoutButton";
 import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
@@ -33,20 +32,7 @@ export default async function AdminDashboard() {
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
-            <div className="mb-8 flex items-center justify-between">
-                <h1 className="font-display text-2xl font-black text-ink">
-                    Dashboard
-                </h1>
-                <div className="flex items-center gap-3">
-                    <Link
-                        href={ADMIN_ROUTES.amazonImport}
-                        className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
-                    >
-                        Amazon Import
-                    </Link>
-                    <LogoutButton />
-                </div>
-            </div>
+            <h1 className="mb-8 font-display text-2xl font-black text-ink">Dashboard</h1>
 
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-display text-xl font-black text-ink">

@@ -18,3 +18,15 @@ export const ADMIN_ROUTES = {
   guideNew: `${ADMIN_ROOT}/guides/new`,
   guideEdit: (id: string) => `${ADMIN_ROOT}/guides/${id}/edit`,
 } as const;
+export interface AdminNavItem {
+  label: string;
+  href: string;
+  /** Dashboard is active only on its own page, other items on their sub-pages too. */
+  exact?: boolean;
+}
+
+export const ADMIN_NAV: readonly AdminNavItem[] = [
+  { label: "Dashboard", href: ADMIN_ROUTES.dashboard, exact: true },
+  { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
+  { label: "Add from store", href: ADMIN_ROUTES.storeProductNew },
+];

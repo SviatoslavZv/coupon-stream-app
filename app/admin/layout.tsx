@@ -1,20 +1,25 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import type { Metadata } from "next";
+import { requireAdmin } from "@/lib/auth";
+import AdminHeader from "@/components/admin/AdminHeader";
+
+export const metadata: Metadata = {
+    title: { default: "Admin", template: "%s · Admin" },
+    robots: { index: false, follow: false },
+};
 
 export default async function AdminLayout({
     children,
 }: {
     children: React.ReactNode;
 }) {
-    const supabase = await createClient();
+    // Sends visitors who are not admins to the login page.
+    // This is a convenience, not the protection: pages, data functions and actions check on their own.
+    await requireAdmin();
 
-    const {
-        data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-        redirect("/login");
-    }
-
-    return <div className="min-h-screen bg-paper">{children}</div>;
+    return (
+        <div className="flex min-h-screen flex-col bg-paper">
+            <AdminHeader />
+            <main className="flex-1">{children}</main>
+        </div>
+    );
 }
