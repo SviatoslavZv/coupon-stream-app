@@ -51,7 +51,7 @@ export async function createCoupon(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.coupons);
 }
 
 export async function updateCoupon(
@@ -81,7 +81,7 @@ export async function updateCoupon(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.coupons);
 }
 
 export async function deleteCoupon(formData: FormData): Promise<void> {

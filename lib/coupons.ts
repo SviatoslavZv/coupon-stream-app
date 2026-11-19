@@ -1,5 +1,6 @@
 // lib/coupons.ts
 
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
@@ -108,7 +109,7 @@ interface AdminCouponDbRow {
 }
 
 export async function getAllCouponsForAdmin(): Promise<AdminCouponRow[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("coupons")
@@ -135,7 +136,7 @@ export async function getAllCouponsForAdmin(): Promise<AdminCouponRow[]> {
 }
 
 export async function getCouponById(id: string) {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("coupons")
