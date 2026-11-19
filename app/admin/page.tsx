@@ -1,13 +1,10 @@
 import Link from "next/link";
-import { getStores } from "@/lib/stores";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
 import { getShopLinksForAdmin } from "@/lib/shop-links";
 import { getGuidesForAdmin } from "@/lib/guides";
 import { SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
 import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
-import { deleteStore } from "@/lib/actions/stores";
 import { deleteGuide } from "@/lib/actions/guides";
-import DeleteStoreButton from "@/components/admin/DeleteStoreButton";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
 import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
@@ -15,14 +12,11 @@ import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 
 export default async function AdminDashboard() {
-    const [storesRaw, coupons, shopLinks, guides] = await Promise.all([
-        getStores(),
+    const [coupons, shopLinks, guides] = await Promise.all([
         getAllCouponsForAdmin(),
         getShopLinksForAdmin(),
         getGuidesForAdmin(),
     ]);
-
-    const stores = [...storesRaw].sort((a, b) => a.name.localeCompare(b.name));
 
     const sortedCoupons = [...coupons].sort((a, b) => {
         const storeCompare = a.storeName.localeCompare(b.storeName);
@@ -33,58 +27,6 @@ export default async function AdminDashboard() {
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
             <h1 className="mb-8 font-display text-2xl font-black text-ink">Dashboard</h1>
-
-            <div className="mb-4 flex items-center justify-between">
-                <h2 className="font-display text-xl font-black text-ink">
-                    Stores <span className="font-mono text-sm font-normal text-ink/50">({stores.length})</span>
-                </h2>
-                <Link
-                    href={ADMIN_ROUTES.storeNew}
-                    className="rounded-full bg-ink px-4 py-2 text-sm font-semibold text-white transition hover:bg-ink/90"
-                >
-                    + Add Store
-                </Link>
-            </div>
-
-            <AdminTableFrame className="mb-10">
-                <table className="w-full text-left text-sm">
-                    <thead className="border-b border-line bg-paper">
-                        <tr>
-                            <th className="px-5 py-3 font-medium text-ink/60">Store</th>
-                            <th className="px-5 py-3 font-medium text-ink/60">Offers</th>
-                            <th className="px-5 py-3 font-medium text-ink/60">Best Offer</th>
-                            <th className="px-5 py-3 font-medium text-ink/60"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {stores.map((store) => (
-                            <tr key={store.slug} className="border-b border-line last:border-0">
-                                <td className="px-5 py-3 font-medium text-ink">{store.name}</td>
-                                <td className="px-5 py-3 font-mono text-ink/60">
-                                    {store.offerCount}
-                                </td>
-                                <td className="px-5 py-3 text-coupon">{store.bestOffer}</td>
-                                <td className="px-5 py-3">
-                                    <div className="flex items-center justify-end gap-3">
-                                        <Link
-                                            href={ADMIN_ROUTES.storeEdit(store.id)}
-                                            className="text-xs font-medium text-ink/60 hover:text-ink"
-                                        >
-                                            Edit
-                                        </Link>
-                                        <form action={deleteStore}>
-                                            <input type="hidden" name="id" value={store.id} />
-                                            <DeleteStoreButton />
-                                        </form>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
-            </AdminTableFrame>
-
-
 
             <div className="mb-4 flex items-center justify-between">
                 <h2 className="font-display text-xl font-black text-ink">

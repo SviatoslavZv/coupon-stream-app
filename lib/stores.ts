@@ -1,5 +1,6 @@
 // lib/stores.ts
 
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { buildDeepLink } from "@/lib/network-links";
 import { isCouponExpired } from "@/lib/utils";
@@ -86,7 +87,7 @@ export interface StoreOption {
 }
 
 export async function getStoreOptions(): Promise<StoreOption[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("stores")
@@ -123,7 +124,7 @@ interface StoreByIdDbRow {
 }
 
 export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("stores")
@@ -180,7 +181,7 @@ interface DeepLinkStoreRow {
 
 /** Stores whose affiliate link can be turned into a product deep link. */
 export async function getDeepLinkStoreOptions(): Promise<StoreOption[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("stores")

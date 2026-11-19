@@ -61,7 +61,7 @@ export async function createStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.stores);
 }
 
 export async function updateStore(
@@ -89,7 +89,7 @@ export async function updateStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.stores);
 }
 
 export async function deleteStore(formData: FormData): Promise<void> {

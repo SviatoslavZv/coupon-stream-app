@@ -9,6 +9,7 @@ export const ADMIN_ROUTES = {
   dashboard: ADMIN_ROOT,
   amazonImport: AMAZON_IMPORT_PATH,
   storeProductNew: `${ADMIN_ROOT}/store-products/new`,
+  stores: `${ADMIN_ROOT}/stores`,
   storeNew: `${ADMIN_ROOT}/stores/new`,
   storeEdit: (id: string) => `${ADMIN_ROOT}/stores/${id}/edit`,
   couponNew: `${ADMIN_ROOT}/coupons/new`,
@@ -27,6 +28,7 @@ export interface AdminNavItem {
 
 export const ADMIN_NAV: readonly AdminNavItem[] = [
   { label: "Dashboard", href: ADMIN_ROUTES.dashboard, exact: true },
+  { label: "Stores", href: ADMIN_ROUTES.stores },
   { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
   { label: "Add from store", href: ADMIN_ROUTES.storeProductNew },
 ];
