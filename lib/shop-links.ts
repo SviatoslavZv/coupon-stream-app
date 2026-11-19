@@ -1,7 +1,10 @@
 // lib/shop-links.ts
 
 import { requireAdmin } from "@/lib/auth";
-import type { ShopLinkKind } from "@/lib/constants/shop-links";
+import type {
+  ShopLinkCheckStatus,
+  ShopLinkKind,
+} from "@/lib/constants/shop-links";
 
 export interface AdminShopLink {
   id: string;
@@ -16,6 +19,8 @@ export interface AdminShopLink {
   networkLinkId: string | null;
   commissionRate: number | null;
   isActive: boolean;
+  checkStatus: ShopLinkCheckStatus | null;
+  lastCheckedAt: string | null;
 }
 
 interface AdminShopLinkRow {
@@ -30,11 +35,13 @@ interface AdminShopLinkRow {
   network_link_id: string | null;
   commission_rate: number | null;
   is_active: boolean;
+  check_status: ShopLinkCheckStatus | null;
+  last_checked_at: string | null;
   stores: { name: string } | null;
 }
 
 const ADMIN_SHOP_LINK_SELECT =
-  "id, store_id, kind, title, url, brand, asin, image_url, network_link_id, commission_rate, is_active, stores(name)";
+  "id, store_id, kind, title, url, brand, asin, image_url, network_link_id, commission_rate, is_active, check_status, last_checked_at, stores(name)";
 
 function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
   return {
@@ -51,6 +58,8 @@ function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
     commissionRate:
       row.commission_rate === null ? null : Number(row.commission_rate),
     isActive: row.is_active,
+    checkStatus: row.check_status,
+    lastCheckedAt: row.last_checked_at,
   };
 }
 

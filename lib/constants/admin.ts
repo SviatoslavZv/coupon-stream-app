@@ -4,6 +4,11 @@ import { AMAZON_IMPORT_PATH } from "@/lib/constants/amazon";
 
 const ADMIN_ROOT = "/admin";
 
+/** Dashboard: a coupon "expires soon" when its last day is within this many days. */
+export const EXPIRING_SOON_DAYS = 3;
+/** Dashboard: how many rows each "Needs attention" list shows before "+N more". */
+export const ATTENTION_LIST_LIMIT = 8;
+
 /** Every admin address in one place: pages, redirects and revalidation use these. */
 export const ADMIN_ROUTES = {
   dashboard: ADMIN_ROOT,
@@ -38,3 +43,12 @@ export const ADMIN_NAV: readonly AdminNavItem[] = [
   { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
   { label: "Add from store", href: ADMIN_ROUTES.storeProductNew },
 ];
+
+/** Admin list address with filters: withQuery(ADMIN_ROUTES.coupons, { status: "expired" }). */
+export function withQuery(
+  path: string,
+  params: Record<string, string>,
+): string {
+  const query = new URLSearchParams(params).toString();
+  return query ? `${path}?${query}` : path;
+}

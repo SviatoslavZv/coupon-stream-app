@@ -20,6 +20,16 @@ export const SHOP_LINK_CHECK_STATUSES = [
 
 export type ShopLinkCheckStatus = (typeof SHOP_LINK_CHECK_STATUSES)[number];
 
+export const SHOP_LINK_CHECK_STATUS_LABELS: Record<
+  ShopLinkCheckStatus,
+  string
+> = {
+  ok: "OK",
+  out_of_stock: "Out of stock",
+  no_commission: "No commission",
+  not_found: "Not found by the check",
+};
+
 export const HIDDEN_CHECK_STATUSES: readonly ShopLinkCheckStatus[] = [
   "out_of_stock",
   "no_commission",
