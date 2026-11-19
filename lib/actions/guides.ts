@@ -113,7 +113,7 @@ export async function updateGuide(
   if (current.slug !== parsed.data.slug) {
     revalidateGuide(parsed.data.slug);
   }
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.guides);
 }
 
 export async function deleteGuide(formData: FormData) {

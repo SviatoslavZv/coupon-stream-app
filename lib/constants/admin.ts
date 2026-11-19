@@ -18,6 +18,7 @@ export const ADMIN_ROUTES = {
   shopLinks: `${ADMIN_ROOT}/shop-links`,
   shopLinkNew: `${ADMIN_ROOT}/shop-links/new`,
   shopLinkEdit: (id: string) => `${ADMIN_ROOT}/shop-links/${id}/edit`,
+  guides: `${ADMIN_ROOT}/guides`,
   guideNew: `${ADMIN_ROOT}/guides/new`,
   guideEdit: (id: string) => `${ADMIN_ROOT}/guides/${id}/edit`,
 } as const;
@@ -33,6 +34,7 @@ export const ADMIN_NAV: readonly AdminNavItem[] = [
   { label: "Stores", href: ADMIN_ROUTES.stores },
   { label: "Coupons", href: ADMIN_ROUTES.coupons },
   { label: "Links", href: ADMIN_ROUTES.shopLinks },
+  { label: "Guides", href: ADMIN_ROUTES.guides },
   { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
   { label: "Add from store", href: ADMIN_ROUTES.storeProductNew },
 ];

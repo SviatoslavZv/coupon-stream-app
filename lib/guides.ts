@@ -1,6 +1,7 @@
 // lib/guides.ts
 
 import { cache } from "react";
+import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import {
   isHiddenByCheck,
@@ -215,7 +216,7 @@ interface AdminGuideDbRow {
 }
 
 export async function getGuidesForAdmin(): Promise<AdminGuideRow[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("guides")
@@ -263,7 +264,7 @@ interface GuideFormDbRow {
 export async function getGuideForEdit(
   id: string,
 ): Promise<GuideFormValues | null> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("guides")
@@ -473,7 +474,7 @@ const ADMIN_STORE_SELECT = "stores(name, slug, website_url)";
 export async function getGuideItemsForAdmin(
   guideId: string,
 ): Promise<AdminGuideItem[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("guide_items")
