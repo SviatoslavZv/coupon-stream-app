@@ -14,6 +14,9 @@ import {
   optionalHttpsUrl,
   optionalOneOf,
   emptyToNull,
+  blankToUndefined,
+  flattenSearchParams,
+  type RawSearchParams,
 } from "@/lib/schemas/common";
 import {
   BRANDS,
@@ -21,12 +24,6 @@ import {
   GENDERS,
   getSubcategories,
 } from "@/lib/constants/taxonomy";
-
-type RawSearchParams = Record<string, string | string[] | undefined>;
-
-function blankToUndefined(value: unknown): unknown {
-  return typeof value === "string" && value.trim() === "" ? undefined : value;
-}
 
 const AmazonImportParamsSchema = z.object({
   category: z.enum(AMAZON_CATEGORIES).catch(AMAZON_CATEGORIES[0]),
@@ -51,13 +48,7 @@ export type AmazonImportFilters = z.infer<typeof AmazonImportParamsSchema>;
 export function parseAmazonImportParams(
   raw: RawSearchParams,
 ): AmazonImportFilters {
-  const flat = Object.fromEntries(
-    Object.entries(raw).map(([key, value]) => [
-      key,
-      Array.isArray(value) ? value[0] : value,
-    ]),
-  );
-  return AmazonImportParamsSchema.parse(flat);
+  return AmazonImportParamsSchema.parse(flattenSearchParams(raw));
 }
 
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;

@@ -1,9 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
+import { getStoreOptions } from "@/lib/stores";
+import { filterAdminCoupons } from "@/lib/admin-filters";
+import {
+    COUPON_STATUS_FILTERS,
+    COUPON_STATUS_LABELS,
+    parseAdminCouponFilters,
+} from "@/lib/schemas/admin-filters";
+import { isCouponExpired } from "@/lib/utils";
 import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminFilterBar from "@/components/admin/AdminFilterBar";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import ConfirmSubmitButton from "@/components/admin/ConfirmSubmitButton";
 
@@ -11,8 +20,16 @@ export const metadata: Metadata = {
     title: "Coupons",
 };
 
-export default async function AdminCouponsPage() {
-    const coupons = [...(await getAllCouponsForAdmin())].sort((a, b) => {
+const STATUS_OPTIONS = COUPON_STATUS_FILTERS.map((value) => ({
+    value,
+    label: COUPON_STATUS_LABELS[value],
+}));
+
+export default async function AdminCouponsPage(props: PageProps<"/admin/coupons">) {
+    const filters = parseAdminCouponFilters(await props.searchParams);
+    const [allCoupons, storeOptions] = await Promise.all([getAllCouponsForAdmin(), getStoreOptions()]);
+
+    const coupons = filterAdminCoupons(allCoupons, filters).sort((a, b) => {
         const storeCompare = a.storeName.localeCompare(b.storeName);
         if (storeCompare !== 0) return storeCompare;
         return a.title.localeCompare(b.title);
@@ -20,7 +37,7 @@ export default async function AdminCouponsPage() {
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
-            <AdminPageHeader title="Coupons" count={coupons.length}>
+            <AdminPageHeader title="Coupons" count={allCoupons.length}>
                 <Link
                     href={ADMIN_ROUTES.couponNew}
                     className="rounded-full bg-coupon px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon/90"
@@ -28,6 +45,17 @@ export default async function AdminCouponsPage() {
                     + Add Coupon
                 </Link>
             </AdminPageHeader>
+
+            <AdminFilterBar
+                action={ADMIN_ROUTES.coupons}
+                query={filters.q}
+                queryPlaceholder="Title, code or discount…"
+                stores={storeOptions}
+                store={filters.store}
+                select={{ name: "status", label: "Status", value: filters.status, options: STATUS_OPTIONS }}
+                shown={coupons.length}
+                total={allCoupons.length}
+            />
 
             <AdminTableFrame>
                 <table className="w-full text-left text-sm">
@@ -44,7 +72,12 @@ export default async function AdminCouponsPage() {
                             <tr key={coupon.id} className="border-b border-line last:border-0">
                                 <td className="px-5 py-3 font-medium text-ink">{coupon.storeName}</td>
                                 <td className="px-5 py-3 text-ink/80">{coupon.title}</td>
-                                <td className="px-5 py-3 font-mono text-ink/60">{coupon.expiresAt}</td>
+                                <td className="px-5 py-3 font-mono text-ink/60">
+                                    {coupon.expiresAt}
+                                    {isCouponExpired(coupon.expiresAt) && (
+                                        <span className="ml-2 font-sans text-xs font-medium text-coupon">Expired</span>
+                                    )}
+                                </td>
                                 <td className="px-5 py-3">
                                     <div className="flex items-center justify-end gap-3">
                                         <form action={markCouponVerified}>
@@ -75,6 +108,13 @@ export default async function AdminCouponsPage() {
                                 </td>
                             </tr>
                         ))}
+                        {coupons.length === 0 && (
+                            <tr>
+                                <td colSpan={4} className="px-5 py-8 text-center text-ink/60">
+                                    No coupons match these filters.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
                 </table>
             </AdminTableFrame>

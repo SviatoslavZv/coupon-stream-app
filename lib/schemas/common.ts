@@ -2,6 +2,25 @@
 
 import { z } from "zod";
 
+/** Query string values as Next.js passes them to a page. */
+export type RawSearchParams = Record<string, string | string[] | undefined>;
+
+/** Keeps the first value of a repeated parameter (?q=a&q=b → "a"). */
+export function flattenSearchParams(
+  raw: RawSearchParams,
+): Record<string, string | undefined> {
+  return Object.fromEntries(
+    Object.entries(raw).map(([key, value]) => [
+      key,
+      Array.isArray(value) ? value[0] : value,
+    ]),
+  );
+}
+
+export function blankToUndefined(value: unknown): unknown {
+  return typeof value === "string" && value.trim() === "" ? undefined : value;
+}
+
 export function emptyToNull(value: unknown): unknown {
   if (value === undefined || value === null) return null;
   if (typeof value === "string" && value.trim() === "") return null;
