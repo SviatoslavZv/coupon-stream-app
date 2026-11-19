@@ -42,3 +42,24 @@ export function parseAdminCouponFilters(
 ): AdminCouponFilters {
   return AdminCouponFiltersSchema.parse(flattenSearchParams(raw));
 }
+
+export const LINK_STATUS_FILTERS = ["all", "active", "hidden"] as const;
+export type LinkStatusFilter = (typeof LINK_STATUS_FILTERS)[number];
+
+export const LINK_STATUS_LABELS: Record<LinkStatusFilter, string> = {
+  all: "All links",
+  active: "Active",
+  hidden: "Hidden",
+};
+
+const AdminLinkFiltersSchema = z.object({
+  q: searchText,
+  store: storeId,
+  status: z.enum(LINK_STATUS_FILTERS).catch("all"),
+});
+
+export type AdminLinkFilters = z.infer<typeof AdminLinkFiltersSchema>;
+
+export function parseAdminLinkFilters(raw: RawSearchParams): AdminLinkFilters {
+  return AdminLinkFiltersSchema.parse(flattenSearchParams(raw));
+}

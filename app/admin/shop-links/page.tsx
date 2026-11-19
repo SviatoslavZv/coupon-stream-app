@@ -1,9 +1,17 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { getShopLinksForAdmin } from "@/lib/shop-links";
+import { getStoreOptions } from "@/lib/stores";
+import { filterAdminShopLinks } from "@/lib/admin-filters";
+import {
+    LINK_STATUS_FILTERS,
+    LINK_STATUS_LABELS,
+    parseAdminLinkFilters,
+} from "@/lib/schemas/admin-filters";
 import { SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
+import AdminFilterBar from "@/components/admin/AdminFilterBar";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
 import DeleteShopLinkButton from "@/components/admin/DeleteShopLinkButton";
 
@@ -11,12 +19,19 @@ export const metadata: Metadata = {
     title: "Links",
 };
 
-export default async function AdminShopLinksPage() {
-    const shopLinks = await getShopLinksForAdmin();
+const STATUS_OPTIONS = LINK_STATUS_FILTERS.map((value) => ({
+    value,
+    label: LINK_STATUS_LABELS[value],
+}));
+
+export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-links">) {
+    const filters = parseAdminLinkFilters(await props.searchParams);
+    const [allLinks, storeOptions] = await Promise.all([getShopLinksForAdmin(), getStoreOptions()]);
+    const shopLinks = filterAdminShopLinks(allLinks, filters);
 
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
-            <AdminPageHeader title="Links" count={shopLinks.length}>
+            <AdminPageHeader title="Links" count={allLinks.length}>
                 <Link
                     href={ADMIN_ROUTES.storeProductNew}
                     className="rounded-full bg-coupon-dark px-4 py-2 text-sm font-semibold text-white transition hover:bg-coupon"
@@ -30,6 +45,18 @@ export default async function AdminShopLinksPage() {
                     + Add Link
                 </Link>
             </AdminPageHeader>
+
+
+            <AdminFilterBar
+                action={ADMIN_ROUTES.shopLinks}
+                query={filters.q}
+                queryPlaceholder="Title, brand or ASIN…"
+                stores={storeOptions}
+                store={filters.store}
+                select={{ name: "status", label: "Status", value: filters.status, options: STATUS_OPTIONS }}
+                shown={shopLinks.length}
+                total={allLinks.length}
+            />
 
             <AdminTableFrame>
                 <table className="w-full text-left text-sm">
@@ -64,6 +91,15 @@ export default async function AdminShopLinksPage() {
                                 </td>
                             </tr>
                         ))}
+
+                        {shopLinks.length === 0 && (
+                            <tr>
+                                <td colSpan={5} className="px-5 py-8 text-center text-ink/60">
+                                    No links match these filters.
+                                </td>
+                            </tr>
+                        )}
+
                     </tbody>
                 </table>
             </AdminTableFrame>

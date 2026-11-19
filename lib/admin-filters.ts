@@ -1,13 +1,17 @@
 // lib/admin-filters.ts
 
 import type { AdminCouponRow } from "@/lib/coupons";
-import type { AdminCouponFilters } from "@/lib/schemas/admin-filters";
+import type { AdminShopLink } from "@/lib/shop-links";
+import type {
+  AdminCouponFilters,
+  AdminLinkFilters,
+} from "@/lib/schemas/admin-filters";
 import { isCouponExpired } from "@/lib/utils";
 
 /** Case-insensitive "contains" over several text fields. */
 function matchesText(
   query: string | undefined,
-  fields: readonly (string | undefined)[],
+  fields: readonly (string | null | undefined)[],
 ): boolean {
   if (!query) return true;
   const needle = query.toLowerCase();
@@ -32,5 +36,19 @@ export function filterAdminCoupons(
       coupon.code,
       coupon.storeName,
     ]);
+  });
+}
+
+/** Links that pass the search box, the store and the active/hidden filters. Pure function. */
+export function filterAdminShopLinks(
+  links: readonly AdminShopLink[],
+  { q, store, status }: AdminLinkFilters,
+): AdminShopLink[] {
+  return links.filter((link) => {
+    if (store && link.storeId !== store) return false;
+    if (status === "active" && !link.isActive) return false;
+    if (status === "hidden" && link.isActive) return false;
+
+    return matchesText(q, [link.title, link.brand, link.asin, link.storeName]);
   });
 }
