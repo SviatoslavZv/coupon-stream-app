@@ -58,7 +58,7 @@ export async function createShopLink(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.shopLinks);
 }
 
 export async function updateShopLink(
@@ -86,7 +86,7 @@ export async function updateShopLink(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.shopLinks);
 }
 
 const FOREIGN_KEY_VIOLATION = "23503";

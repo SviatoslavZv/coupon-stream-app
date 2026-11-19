@@ -15,6 +15,7 @@ export const ADMIN_ROUTES = {
   coupons: `${ADMIN_ROOT}/coupons`,
   couponNew: `${ADMIN_ROOT}/coupons/new`,
   couponEdit: (id: string) => `${ADMIN_ROOT}/coupons/${id}/edit`,
+  shopLinks: `${ADMIN_ROOT}/shop-links`,
   shopLinkNew: `${ADMIN_ROOT}/shop-links/new`,
   shopLinkEdit: (id: string) => `${ADMIN_ROOT}/shop-links/${id}/edit`,
   guideNew: `${ADMIN_ROOT}/guides/new`,
@@ -31,6 +32,7 @@ export const ADMIN_NAV: readonly AdminNavItem[] = [
   { label: "Dashboard", href: ADMIN_ROUTES.dashboard, exact: true },
   { label: "Stores", href: ADMIN_ROUTES.stores },
   { label: "Coupons", href: ADMIN_ROUTES.coupons },
+  { label: "Links", href: ADMIN_ROUTES.shopLinks },
   { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
   { label: "Add from store", href: ADMIN_ROUTES.storeProductNew },
 ];

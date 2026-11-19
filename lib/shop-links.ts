@@ -1,6 +1,6 @@
 // lib/shop-links.ts
 
-import { createClient } from "@/lib/supabase/server";
+import { requireAdmin } from "@/lib/auth";
 import type { ShopLinkKind } from "@/lib/constants/shop-links";
 
 export interface AdminShopLink {
@@ -55,7 +55,7 @@ function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
 }
 
 export async function getShopLinksForAdmin(): Promise<AdminShopLink[]> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("shop_links")
@@ -72,7 +72,7 @@ export async function getShopLinksForAdmin(): Promise<AdminShopLink[]> {
 export async function getShopLinkById(
   id: string,
 ): Promise<AdminShopLink | null> {
-  const supabase = await createClient();
+  const supabase = await requireAdmin();
 
   const { data, error } = await supabase
     .from("shop_links")

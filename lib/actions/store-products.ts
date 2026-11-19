@@ -166,5 +166,5 @@ export async function addStoreProduct(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.dashboard);
+  redirect(ADMIN_ROUTES.shopLinks);
 }
