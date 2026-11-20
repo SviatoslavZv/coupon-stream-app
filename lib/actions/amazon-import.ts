@@ -7,7 +7,7 @@ import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { isCouponExpired } from "@/lib/utils";
-import type { CouponFormState } from "@/lib/actions/coupons";
+import type { FormState } from "@/types";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import { generateAmazonLinks } from "@/lib/partnerboost";
 import { getStoreIdBySlug } from "@/lib/stores";
@@ -29,9 +29,9 @@ interface ExistingCouponRow {
 }
 
 export async function importAmazonCoupon(
-  _prevState: CouponFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<CouponFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = AmazonCouponSchema.safeParse(Object.fromEntries(formData));
@@ -101,9 +101,9 @@ async function buildLinkSid(
 }
 
 export async function importAmazonProductLink(
-  _prevState: CouponFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<CouponFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = AmazonLinkSchema.safeParse(Object.fromEntries(formData));

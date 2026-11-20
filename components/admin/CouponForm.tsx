@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { CATEGORIES, GENDERS, BRANDS_BY_LABEL, getSubcategories } from "@/lib/constants/taxonomy";
-import type { CouponFormState } from "@/lib/actions/coupons";
+import type { FormState } from "@/types";
 import { DISCOUNT_LABEL_PRESETS, DESCRIPTION_PRESETS, buildTitleSuggestions } from "@/lib/constants/coupon-presets";
 
 interface StoreOption {
@@ -37,9 +37,9 @@ export default function CouponForm({
     hiddenFields,
 }: {
     action: (
-        prevState: CouponFormState | null,
+        prevState: FormState | null,
         formData: FormData
-    ) => Promise<CouponFormState>;
+    ) => Promise<FormState>;
     storeOptions: StoreOption[];
     initialValues?: CouponFormValues;
     hiddenFields?: Record<string, string>;

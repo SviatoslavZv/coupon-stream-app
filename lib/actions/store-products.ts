@@ -5,7 +5,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import type { CouponFormState } from "@/lib/actions/coupons";
+import type { FormState } from "@/types";
 import {
   appendGuideItem,
   revalidateGuidePages,
@@ -84,9 +84,9 @@ export async function fetchStoreProductDetails(
 }
 
 export async function addStoreProduct(
-  _prevState: CouponFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<CouponFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = StoreProductSchema.safeParse(Object.fromEntries(formData));

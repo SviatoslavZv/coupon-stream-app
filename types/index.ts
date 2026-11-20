@@ -86,3 +86,9 @@ export type GuideSummary = Pick<
   Guide,
   "slug" | "title" | "intro" | "metaDescription" | "eventSlug" | "updatedAt"
 >;
+
+/** What a server action sends back to its form: an error to show, or a success flag. */
+export interface FormState {
+  error?: string;
+  success?: boolean;
+}

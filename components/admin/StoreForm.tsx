@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState, useRef, useEffect } from "react";
-import type { StoreFormState } from "@/lib/actions/stores";
+import type { FormState } from "@/types";
 import { slugify, extractDomain, faviconUrl } from "@/lib/utils";
 
 interface StoreFormValues {
@@ -20,9 +20,9 @@ export default function StoreForm({
     initialValues,
 }: {
     action: (
-        prevState: StoreFormState | null,
+        prevState: FormState | null,
         formData: FormData
-    ) => Promise<StoreFormState>;
+    ) => Promise<FormState>;
     initialValues?: StoreFormValues;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);

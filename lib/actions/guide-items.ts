@@ -10,16 +10,12 @@ import {
   MoveGuideItemSchema,
   UpdateGuideItemSchema,
 } from "@/lib/schemas/guide-items";
-
-export interface GuideItemFormState {
-  error?: string;
-  success?: boolean;
-}
+import type { FormState } from "@/types";
 
 export async function addGuideItem(
-  _prevState: GuideItemFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<GuideItemFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = AddGuideItemSchema.safeParse(Object.fromEntries(formData));
@@ -43,9 +39,9 @@ export async function addGuideItem(
 }
 
 export async function updateGuideItemComment(
-  _prevState: GuideItemFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<GuideItemFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = UpdateGuideItemSchema.safeParse(Object.fromEntries(formData));

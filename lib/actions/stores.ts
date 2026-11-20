@@ -9,10 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { StoreSchema, type StoreInput } from "@/lib/schemas/stores";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
-
-export interface StoreFormState {
-  error?: string;
-}
+import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
 
@@ -45,9 +42,9 @@ function revalidateStorePages(slug?: string): void {
 }
 
 export async function createStore(
-  _prevState: StoreFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<StoreFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = StoreSchema.safeParse(Object.fromEntries(formData));
@@ -65,9 +62,9 @@ export async function createStore(
 }
 
 export async function updateStore(
-  _prevState: StoreFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<StoreFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const id = z.uuid().safeParse(formData.get("id"));

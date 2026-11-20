@@ -2,7 +2,7 @@
 
 import { useActionState, useState } from "react";
 import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
-import type { CouponFormState } from "@/lib/actions/coupons";
+import type { FormState } from "@/types";
 
 interface GuideOption {
     id: string;
@@ -20,7 +20,7 @@ export default function AmazonLinkForm({
     initialValues,
     hiddenFields,
 }: {
-    action: (prevState: CouponFormState | null, formData: FormData) => Promise<CouponFormState>;
+    action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     guideOptions: GuideOption[];
     initialValues: { title: string; brand: string | null };
     hiddenFields: Record<string, string>;

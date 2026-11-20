@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState, useTransition, type ChangeEvent } from "react";
-import type { CouponFormState } from "@/lib/actions/coupons";
+import type { FormState } from "@/types";
 import { fetchStoreProductDetails } from "@/lib/actions/store-products";
 import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
 import type { StoreOption } from "@/lib/stores";
@@ -44,7 +44,7 @@ export default function StoreProductForm({
     storeOptions,
     guideOptions,
 }: {
-    action: (prevState: CouponFormState | null, formData: FormData) => Promise<CouponFormState>;
+    action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     storeOptions: StoreOption[];
     guideOptions: GuideOption[];
 }) {

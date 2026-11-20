@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { GuideFormState } from "@/lib/actions/guides";
+import type { FormState } from "@/types";
 import { INTRO_RECOMMENDED_WORDS, META_DESCRIPTION_MAX } from "@/lib/constants/guides";
 import { SALES_CALENDAR } from "@/lib/constants/sales-calendar";
 import { CATEGORIES, GENDERS } from "@/lib/constants/taxonomy";
@@ -20,7 +20,7 @@ export default function GuideForm({
     action,
     initialValues,
 }: {
-    action: (prevState: GuideFormState | null, formData: FormData) => Promise<GuideFormState>;
+    action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     initialValues?: GuideFormValues;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);

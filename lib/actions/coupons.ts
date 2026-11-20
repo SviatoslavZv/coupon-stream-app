@@ -9,10 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { CouponSchema, type CouponInput } from "@/lib/schemas/coupons";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
-
-export interface CouponFormState {
-  error?: string;
-}
+import type { FormState } from "@/types";
 
 function toRow(input: CouponInput) {
   return {
@@ -32,9 +29,9 @@ function toRow(input: CouponInput) {
 }
 
 export async function createCoupon(
-  _prevState: CouponFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<CouponFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = CouponSchema.safeParse(Object.fromEntries(formData));
@@ -55,9 +52,9 @@ export async function createCoupon(
 }
 
 export async function updateCoupon(
-  _prevState: CouponFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<CouponFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const id = z.uuid().safeParse(formData.get("id"));

@@ -10,10 +10,7 @@ import { firstErrorMessage } from "@/lib/schemas/common";
 import { ShopLinkSchema, type ShopLinkInput } from "@/lib/schemas/shop-links";
 import { extractAmazonAsin, extractNetworkLinkId } from "@/lib/network-links";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
-
-export interface ShopLinkFormState {
-  error?: string;
-}
+import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
 
@@ -40,9 +37,9 @@ function saveErrorMessage(code: string | undefined): string {
 }
 
 export async function createShopLink(
-  _prevState: ShopLinkFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<ShopLinkFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = ShopLinkSchema.safeParse(Object.fromEntries(formData));
@@ -62,9 +59,9 @@ export async function createShopLink(
 }
 
 export async function updateShopLink(
-  _prevState: ShopLinkFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<ShopLinkFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const id = z.uuid().safeParse(formData.get("id"));
@@ -92,9 +89,9 @@ export async function updateShopLink(
 const FOREIGN_KEY_VIOLATION = "23503";
 
 export async function deleteShopLink(
-  _prevState: ShopLinkFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<ShopLinkFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const id = z.uuid().safeParse(formData.get("id"));

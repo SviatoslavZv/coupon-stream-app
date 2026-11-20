@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import type { ShopLinkFormState } from "@/lib/actions/shop-links";
+import type { FormState } from "@/types";
 import {
     SHOP_LINK_KINDS,
     SHOP_LINK_KIND_LABELS,
@@ -21,7 +21,7 @@ export default function ShopLinkForm({
     storeOptions,
     initialValues,
 }: {
-    action: (prevState: ShopLinkFormState | null, formData: FormData) => Promise<ShopLinkFormState>;
+    action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     storeOptions: StoreOption[];
     initialValues?: AdminShopLink;
 }) {

@@ -9,10 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { GuideSchema, type GuideInput } from "@/lib/schemas/guides";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
-
-export interface GuideFormState {
-  error?: string;
-}
+import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
 
@@ -42,9 +39,9 @@ function revalidateGuide(slug: string) {
 }
 
 export async function createGuide(
-  _prevState: GuideFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<GuideFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const parsed = GuideSchema.safeParse(Object.fromEntries(formData));
@@ -70,9 +67,9 @@ export async function createGuide(
 }
 
 export async function updateGuide(
-  _prevState: GuideFormState | null,
+  _prevState: FormState | null,
   formData: FormData,
-): Promise<GuideFormState> {
+): Promise<FormState> {
   const supabase = await requireAdmin();
 
   const id = z.uuid().safeParse(formData.get("id"));
