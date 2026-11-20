@@ -1,11 +1,12 @@
 import type { Guide } from "@/types";
+import { SITE_URL } from "@/lib/constants/site";
 
 function safeJsonLd(data: object): string {
     return JSON.stringify(data).replace(/</g, "\\u003c");
 }
 
 export default function GuideStructuredData({ guide }: { guide: Guide }) {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://couponcreek.com";
+    const baseUrl = SITE_URL;
     const guideUrl = `${baseUrl}/guides/${guide.slug}`;
 
     const itemListSchema = {

@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
+import { SITE_URL } from "@/lib/constants/site";
 import { getStores } from "@/lib/stores";
 import { getCategoriesWithCoupons, getBrandsWithCoupons } from "@/lib/coupons";
 import { getPublishedGuides } from "@/lib/guides";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://couponcreek.com";
+  const siteUrl = SITE_URL;
   const now = new Date();
 
   // Статические страницы

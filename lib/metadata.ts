@@ -1,9 +1,7 @@
 // lib/metadata.ts
 
 import type { Metadata } from "next";
-
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+import { SITE_URL } from "@/lib/constants/site";
 
 export function buildPageMetadata({
   title,
@@ -14,7 +12,6 @@ export function buildPageMetadata({
   description: string;
   path: string;
 }): Metadata {
-
   const cleanPath = path.startsWith("/") ? path : `/${path}`;
   const absoluteUrl = `${SITE_URL}${cleanPath}`;
 
@@ -22,12 +19,10 @@ export function buildPageMetadata({
     title,
     description,
 
-
     alternates: {
       canonical: absoluteUrl,
     },
 
-  
     openGraph: {
       title,
       description,
@@ -36,7 +31,6 @@ export function buildPageMetadata({
       type: "website",
     },
 
-    
     twitter: {
       card: "summary_large_image",
       title,

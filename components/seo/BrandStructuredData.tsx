@@ -1,4 +1,5 @@
 import type { BrandCoupon } from "@/lib/coupons";
+import { SITE_URL } from "@/lib/constants/site";
 
 interface BrandStructuredDataProps {
     brandName: string;
@@ -15,7 +16,7 @@ export default function BrandStructuredData({
     brandSlug,
     coupons,
 }: BrandStructuredDataProps) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const siteUrl = SITE_URL;
 
     const jsonLd = {
         "@context": "https://schema.org",

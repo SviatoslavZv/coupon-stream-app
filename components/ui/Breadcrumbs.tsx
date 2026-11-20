@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SITE_URL } from "@/lib/constants/site";
 
 interface BreadcrumbItem {
     label: string;
@@ -10,7 +11,7 @@ function safeJsonLd(data: object): string {
 }
 
 export default function Breadcrumbs({ items }: { items: BreadcrumbItem[] }) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const siteUrl = SITE_URL;
 
     const jsonLd = {
         "@context": "https://schema.org",

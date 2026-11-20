@@ -1,5 +1,6 @@
-import type { CategoryCoupon } from "@/lib/coupons";
+import { SITE_URL } from "@/lib/constants/site";
 
+import type { CategoryCoupon } from "@/lib/coupons";
 interface CategoryStructuredDataProps {
     categoryName: string;
     categorySlug: string;
@@ -15,7 +16,7 @@ export default function CategoryStructuredData({
     categorySlug,
     coupons,
 }: CategoryStructuredDataProps) {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const siteUrl = SITE_URL;
 
     const jsonLd = {
         "@context": "https://schema.org",

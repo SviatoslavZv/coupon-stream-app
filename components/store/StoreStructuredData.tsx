@@ -1,5 +1,6 @@
-import type { Store, Coupon } from "@/types";
+import { SITE_URL } from "@/lib/constants/site";
 
+import type { Store, Coupon } from "@/types";
 interface StoreStructuredDataProps {
     store: Pick<Store, "slug" | "name" | "logoUrl">;
     coupons: Coupon[];
@@ -13,7 +14,7 @@ export default function StoreStructuredData({
     store,
     coupons,
 }: StoreStructuredDataProps) {
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://couponcreek.com";
+    const baseUrl = SITE_URL;
     const storeUrl = `${baseUrl}/store/${store.slug}`;
 
     // 1. Список промокодов (ItemList из Offer)
