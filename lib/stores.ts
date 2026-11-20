@@ -179,8 +179,12 @@ interface DeepLinkStoreRow {
   website_url: string | null;
 }
 
-/** Stores whose affiliate link can be turned into a product deep link. */
-export async function getDeepLinkStoreOptions(): Promise<StoreOption[]> {
+export interface DeepLinkStore extends StoreOption {
+  websiteUrl: string;
+}
+
+/** Stores whose affiliate link can be turned into a product deep link, with their sites. */
+export async function getDeepLinkStores(): Promise<DeepLinkStore[]> {
   const supabase = await requireAdmin();
 
   const { data, error } = await supabase
@@ -193,11 +197,16 @@ export async function getDeepLinkStoreOptions(): Promise<StoreOption[]> {
   }
 
   // The homepage is a page of the store too: if it works, any product page will
-  return (data as DeepLinkStoreRow[])
-    .filter(
-      (row) =>
-        row.website_url !== null &&
-        buildDeepLink(row.affiliate_link, row.website_url, row.website_url).ok,
-    )
-    .map(({ id, name }) => ({ id, name }));
+  return (data as DeepLinkStoreRow[]).flatMap(
+    ({ id, name, affiliate_link, website_url }) =>
+      website_url !== null &&
+      buildDeepLink(affiliate_link, website_url, website_url).ok
+        ? [{ id, name, websiteUrl: website_url }]
+        : [],
+  );
+}
+
+/** The same stores for a dropdown: id and name only. */
+export async function getDeepLinkStoreOptions(): Promise<StoreOption[]> {
+  return (await getDeepLinkStores()).map(({ id, name }) => ({ id, name }));
 }

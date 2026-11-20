@@ -29,7 +29,8 @@ const EMPTY_VALUES = {
 
 type FieldChange = ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>;
 
-interface LookupMessage {
+export type StoreProductValues = Record<keyof typeof EMPTY_VALUES, string>;
+export interface LookupMessage {
     tone: "success" | "error";
     text: string;
 }
@@ -43,14 +44,19 @@ export default function StoreProductForm({
     action,
     storeOptions,
     guideOptions,
+    initialValues,
+    initialLookup,
 }: {
     action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     storeOptions: StoreOption[];
     guideOptions: GuideOption[];
+    /** Filled in by Quick add: store, address and, if the page allowed it, title and image. */
+    initialValues?: Partial<StoreProductValues>;
+    initialLookup?: LookupMessage;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);
     // Controlled fields keep what you typed when the server returns an error
-    const [values, setValues] = useState(EMPTY_VALUES);
+    const [values, setValues] = useState<StoreProductValues>(() => ({ ...EMPTY_VALUES, ...initialValues }));
 
     function handleChange(event: FieldChange) {
         const { name, value } = event.target;
@@ -58,7 +64,7 @@ export default function StoreProductForm({
     }
 
     const [isFetching, startFetching] = useTransition();
-    const [lookupMessage, setLookupMessage] = useState<LookupMessage | null>(null);
+    const [lookupMessage, setLookupMessage] = useState<LookupMessage | null>(initialLookup ?? null);
 
     function handleFetchDetails() {
         setLookupMessage(null);

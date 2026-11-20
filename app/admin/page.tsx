@@ -8,6 +8,7 @@ import { ADMIN_ROUTES, EXPIRING_SOON_DAYS, withQuery } from "@/lib/constants/adm
 import { SHOP_LINK_CHECK_STATUS_LABELS } from "@/lib/constants/shop-links";
 import { formatShortDate } from "@/lib/utils";
 import AttentionList, { type AttentionRow } from "@/components/admin/AttentionList";
+import QuickAddForm from "@/components/admin/QuickAddForm";
 
 const QUICK_ACTIONS = [
     { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
@@ -61,6 +62,10 @@ export default async function AdminDashboard() {
     return (
         <div className="mx-auto max-w-5xl px-4 py-10">
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Dashboard</h1>
+
+            <div className="mb-8">
+                <QuickAddForm />
+            </div>
 
             <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
                 {stats.map((stat) => (

@@ -13,6 +13,7 @@ export const ATTENTION_LIST_LIMIT = 8;
 export const ADMIN_ROUTES = {
   dashboard: ADMIN_ROOT,
   amazonImport: AMAZON_IMPORT_PATH,
+  amazonLink: (asin: string) => `${AMAZON_IMPORT_PATH}/link/${asin}`,
   storeProductNew: `${ADMIN_ROOT}/store-products/new`,
   stores: `${ADMIN_ROOT}/stores`,
   storeNew: `${ADMIN_ROOT}/stores/new`,

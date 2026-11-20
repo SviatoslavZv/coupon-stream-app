@@ -117,6 +117,12 @@ function belongsToSite(page: URL, website: URL): boolean {
   const siteHost = bareHost(website.hostname);
   return pageHost === siteHost || pageHost.endsWith(`.${siteHost}`);
 }
+/** True when the page address is on the store's site, for example to find the store of a pasted link. */
+export function isPageOfSite(pageUrl: string, websiteUrl: string): boolean {
+  const page = parseUrl(pageUrl);
+  const website = parseUrl(websiteUrl);
+  return page !== null && website !== null && belongsToSite(page, website);
+}
 
 /** Drops the #anchor and utm_* tags: the network adds its own tracking. */
 function cleanProductUrl(page: URL): string {

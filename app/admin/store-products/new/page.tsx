@@ -1,17 +1,40 @@
 import { requireAdmin } from "@/lib/auth";
-import { addStoreProduct } from "@/lib/actions/store-products";
+import { addStoreProduct, fetchStoreProductDetails } from "@/lib/actions/store-products";
 import { getGuidesForAdmin } from "@/lib/guides";
 import { getDeepLinkStoreOptions } from "@/lib/stores";
-import StoreProductForm from "@/components/admin/StoreProductForm";
+import { parseStoreProductPrefill } from "@/lib/schemas/store-products";
+import StoreProductForm, {
+    type LookupMessage,
+    type StoreProductValues,
+} from "@/components/admin/StoreProductForm";
 
-export default async function NewStoreProductPage() {
+export default async function NewStoreProductPage(props: PageProps<"/admin/store-products/new">) {
     await requireAdmin();
 
-    const [storeOptions, guides] = await Promise.all([
+    const [storeOptions, guides, prefill] = await Promise.all([
         getDeepLinkStoreOptions(),
         getGuidesForAdmin(),
+        props.searchParams.then(parseStoreProductPrefill),
     ]);
     const guideOptions = guides.map(({ id, title, isPublished }) => ({ id, title, isPublished }));
+
+    // Quick add sends ?store=…&url=…: pick that store and read the product page right away
+    const storeId = storeOptions.some((store) => store.id === prefill.store) ? prefill.store : undefined;
+    let initialValues: Partial<StoreProductValues> | undefined;
+    let initialLookup: LookupMessage | undefined;
+
+    if (storeId && prefill.url) {
+        const details = await fetchStoreProductDetails(storeId, prefill.url);
+        initialValues = {
+            storeId,
+            productUrl: prefill.url,
+            ...(details.ok && details.title ? { title: details.title } : {}),
+            ...(details.ok && details.imageUrl ? { imageUrl: details.imageUrl } : {}),
+        };
+        initialLookup = details.ok
+            ? { tone: "success", text: "Filled in from the store page. Check the title and the picture." }
+            : { tone: "error", text: details.error };
+    }
 
     return (
         <div className="mx-auto max-w-xl px-4 py-10">
@@ -24,6 +47,8 @@ export default async function NewStoreProductPage() {
                 action={addStoreProduct}
                 storeOptions={storeOptions}
                 guideOptions={guideOptions}
+                initialValues={initialValues}
+                initialLookup={initialLookup}
             />
         </div>
     );
