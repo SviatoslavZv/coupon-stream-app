@@ -8,7 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { StoreSchema, type StoreInput } from "@/lib/schemas/stores";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
@@ -58,7 +58,7 @@ export async function createStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect(ADMIN_ROUTES.stores);
+  redirect(withNotice(ADMIN_ROUTES.stores, "created"));
 }
 
 export async function updateStore(
@@ -86,7 +86,7 @@ export async function updateStore(
   }
 
   revalidateStorePages(parsed.data.slug);
-  redirect(ADMIN_ROUTES.stores);
+  redirect(withNotice(ADMIN_ROUTES.stores, "saved"));
 }
 
 export async function deleteStore(formData: FormData): Promise<void> {

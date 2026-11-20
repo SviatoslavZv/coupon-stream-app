@@ -8,7 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { GuideSchema, type GuideInput } from "@/lib/schemas/guides";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
@@ -63,7 +63,7 @@ export async function createGuide(
   }
 
   revalidateGuide(parsed.data.slug);
-  redirect(ADMIN_ROUTES.guideEdit(data.id));
+  redirect(withNotice(ADMIN_ROUTES.guideEdit(data.id), "created"));
 }
 
 export async function updateGuide(
@@ -110,7 +110,7 @@ export async function updateGuide(
   if (current.slug !== parsed.data.slug) {
     revalidateGuide(parsed.data.slug);
   }
-  redirect(ADMIN_ROUTES.guides);
+  redirect(withNotice(ADMIN_ROUTES.guides, "saved"));
 }
 
 export async function deleteGuide(formData: FormData) {

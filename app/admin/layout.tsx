@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { requireAdmin } from "@/lib/auth";
 import AdminHeader from "@/components/admin/AdminHeader";
+import AdminNoticeToast from "@/components/admin/AdminNoticeToast";
 
 export const metadata: Metadata = {
     title: { default: "Admin", template: "%s · Admin" },
@@ -20,6 +22,9 @@ export default async function AdminLayout({
         <div className="flex min-h-screen flex-col bg-paper">
             <AdminHeader />
             <main className="flex-1">{children}</main>
+            <Suspense fallback={null}>
+                <AdminNoticeToast />
+            </Suspense>
         </div>
     );
 }

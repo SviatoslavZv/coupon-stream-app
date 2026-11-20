@@ -22,7 +22,7 @@ import {
 } from "@/lib/schemas/amazon-import";
 import { AMAZON_PICKS_SID, AMAZON_STORE_SLUG } from "@/lib/constants/amazon";
 import { guideTrackingId } from "@/lib/network-links";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 
 interface ExistingCouponRow {
   expires_at: string;
@@ -82,7 +82,7 @@ export async function importAmazonCoupon(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(input.returnTo);
+  redirect(withNotice(input.returnTo, "added"));
 }
 
 async function buildLinkSid(
@@ -191,5 +191,5 @@ export async function importAmazonProductLink(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(input.returnTo);
+  redirect(withNotice(input.returnTo, "added"));
 }

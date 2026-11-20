@@ -9,7 +9,7 @@ import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { ShopLinkSchema, type ShopLinkInput } from "@/lib/schemas/shop-links";
 import { extractAmazonAsin, extractNetworkLinkId } from "@/lib/network-links";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 import type { FormState } from "@/types";
 
 const UNIQUE_VIOLATION = "23505";
@@ -55,7 +55,7 @@ export async function createShopLink(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.shopLinks);
+  redirect(withNotice(ADMIN_ROUTES.shopLinks, "created"));
 }
 
 export async function updateShopLink(
@@ -83,7 +83,7 @@ export async function updateShopLink(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.shopLinks);
+  redirect(withNotice(ADMIN_ROUTES.shopLinks, "saved"));
 }
 
 const FOREIGN_KEY_VIOLATION = "23503";

@@ -52,3 +52,27 @@ export function withQuery(
   const query = new URLSearchParams(params).toString();
   return query ? `${path}?${query}` : path;
 }
+
+/** Short confirmations shown after a save. The key travels in the address: ?notice=saved */
+export const ADMIN_NOTICES = {
+  saved: "Saved ✓",
+  created: "Created ✓",
+  added: "Added ✓",
+} as const;
+
+export type AdminNotice = keyof typeof ADMIN_NOTICES;
+
+export const NOTICE_PARAM = "notice";
+export const NOTICE_VISIBLE_MS = 3000;
+
+export function isAdminNotice(value: string | null): value is AdminNotice {
+  return value !== null && Object.hasOwn(ADMIN_NOTICES, value);
+}
+
+/** Adds ?notice=… to an address that may already have filters: /admin/coupons?status=active&notice=saved */
+export function withNotice(path: string, notice: AdminNotice): string {
+  const [base, query = ""] = path.split("?");
+  const params = new URLSearchParams(query);
+  params.set(NOTICE_PARAM, notice);
+  return `${base}?${params.toString()}`;
+}

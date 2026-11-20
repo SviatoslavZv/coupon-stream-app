@@ -8,7 +8,7 @@ import { z } from "zod";
 import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { CouponSchema, type CouponInput } from "@/lib/schemas/coupons";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 import type { FormState } from "@/types";
 
 function toRow(input: CouponInput) {
@@ -48,7 +48,7 @@ export async function createCoupon(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.coupons);
+  redirect(withNotice(ADMIN_ROUTES.coupons, "created"));
 }
 
 export async function updateCoupon(
@@ -78,7 +78,7 @@ export async function updateCoupon(
   }
 
   revalidatePath(ADMIN_ROUTES.dashboard, "layout");
-  redirect(ADMIN_ROUTES.coupons);
+  redirect(withNotice(ADMIN_ROUTES.coupons, "saved"));
 }
 
 export async function deleteCoupon(formData: FormData): Promise<void> {
