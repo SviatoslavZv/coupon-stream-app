@@ -2,14 +2,12 @@ import { notFound } from "next/navigation";
 import { getCouponById } from "@/lib/coupons";
 import { getStoreOptions } from "@/lib/stores";
 import { updateCoupon } from "@/lib/actions/coupons";
+import { ADMIN_ROUTES, RETURN_TO_PARAM, safeAdminReturnTo } from "@/lib/constants/admin";
 import CouponForm from "@/components/admin/CouponForm";
 
-export default async function EditCouponPage({
-    params,
-}: {
-    params: Promise<{ id: string }>;
-}) {
-    const { id } = await params;
+export default async function EditCouponPage(props: PageProps<"/admin/coupons/[id]/edit">) {
+    const { id } = await props.params;
+    const returnTo = safeAdminReturnTo((await props.searchParams)[RETURN_TO_PARAM], ADMIN_ROUTES.coupons);
 
     const [coupon, storeOptions] = await Promise.all([
         getCouponById(id),
@@ -28,6 +26,7 @@ export default async function EditCouponPage({
             <CouponForm
                 action={updateCoupon}
                 storeOptions={storeOptions}
+                hiddenFields={{ [RETURN_TO_PARAM]: returnTo }}
                 initialValues={{
                     id: coupon.id,
                     storeId: coupon.store_id,

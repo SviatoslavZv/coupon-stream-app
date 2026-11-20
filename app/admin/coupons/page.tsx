@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllCouponsForAdmin } from "@/lib/coupons";
 import { getStoreOptions } from "@/lib/stores";
-import { filterAdminCoupons } from "@/lib/admin-filters";
+import { activeFilterParams, filterAdminCoupons } from "@/lib/admin-filters";
 import {
     COUPON_STATUS_FILTERS,
     COUPON_STATUS_LABELS,
@@ -10,7 +10,7 @@ import {
 } from "@/lib/schemas/admin-filters";
 import { isCouponExpired } from "@/lib/utils";
 import { deleteCoupon, markCouponVerified } from "@/lib/actions/coupons";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, RETURN_TO_PARAM, withQuery } from "@/lib/constants/admin";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
@@ -28,6 +28,14 @@ const STATUS_OPTIONS = COUPON_STATUS_FILTERS.map((value) => ({
 export default async function AdminCouponsPage(props: PageProps<"/admin/coupons">) {
     const filters = parseAdminCouponFilters(await props.searchParams);
     const [allCoupons, storeOptions] = await Promise.all([getAllCouponsForAdmin(), getStoreOptions()]);
+
+    // Edit links remember this filtered list, so a save brings you back to it
+    const backParams = activeFilterParams(filters);
+    const backTo = withQuery(ADMIN_ROUTES.coupons, backParams);
+    const editHref = (id: string) =>
+        Object.keys(backParams).length > 0
+            ? withQuery(ADMIN_ROUTES.couponEdit(id), { [RETURN_TO_PARAM]: backTo })
+            : ADMIN_ROUTES.couponEdit(id);
 
     const coupons = filterAdminCoupons(allCoupons, filters).sort((a, b) => {
         const storeCompare = a.storeName.localeCompare(b.storeName);
@@ -90,7 +98,7 @@ export default async function AdminCouponsPage(props: PageProps<"/admin/coupons"
                                             </button>
                                         </form>
                                         <Link
-                                            href={ADMIN_ROUTES.couponEdit(coupon.id)}
+                                            href={editHref(coupon.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit

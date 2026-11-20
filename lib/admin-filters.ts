@@ -52,3 +52,16 @@ export function filterAdminShopLinks(
     return matchesText(q, [link.title, link.brand, link.asin, link.storeName]);
   });
 }
+
+/** Filters that are actually set, as address parameters. "all" is the default, so it is left out. */
+export function activeFilterParams({
+  q,
+  store,
+  status,
+}: AdminCouponFilters | AdminLinkFilters): Record<string, string> {
+  return {
+    ...(q ? { q } : {}),
+    ...(store ? { store } : {}),
+    ...(status !== "all" ? { status } : {}),
+  };
+}

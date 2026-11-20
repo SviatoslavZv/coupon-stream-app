@@ -20,10 +20,12 @@ export default function ShopLinkForm({
     action,
     storeOptions,
     initialValues,
+    hiddenFields,
 }: {
     action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
     storeOptions: StoreOption[];
     initialValues?: AdminShopLink;
+    hiddenFields?: Record<string, string>;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);
 
@@ -51,6 +53,11 @@ export default function ShopLinkForm({
     return (
         <form action={formAction} className="flex flex-col gap-4">
             {initialValues && <input type="hidden" name="id" value={initialValues.id} />}
+
+            {hiddenFields &&
+                Object.entries(hiddenFields).map(([name, value]) => (
+                    <input key={name} type="hidden" name={name} value={value} />
+                ))}
 
             {state?.error && (
                 <div className="rounded-lg border border-coupon bg-coupon/5 px-3 py-2 text-sm text-coupon">

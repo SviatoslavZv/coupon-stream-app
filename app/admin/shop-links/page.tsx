@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getShopLinksForAdmin } from "@/lib/shop-links";
 import { getStoreOptions } from "@/lib/stores";
-import { filterAdminShopLinks } from "@/lib/admin-filters";
+import { activeFilterParams, filterAdminShopLinks } from "@/lib/admin-filters";
 import {
     LINK_STATUS_FILTERS,
     LINK_STATUS_LABELS,
     parseAdminLinkFilters,
 } from "@/lib/schemas/admin-filters";
 import { SHOP_LINK_KIND_LABELS } from "@/lib/constants/shop-links";
-import { ADMIN_ROUTES } from "@/lib/constants/admin";
+import { ADMIN_ROUTES, RETURN_TO_PARAM, withQuery } from "@/lib/constants/admin";
 import AdminPageHeader from "@/components/admin/AdminPageHeader";
 import AdminFilterBar from "@/components/admin/AdminFilterBar";
 import AdminTableFrame from "@/components/admin/AdminTableFrame";
@@ -29,6 +29,14 @@ export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-l
     const [allLinks, storeOptions] = await Promise.all([getShopLinksForAdmin(), getStoreOptions()]);
     const shopLinks = filterAdminShopLinks(allLinks, filters);
 
+    // Edit links remember this filtered list, so a save brings you back to it
+    const backParams = activeFilterParams(filters);
+    const backTo = withQuery(ADMIN_ROUTES.shopLinks, backParams);
+    const editHref = (id: string) =>
+        Object.keys(backParams).length > 0
+            ? withQuery(ADMIN_ROUTES.shopLinkEdit(id), { [RETURN_TO_PARAM]: backTo })
+            : ADMIN_ROUTES.shopLinkEdit(id);
+
     return (
         <div className="mx-auto max-w-4xl px-4 py-10">
             <AdminPageHeader title="Links" count={allLinks.length}>
@@ -45,7 +53,6 @@ export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-l
                     + Add Link
                 </Link>
             </AdminPageHeader>
-
 
             <AdminFilterBar
                 action={ADMIN_ROUTES.shopLinks}
@@ -81,7 +88,7 @@ export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-l
                                 <td className="px-5 py-3">
                                     <div className="flex items-start justify-end gap-3">
                                         <Link
-                                            href={ADMIN_ROUTES.shopLinkEdit(link.id)}
+                                            href={editHref(link.id)}
                                             className="text-xs font-medium text-ink/60 hover:text-ink"
                                         >
                                             Edit
@@ -91,7 +98,6 @@ export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-l
                                 </td>
                             </tr>
                         ))}
-
                         {shopLinks.length === 0 && (
                             <tr>
                                 <td colSpan={5} className="px-5 py-8 text-center text-ink/60">
@@ -99,7 +105,6 @@ export default async function AdminShopLinksPage(props: PageProps<"/admin/shop-l
                                 </td>
                             </tr>
                         )}
-
                     </tbody>
                 </table>
             </AdminTableFrame>

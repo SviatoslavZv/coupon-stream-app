@@ -76,3 +76,17 @@ export function withNotice(path: string, notice: AdminNotice): string {
   params.set(NOTICE_PARAM, notice);
   return `${base}?${params.toString()}`;
 }
+
+/** Hidden field and query parameter that carry "where to go back" after a save. */
+export const RETURN_TO_PARAM = "returnTo";
+
+/**
+ * The list address to go back to, only if it is that list (with or without filters).
+ * Anything else, such as another site or another section, falls back to the plain list.
+ */
+export function safeAdminReturnTo(value: unknown, listPath: string): string {
+  return typeof value === "string" &&
+    (value === listPath || value.startsWith(`${listPath}?`))
+    ? value
+    : listPath;
+}
