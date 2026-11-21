@@ -20,6 +20,3 @@ export const SORT_ORDER_STEP = 10;
 export const GUIDE_EXCERPT_LENGTH = 180;
 
 export const RELATED_GUIDES_LIMIT = 3;
-
-/** How many catalog matches the guide editor shows at once; type more words to narrow down. */
-export const GUIDE_PICKER_RESULTS_LIMIT = 8;

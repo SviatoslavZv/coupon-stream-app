@@ -22,7 +22,9 @@ export default async function GuideItemsEditor({ guideId }: { guideId: string })
                 source: "shop_link" as const,
                 storeName: link.storeName,
                 title: link.title,
-                detail: link.brand,
+                // Amazon titles already start with the brand, so show it only when the title lacks it
+                detail:
+                    link.brand && !link.title.toLowerCase().includes(link.brand.toLowerCase()) ? link.brand : null,
                 isHidden: !link.isActive,
             })),
         ...coupons

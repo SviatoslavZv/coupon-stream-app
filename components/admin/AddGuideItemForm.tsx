@@ -5,7 +5,6 @@ import { addGuideItem } from "@/lib/actions/guide-items";
 import {
     GUIDE_ITEM_SOURCES,
     GUIDE_ITEM_SOURCE_LABELS,
-    GUIDE_PICKER_RESULTS_LIMIT,
     type GuideItemSource,
 } from "@/lib/constants/guides";
 import { matchesAllWords } from "@/lib/utils";
@@ -73,7 +72,6 @@ export default function AddGuideItemForm({ guideId, options }: { guideId: string
     const matches = options.filter(
         (option) => (filter === "all" || option.source === filter) && matchesAllWords(searchText(option), query),
     );
-    const shown = matches.slice(0, GUIDE_PICKER_RESULTS_LIMIT);
 
     return (
         <form action={formAction} className="flex flex-col gap-3 rounded-2xl border border-line bg-white p-4">
@@ -128,9 +126,9 @@ export default function AddGuideItemForm({ guideId, options }: { guideId: string
                         ))}
                     </div>
 
-                    {shown.length > 0 ? (
-                        <ul className="flex flex-col divide-y divide-line rounded-lg border border-line">
-                            {shown.map((option) => (
+                    {matches.length > 0 ? (
+                        <ul className="flex max-h-80 flex-col divide-y divide-line overflow-y-auto rounded-lg border border-line">
+                            {matches.map((option) => (
                                 <li key={option.id}>
                                     <button
                                         type="button"
@@ -145,12 +143,6 @@ export default function AddGuideItemForm({ guideId, options }: { guideId: string
                     ) : (
                         <p className="text-sm text-ink/60">
                             {options.length > 0 ? "Nothing matches. Try fewer words." : "Nothing available to add."}
-                        </p>
-                    )}
-
-                    {matches.length > shown.length && (
-                        <p className="text-xs text-ink/50">
-                            Showing {shown.length} of {matches.length}. Type more words to narrow down.
                         </p>
                     )}
                 </div>
