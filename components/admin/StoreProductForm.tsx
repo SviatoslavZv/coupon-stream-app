@@ -89,6 +89,22 @@ export default function StoreProductForm({
     const { imageUrl, guideId } = values;
     const showPreview = imageUrl.trim().startsWith("https://");
 
+    // Some stores refuse to show their pictures on other sites: remember which address failed
+    const [brokenImageUrl, setBrokenImageUrl] = useState<string | null>(null);
+    const isImageBroken = showPreview && brokenImageUrl === imageUrl.trim();
+
+    function clearImage() {
+        setValues((prev) => ({ ...prev, imageUrl: "" }));
+    }
+
+    // The page is rendered on the server, so the picture may fail before React starts listening for onError.
+    // When React gets the <img>, check whether the browser already gave up on it.
+    function checkFailedImage(img: HTMLImageElement | null) {
+        if (img?.complete && img.naturalWidth === 0) {
+            setBrokenImageUrl(imageUrl.trim());
+        }
+    }
+
     return (
         <form action={formAction} className="flex flex-col gap-4">
             {state?.error && (
@@ -174,13 +190,30 @@ export default function StoreProductForm({
                     placeholder="https://…"
                     className={FIELD_CLASS}
                 />
-                {showPreview && (
+                {showPreview && !isImageBroken && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                         src={imageUrl.trim()}
                         alt="Product preview"
+                        ref={checkFailedImage}
+                        onError={() => setBrokenImageUrl(imageUrl.trim())}
                         className="mt-2 h-24 w-24 rounded-lg border border-line object-contain"
                     />
+                )}
+                {isImageBroken && (
+                    <div className="mt-2 rounded-lg border border-coupon bg-coupon/5 px-3 py-2 text-xs text-coupon">
+                        <p>
+                            This picture does not load here, so visitors would see an empty box. The store may block
+                            showing its pictures on other sites, or the address is wrong.
+                        </p>
+                        <button
+                            type="button"
+                            onClick={clearImage}
+                            className="mt-2 rounded-full border border-coupon px-3 py-1 font-semibold transition hover:bg-coupon hover:text-white"
+                        >
+                            Clear image
+                        </button>
+                    </div>
                 )}
             </div>
 

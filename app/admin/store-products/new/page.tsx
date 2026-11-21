@@ -23,7 +23,16 @@ export default async function NewStoreProductPage(props: PageProps<"/admin/store
     let initialValues: Partial<StoreProductValues> | undefined;
     let initialLookup: LookupMessage | undefined;
 
-    if (storeId && prefill.url) {
+    if (storeId && prefill.url && (prefill.title || prefill.image)) {
+        // The bookmarklet already read the page in your browser: no request to the store at all
+        initialValues = {
+            storeId,
+            productUrl: prefill.url,
+            ...(prefill.title ? { title: prefill.title } : {}),
+            ...(prefill.image ? { imageUrl: prefill.image } : {}),
+        };
+        initialLookup = { tone: "success", text: "Filled in from your browser. Check the title and the picture." };
+    } else if (storeId && prefill.url) {
         const details = await fetchStoreProductDetails(storeId, prefill.url);
         initialValues = {
             storeId,

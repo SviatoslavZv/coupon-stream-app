@@ -5,6 +5,7 @@ import { BRANDS } from "@/lib/constants/taxonomy";
 import {
   emptyToNull,
   flattenSearchParams,
+  blankToUndefined,
   type RawSearchParams,
   httpsUrl,
   optionalHttpsUrl,
@@ -42,11 +43,27 @@ export const StoreProductLookupSchema = z.object({
 export const STORE_PRODUCT_PREFILL_PARAMS = {
   store: "store",
   url: "url",
+  title: "title",
+  image: "image",
 } as const;
 
+const PREFILL_TITLE_MAX_LENGTH = 300;
+
+// Title and image come from the bookmarklet, which reads them in your own browser
 const StoreProductPrefillSchema = z.object({
   [STORE_PRODUCT_PREFILL_PARAMS.store]: z.uuid().optional().catch(undefined),
+  // http is accepted here only to show an honest message; resolveQuickAdd upgrades the address to https
   [STORE_PRODUCT_PREFILL_PARAMS.url]: z
+    .url({ protocol: /^https?$/ })
+    .optional()
+    .catch(undefined),
+  [STORE_PRODUCT_PREFILL_PARAMS.title]: z
+    .preprocess(
+      blankToUndefined,
+      z.string().trim().max(PREFILL_TITLE_MAX_LENGTH).optional(),
+    )
+    .catch(undefined),
+  [STORE_PRODUCT_PREFILL_PARAMS.image]: z
     .url({ protocol: /^https$/ })
     .optional()
     .catch(undefined),

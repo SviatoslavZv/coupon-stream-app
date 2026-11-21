@@ -4,9 +4,7 @@
 
 import { redirect } from "next/navigation";
 import { requireAdmin } from "@/lib/auth";
-import { ADMIN_ROUTES, withQuery } from "@/lib/constants/admin";
-import { resolveQuickAdd } from "@/lib/quick-add";
-import { STORE_PRODUCT_PREFILL_PARAMS } from "@/lib/schemas/store-products";
+import { quickAddHref, resolveQuickAdd } from "@/lib/quick-add";
 import { getDeepLinkStores } from "@/lib/stores";
 import type { FormState } from "@/types";
 
@@ -25,17 +23,8 @@ export async function quickAdd(
     await getDeepLinkStores(),
   );
 
-  switch (target.kind) {
-    case "amazon":
-      redirect(ADMIN_ROUTES.amazonLink(target.asin));
-    case "store":
-      redirect(
-        withQuery(ADMIN_ROUTES.storeProductNew, {
-          [STORE_PRODUCT_PREFILL_PARAMS.store]: target.store.id,
-          [STORE_PRODUCT_PREFILL_PARAMS.url]: target.productUrl,
-        }),
-      );
-    case "error":
-      return { error: target.message };
+  if (target.kind === "error") {
+    return { error: target.message };
   }
+  redirect(quickAddHref(target));
 }

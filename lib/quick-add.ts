@@ -1,7 +1,9 @@
 // lib/quick-add.ts
 
+import { ADMIN_ROUTES, withQuery } from "@/lib/constants/admin";
 import { ASIN_PATTERN } from "@/lib/constants/amazon";
 import { extractAmazonAsin, isPageOfSite } from "@/lib/network-links";
+import { STORE_PRODUCT_PREFILL_PARAMS } from "@/lib/schemas/store-products";
 import type { DeepLinkStore } from "@/lib/stores";
 
 const AMAZON_DOMAIN = "amazon.com";
@@ -98,4 +100,31 @@ export function resolveQuickAdd(
         kind: "error",
         message: `${url.hostname} is not one of our stores with deep links. Add the store first.`,
       };
+}
+
+/** Title and image the bookmarklet read on the product page, passed on to the form. */
+export interface PageDetails {
+  title?: string;
+  image?: string;
+}
+
+/** Where to send the admin for a found target. Amazon details come from PartnerBoost, so they are not passed. */
+export function quickAddHref(
+  target: Exclude<QuickAddTarget, { kind: "error" }>,
+  details: PageDetails = {},
+): string {
+  if (target.kind === "amazon") {
+    return ADMIN_ROUTES.amazonLink(target.asin);
+  }
+
+  return withQuery(ADMIN_ROUTES.storeProductNew, {
+    [STORE_PRODUCT_PREFILL_PARAMS.store]: target.store.id,
+    [STORE_PRODUCT_PREFILL_PARAMS.url]: target.productUrl,
+    ...(details.title
+      ? { [STORE_PRODUCT_PREFILL_PARAMS.title]: details.title }
+      : {}),
+    ...(details.image
+      ? { [STORE_PRODUCT_PREFILL_PARAMS.image]: details.image }
+      : {}),
+  });
 }

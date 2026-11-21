@@ -9,6 +9,7 @@ import { SHOP_LINK_CHECK_STATUS_LABELS } from "@/lib/constants/shop-links";
 import { formatShortDate } from "@/lib/utils";
 import AttentionList, { type AttentionRow } from "@/components/admin/AttentionList";
 import QuickAddForm from "@/components/admin/QuickAddForm";
+import BookmarkletCard from "@/components/admin/BookmarkletCard";
 
 const QUICK_ACTIONS = [
     { label: "Amazon Import", href: ADMIN_ROUTES.amazonImport },
@@ -63,8 +64,9 @@ export default async function AdminDashboard() {
         <div className="mx-auto max-w-5xl px-4 py-10">
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Dashboard</h1>
 
-            <div className="mb-8">
+            <div className="mb-8 flex flex-col gap-3">
                 <QuickAddForm />
+                <BookmarkletCard />
             </div>
 
             <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">

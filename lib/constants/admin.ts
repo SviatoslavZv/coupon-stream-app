@@ -15,6 +15,7 @@ export const ADMIN_ROUTES = {
   amazonImport: AMAZON_IMPORT_PATH,
   amazonLink: (asin: string) => `${AMAZON_IMPORT_PATH}/link/${asin}`,
   storeProductNew: `${ADMIN_ROOT}/store-products/new`,
+  quickAdd: `${ADMIN_ROOT}/quick-add`,
   stores: `${ADMIN_ROOT}/stores`,
   storeNew: `${ADMIN_ROOT}/stores/new`,
   storeEdit: (id: string) => `${ADMIN_ROOT}/stores/${id}/edit`,
