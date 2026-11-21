@@ -85,3 +85,13 @@ export function formatMonthYear(value: string): string {
     timeZone: "UTC",
   });
 }
+
+/** True when every word of the query appears somewhere in the text, in any order and any case. */
+export function matchesAllWords(text: string, query: string): boolean {
+  const haystack = text.toLowerCase();
+  return query
+    .toLowerCase()
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((word) => haystack.includes(word));
+}

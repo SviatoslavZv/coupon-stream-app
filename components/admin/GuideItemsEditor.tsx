@@ -14,21 +14,28 @@ export default async function GuideItemsEditor({ guideId }: { guideId: string })
 
     const usedIds = new Set(items.map((item) => item.targetId));
 
-    const shopLinkOptions: GuideItemOption[] = shopLinks
-        .filter((link) => !usedIds.has(link.id))
-        .sort((a, b) => a.storeName.localeCompare(b.storeName) || a.title.localeCompare(b.title))
-        .map((link) => ({
-            id: link.id,
-            label: `${link.storeName} — ${link.title}${link.isActive ? "" : " (hidden)"}`,
-        }));
-
-    const couponOptions: GuideItemOption[] = coupons
-        .filter((coupon) => !usedIds.has(coupon.id) && !isCouponExpired(coupon.expiresAt))
-        .sort((a, b) => a.storeName.localeCompare(b.storeName) || a.title.localeCompare(b.title))
-        .map((coupon) => ({
-            id: coupon.id,
-            label: `${coupon.storeName} — ${coupon.discountLabel} · ${coupon.title}`,
-        }));
+    const options: GuideItemOption[] = [
+        ...shopLinks
+            .filter((link) => !usedIds.has(link.id))
+            .map((link) => ({
+                id: link.id,
+                source: "shop_link" as const,
+                storeName: link.storeName,
+                title: link.title,
+                detail: link.brand,
+                isHidden: !link.isActive,
+            })),
+        ...coupons
+            .filter((coupon) => !usedIds.has(coupon.id) && !isCouponExpired(coupon.expiresAt))
+            .map((coupon) => ({
+                id: coupon.id,
+                source: "coupon" as const,
+                storeName: coupon.storeName,
+                title: coupon.title,
+                detail: coupon.discountLabel,
+                isHidden: false,
+            })),
+    ].sort((a, b) => a.storeName.localeCompare(b.storeName) || a.title.localeCompare(b.title));
 
     return (
         <section className="mt-12 border-t border-line pt-8">
@@ -52,10 +59,7 @@ export default async function GuideItemsEditor({ guideId }: { guideId: string })
                 <p className="mb-6 text-sm text-ink/60">No items yet. Add the first one below.</p>
             )}
 
-            <AddGuideItemForm
-                guideId={guideId}
-                options={{ shop_link: shopLinkOptions, coupon: couponOptions }}
-            />
+            <AddGuideItemForm guideId={guideId} options={options} />
         </section>
     );
 }
