@@ -39,7 +39,7 @@ async function prepareCoupon(asin: string): Promise<Preparation> {
         const page = await searchAmazonProducts({ asins: [asin] });
         const product = page.products.find((item) => item.asin === asin) ?? null;
         if (!product) {
-            return { ok: false, product: null, message: "This product is no longer available in PartnerBoost." };
+            return { ok: false, product: null, message: "PartnerBoost has no offer for this product, so we cannot earn a commission on it. Choose a product from Amazon Import instead.", };
         }
         if (product.couponPercent === null) {
             return { ok: false, product, message: "This product has no Amazon coupon right now." };
