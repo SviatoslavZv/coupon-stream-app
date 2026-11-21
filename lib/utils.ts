@@ -76,3 +76,12 @@ export function daysSince(iso: string, now: Date = new Date()): number {
   const diffMs = now.getTime() - new Date(iso).getTime();
   return Math.max(0, Math.floor(diffMs / MS_PER_DAY));
 }
+
+/** "2026-07" or a full date → "July 2026". UTC, so the month does not shift with the time zone. */
+export function formatMonthYear(value: string): string {
+  return new Date(value).toLocaleDateString("en-US", {
+    month: "long",
+    year: "numeric",
+    timeZone: "UTC",
+  });
+}

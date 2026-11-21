@@ -13,3 +13,6 @@ const PRODUCTION_URL = "https://www.couponcreek.com";
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ?? PRODUCTION_URL
 ).replace(/\/+$/, "");
+
+/** When the legal pages (privacy, terms, cookies, disclaimer) last changed. Year and month, as the pages show it. */
+export const LEGAL_PAGES_UPDATED = "2026-07";

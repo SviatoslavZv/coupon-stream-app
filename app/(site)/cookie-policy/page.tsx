@@ -1,3 +1,5 @@
+import { LEGAL_PAGES_UPDATED } from "@/lib/constants/site";
+import { formatMonthYear } from "@/lib/utils";
 
 export default function CookiePolicyPage() {
     return (
@@ -5,7 +7,7 @@ export default function CookiePolicyPage() {
             <h1 className="font-display text-3xl font-black text-ink">
                 Cookie Policy
             </h1>
-            <p className="mt-2 text-sm text-ink/70">Last updated: July 2026</p>
+            <p className="mt-2 text-sm text-ink/70">Last updated: {formatMonthYear(LEGAL_PAGES_UPDATED)}</p>
 
             <div className="mt-8 flex flex-col gap-6 text-sm leading-relaxed text-ink/80">
                 <section>

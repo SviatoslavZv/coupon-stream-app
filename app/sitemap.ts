@@ -1,72 +1,41 @@
 import type { MetadataRoute } from "next";
-import { SITE_URL } from "@/lib/constants/site";
+import { LEGAL_PAGES_UPDATED, SITE_URL } from "@/lib/constants/site";
 import { getStores } from "@/lib/stores";
 import { getCategoriesWithCoupons, getBrandsWithCoupons } from "@/lib/coupons";
 import { getPublishedGuides } from "@/lib/guides";
 
+type SitemapEntry = MetadataRoute.Sitemap[number];
+
+/** The newest of the given dates, or undefined when none is known. */
+function latestDate(
+  dates: readonly (string | undefined)[],
+): string | undefined {
+  return dates.reduce<string | undefined>(
+    (latest, date) =>
+      date && (!latest || new Date(date) > new Date(latest)) ? date : latest,
+    undefined,
+  );
+}
+
+/**
+ * A sitemap entry with lastModified only when we really know it.
+ * Google trusts lastmod only while it matches real changes, so an unknown date is left out, never replaced with "now".
+ */
+function entry(path: string, lastModified: string | undefined): SitemapEntry {
+  return {
+    url: `${SITE_URL}${path}`,
+    ...(lastModified ? { lastModified } : {}),
+  };
+}
+
+const LEGAL_PATHS = [
+  "/privacy-policy",
+  "/terms-of-use",
+  "/cookie-policy",
+  "/disclaimer",
+] as const;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const siteUrl = SITE_URL;
-  const now = new Date();
-
-  // Статические страницы
-  const staticPages: MetadataRoute.Sitemap = [
-    {
-      url: siteUrl,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 1.0,
-    },
-    {
-      url: `${siteUrl}/stores`,
-      lastModified: now,
-      changeFrequency: "daily",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/categories`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/brands`,
-      lastModified: now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${siteUrl}/sales-calendar`,
-      lastModified: now,
-      changeFrequency: "monthly",
-      priority: 0.5,
-    },
-    {
-      url: `${siteUrl}/privacy-policy`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${siteUrl}/terms-of-use`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${siteUrl}/cookie-policy`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-    {
-      url: `${siteUrl}/disclaimer`,
-      lastModified: now,
-      changeFrequency: "yearly",
-      priority: 0.2,
-    },
-  ];
-
-  // Параллельный запрос ко всем динамическим сущностям
   const [stores, categories, brands, guides] = await Promise.all([
     getStores(),
     getCategoriesWithCoupons(),
@@ -74,60 +43,33 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     getPublishedGuides(),
   ]);
 
-  // Страницы магазинов (самый высокий приоритет среди внутренних)
-  const storePages: MetadataRoute.Sitemap = stores.map((store) => ({
-    url: `${siteUrl}/store/${store.slug.toLowerCase()}`,
-    ...(store.lastModified
-      ? { lastModified: new Date(store.lastModified) }
-      : { lastModified: now }),
-    changeFrequency: "daily",
-    priority: 0.9,
-  }));
-
-  // Страницы гайдов
-  const guidePages: MetadataRoute.Sitemap = guides.map((guide) => ({
-    url: `${siteUrl}/guides/${guide.slug}`,
-    lastModified: new Date(guide.updatedAt),
-    changeFrequency: "weekly",
-    priority: 0.8,
-  }));
-
-  // Хаб гайдов: «изменился» тогда, когда обновился самый свежий гайд
-  const guidesHubPage: MetadataRoute.Sitemap = [
-    {
-      url: `${siteUrl}/guides`,
-      lastModified: guides[0] ? new Date(guides[0].updatedAt) : now,
-      changeFrequency: "weekly",
-      priority: 0.8,
-    },
-  ];
-
-  // Страницы категорий
-  const categoryPages: MetadataRoute.Sitemap = categories.map((category) => ({
-    url: `${siteUrl}/category/${category.slug.toLowerCase()}`,
-    ...(category.lastModified
-      ? { lastModified: new Date(category.lastModified) }
-      : { lastModified: now }),
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
-
-  // Страницы брендов
-  const brandPages: MetadataRoute.Sitemap = brands.map((brand) => ({
-    url: `${siteUrl}/brand/${brand.slug.toLowerCase()}`,
-    ...(brand.lastModified
-      ? { lastModified: new Date(brand.lastModified) }
-      : { lastModified: now }),
-    changeFrequency: "weekly",
-    priority: 0.7,
-  }));
+  const storesUpdated = latestDate(stores.map((store) => store.lastModified));
+  const categoriesUpdated = latestDate(
+    categories.map((category) => category.lastModified),
+  );
+  const brandsUpdated = latestDate(brands.map((brand) => brand.lastModified));
+  const guidesUpdated = latestDate(guides.map((guide) => guide.updatedAt));
 
   return [
-    ...staticPages,
-    ...guidesHubPage,
-    ...storePages,
-    ...guidePages,
-    ...categoryPages,
-    ...brandPages,
+    // Hub pages change when anything they list changes
+    entry("", latestDate([storesUpdated, guidesUpdated])),
+    entry("/stores", storesUpdated),
+    entry("/categories", categoriesUpdated),
+    entry("/brands", brandsUpdated),
+    entry("/guides", guidesUpdated),
+    // The calendar is edited by hand and has no recorded date, so it gets none
+    entry("/sales-calendar", undefined),
+    ...LEGAL_PATHS.map((path) => entry(path, LEGAL_PAGES_UPDATED)),
+
+    ...stores.map((store) =>
+      entry(`/store/${store.slug.toLowerCase()}`, store.lastModified),
+    ),
+    ...guides.map((guide) => entry(`/guides/${guide.slug}`, guide.updatedAt)),
+    ...categories.map((category) =>
+      entry(`/category/${category.slug.toLowerCase()}`, category.lastModified),
+    ),
+    ...brands.map((brand) =>
+      entry(`/brand/${brand.slug.toLowerCase()}`, brand.lastModified),
+    ),
   ];
 }

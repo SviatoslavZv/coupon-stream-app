@@ -1,10 +1,13 @@
+import { LEGAL_PAGES_UPDATED } from "@/lib/constants/site";
+import { formatMonthYear } from "@/lib/utils";
+
 export default function DisclaimerPage() {
     return (
         <div className="mx-auto max-w-2xl px-4 py-10 animate-fade-in-up">
             <h1 className="font-display text-3xl font-black text-ink">
                 Disclaimer
             </h1>
-            <p className="mt-2 text-sm text-ink/70">Last updated: July 2026</p>
+            <p className="mt-2 text-sm text-ink/70">Last updated: {formatMonthYear(LEGAL_PAGES_UPDATED)}</p>
 
             <div className="mt-6 rounded-2xl border border-coupon bg-coupon/5 p-4 text-sm font-medium text-ink">
                 By accessing or using CouponCreek, you fully and unconditionally
