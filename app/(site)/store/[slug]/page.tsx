@@ -26,28 +26,26 @@ export async function generateMetadata({
     }
 
     const { store, coupons } = result;
-    const monthYear = new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-    });
+    const now = new Date();
+    const monthYear = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    // Short month in the title keeps it under ~60 characters with the " | CouponCreek" suffix
+    const shortMonthYear = now.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 
     const activeCoupons = coupons.filter((c) => !isCouponExpired(c.expiresAt));
     const activeCount = activeCoupons.length;
-    const countBadge = activeCount > 0 ? `(${activeCount} Active) ` : "";
-
     const description =
         activeCount > 0
             ? `${activeCount} active ${store.name} promo codes and deals for ${monthYear}. Save with hand-picked ${store.name} coupons on CouponCreek.`
             : `Find the latest ${store.name} promo codes and deals for ${monthYear} on CouponCreek.`;
 
     return buildPageMetadata({
-        title: `${store.name} Promo Codes & Coupons ${countBadge}— ${monthYear}`,
+        title: `${store.name} Coupons & Promo Codes ${shortMonthYear}`,
         description,
         path: `/store/${slug}`,
     });
 }
 
-// Лимит отображения истёкших купонов для защиты производительности и SEO
+// How many expired coupons to show: enough to prove the store is tracked, not a wall of dead codes
 const MAX_EXPIRED_SHOW = 5;
 
 export default async function StorePage({
@@ -65,15 +63,14 @@ export default async function StorePage({
 
     const { store, coupons } = result;
 
-    // Разделяем купоны на активные и ограничение по просроченным
     const activeCoupons = coupons.filter((c) => !isCouponExpired(c.expiresAt));
+    // The most recently expired first: the database returns them in no particular order
     const expiredCoupons = coupons
         .filter((c) => isCouponExpired(c.expiresAt))
-        .slice(0, MAX_EXPIRED_SHOW); // 👈 Берем только 5 последних
+        .sort((a, b) => new Date(b.expiresAt).getTime() - new Date(a.expiresAt).getTime())
+        .slice(0, MAX_EXPIRED_SHOW);
 
     const faqItems = getStoreFaq(store.name, activeCoupons.length);
-
-    // ... остальной JSX код остается без изменений
 
     return (
         <div className="mx-auto max-w-3xl px-4 py-6 sm:py-10 animate-fade-in-up">
