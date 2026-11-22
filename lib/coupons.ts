@@ -17,6 +17,7 @@ interface CouponRow {
   expires_at: string;
   last_verified_at: string | null;
   affiliate_link: string | null;
+  image_url: string | null;
 }
 interface StoreWithCouponsRow {
   slug: string;
@@ -38,6 +39,7 @@ function mapCoupon(row: CouponRow): Coupon {
     expiresAt: row.expires_at,
     lastVerifiedAt: row.last_verified_at,
     affiliateLink: row.affiliate_link,
+    imageUrl: row.image_url,
   };
 }
 

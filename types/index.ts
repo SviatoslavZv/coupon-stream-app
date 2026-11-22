@@ -5,8 +5,8 @@ export interface Store {
   logoUrl: string;
   offerCount: number;
   bestOffer: string;
-  createdAt?: string; // Добавляем опциональную дату создания
-  updatedAt?: string; // Добавляем опциональную дату обновления
+  createdAt?: string;
+  updatedAt?: string;
   lastModified?: string;
   bannerUrl?: string | null;
   bannerLink?: string | null;
@@ -22,6 +22,8 @@ export interface Coupon {
   expiresAt: string;
   lastVerifiedAt?: string | null;
   affiliateLink?: string | null;
+  /** Product picture, set for Amazon coupons; most store-wide offers have none. */
+  imageUrl: string | null;
 }
 
 export interface GuideStore {

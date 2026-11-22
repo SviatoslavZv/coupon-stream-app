@@ -150,23 +150,35 @@ export default function CouponItem({
                     </div>
                 </div>
 
-                {/* Заголовок купона + десктопные метки */}
-                <div className="flex-1">
-                    <div className="hidden items-center gap-2 sm:flex">
-                        <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
-                            {isCodeType ? "Code" : "Sale"}
-                        </span>
-                        {status && (
-                            <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
-                                }`}>
-                                {!status.isExpired && <span>✓</span>} {status.text}
+                {/* Coupon title with labels, and the product picture when there is one */}
+                <div className="flex flex-1 items-center gap-3 sm:gap-4">
+                    {coupon.imageUrl && (
+                        // Decorative: the title next to it already says what the product is, so alt is empty
+                        // eslint-disable-next-line @next/next/no-img-element
+                        <img
+                            src={coupon.imageUrl}
+                            alt=""
+                            loading="lazy"
+                            className="h-14 w-14 shrink-0 rounded-lg border border-line bg-white object-contain sm:h-16 sm:w-16"
+                        />
+                    )}
+                    <div className="min-w-0 flex-1">
+                        <div className="hidden items-center gap-2 sm:flex">
+                            <span className="font-mono text-xs uppercase tracking-wide text-ink/80">
+                                {isCodeType ? "Code" : "Sale"}
                             </span>
-                        )}
-                    </div>
+                            {status && (
+                                <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ${status.isExpired ? "bg-gray-100 text-gray-700" : "bg-green-50 text-green-700"
+                                    }`}>
+                                    {!status.isExpired && <span>✓</span>} {status.text}
+                                </span>
+                            )}
+                        </div>
 
-                    <h2 className="mt-1 font-medium text-ink text-base sm:text-lg leading-snug">
-                        {coupon.title}
-                    </h2>
+                        <h2 className="mt-1 font-medium text-ink text-base sm:text-lg leading-snug">
+                            {coupon.title}
+                        </h2>
+                    </div>
                 </div>
 
 
