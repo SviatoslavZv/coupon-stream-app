@@ -59,7 +59,7 @@ export const getStoreWithCoupons = cache(
     const { data, error } = await supabase
       .from("stores")
       .select(
-        "slug, name, logo_url, banner_url, banner_link, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, affiliate_link)",
+        "slug, name, logo_url, banner_url, banner_link, coupons(id, type, discount_label, title, code, description, expires_at, last_verified_at, affiliate_link, image_url)",
       )
       .eq("slug", slug.toLowerCase())
       .maybeSingle();
