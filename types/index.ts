@@ -29,6 +29,8 @@ export interface Coupon {
 export interface GuideStore {
   name: string;
   slug: string;
+  /** Shown in guide cards that have no product photo */
+  logoUrl: string | null;
 }
 
 export interface GuideLinkCoupon {

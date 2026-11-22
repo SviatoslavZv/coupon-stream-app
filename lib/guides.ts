@@ -29,6 +29,7 @@ import type {
 interface StoreRef {
   name: string;
   slug: string;
+  logo_url: string | null;
 }
 
 interface ShopLinkRow {
@@ -86,17 +87,17 @@ const GUIDE_SELECT = `
     id, sort_order, comment,
     shop_links (
       id, kind, title, url, brand, asin, image_url, coupon_percent, last_checked_at, check_status,
-      stores ( name, slug )
+       stores ( name, slug, logo_url )
     ),
     coupons (
       id, type, discount_label, title, code, description, expires_at, image_url,
-      stores ( name, slug )
+       stores ( name, slug, logo_url )
     )
   )
 `;
 
 function mapStore(store: StoreRef): GuideStore {
-  return { name: store.name, slug: store.slug };
+  return { name: store.name, slug: store.slug, logoUrl: store.logo_url };
 }
 
 function mapLinkCoupon(link: ShopLinkRow): GuideLinkCoupon | null {

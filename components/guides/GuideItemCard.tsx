@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type { GuideItem } from "@/types";
 import { formatShortDate } from "@/lib/utils";
+import GuideItemImage from "@/components/guides/GuideItemImage";
 
 const ACTION_LABEL = {
     product: "View product",
@@ -8,7 +9,8 @@ const ACTION_LABEL = {
 } as const;
 
 export default function GuideItemCard({ item, index }: { item: GuideItem; index: number }) {
-    const storeName = item.source === "shop_link" ? item.link.store.name : item.coupon.store.name;
+    const store = item.source === "shop_link" ? item.link.store : item.coupon.store;
+    const storeName = store.name;
     const title = item.source === "shop_link" ? item.link.title : item.coupon.title;
     const imageUrl = item.source === "shop_link" ? item.link.imageUrl : item.coupon.imageUrl;
 
@@ -17,15 +19,7 @@ export default function GuideItemCard({ item, index }: { item: GuideItem; index:
             id={`item-${item.id}`}
             className="flex flex-col gap-4 rounded-2xl border border-line bg-white p-4 sm:flex-row sm:p-5"
         >
-            {imageUrl && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                    src={imageUrl}
-                    alt={title}
-                    loading="lazy"
-                    className="h-32 w-full rounded-xl object-contain sm:h-28 sm:w-28 sm:shrink-0"
-                />
-            )}
+            <GuideItemImage imageUrl={imageUrl} title={title} storeName={storeName} storeLogoUrl={store.logoUrl} />
 
             <div className="flex flex-1 flex-col gap-2">
                 <p className="font-mono text-xs uppercase tracking-wide text-ink/70">
