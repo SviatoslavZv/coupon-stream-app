@@ -2,6 +2,7 @@
 
 import { z } from "zod";
 import {
+  httpsUrl,
   optionalHttpsUrl,
   requiredText,
   SLUG_PATTERN,
@@ -17,7 +18,8 @@ export const StoreSchema = z.object({
       SLUG_PATTERN,
       "Slug can contain only latin letters, digits and single hyphens.",
     ),
-  logoUrl: optionalHttpsUrl("Logo URL must start with https://"),
+  // Required: stores.logo_url is NOT NULL in the database
+  logoUrl: httpsUrl("Logo URL is required and must start with https://"),
   affiliateLink: optionalHttpsUrl("Affiliate link must start with https://"),
   websiteUrl: optionalHttpsUrl("Website URL must start with https://"),
   bannerUrl: optionalHttpsUrl("Banner URL must start with https://"),
