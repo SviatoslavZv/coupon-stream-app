@@ -1,10 +1,14 @@
 // lib/shop-links.ts
 
 import { requireAdmin } from "@/lib/auth";
-import type {
-  ShopLinkCheckStatus,
-  ShopLinkKind,
+import {
+  SHOP_LINK_CHECK_STATUSES,
+  SHOP_LINK_KINDS,
+  type ShopLinkCheckStatus,
+  type ShopLinkKind,
 } from "@/lib/constants/shop-links";
+import { isOneOf } from "@/lib/utils";
+import type { Tables } from "@/types/supabase";
 
 export interface AdminShopLink {
   id: string;
@@ -23,27 +27,39 @@ export interface AdminShopLink {
   lastCheckedAt: string | null;
 }
 
-interface AdminShopLinkRow {
-  id: string;
-  store_id: string;
-  kind: ShopLinkKind;
-  title: string;
-  url: string;
-  brand: string | null;
-  asin: string | null;
-  image_url: string | null;
-  network_link_id: string | null;
-  commission_rate: number | null;
-  is_active: boolean;
-  check_status: ShopLinkCheckStatus | null;
-  last_checked_at: string | null;
-  stores: { name: string } | null;
-}
+/** One row of ADMIN_SHOP_LINK_SELECT: the link columns plus the store name. */
+type AdminShopLinkRow = Pick<
+  Tables<"shop_links">,
+  | "id"
+  | "store_id"
+  | "kind"
+  | "title"
+  | "url"
+  | "brand"
+  | "asin"
+  | "image_url"
+  | "network_link_id"
+  | "commission_rate"
+  | "is_active"
+  | "check_status"
+  | "last_checked_at"
+> & {
+  stores: Pick<Tables<"stores">, "name"> | null;
+};
 
 const ADMIN_SHOP_LINK_SELECT =
   "id, store_id, kind, title, url, brand, asin, image_url, network_link_id, commission_rate, is_active, check_status, last_checked_at, stores(name)";
 
 function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
+  // kind and check_status are plain text in the generated types; the database CHECK limits them to our lists
+  if (!isOneOf(SHOP_LINK_KINDS, row.kind)) {
+    throw new Error(`Unknown shop link kind "${row.kind}" in link ${row.id}`);
+  }
+  const checkStatus =
+    row.check_status !== null &&
+    isOneOf(SHOP_LINK_CHECK_STATUSES, row.check_status)
+      ? row.check_status
+      : null;
   return {
     id: row.id,
     storeId: row.store_id,
@@ -58,7 +74,7 @@ function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
     commissionRate:
       row.commission_rate === null ? null : Number(row.commission_rate),
     isActive: row.is_active,
-    checkStatus: row.check_status,
+    checkStatus,
     lastCheckedAt: row.last_checked_at,
   };
 }
@@ -75,7 +91,7 @@ export async function getShopLinksForAdmin(): Promise<AdminShopLink[]> {
     throw new Error(`Failed to fetch shop links: ${error.message}`);
   }
 
-  return (data as unknown as AdminShopLinkRow[]).map(mapAdminShopLink);
+  return data.map(mapAdminShopLink);
 }
 
 export async function getShopLinkById(
@@ -93,5 +109,5 @@ export async function getShopLinkById(
     throw new Error(`Failed to fetch shop link: ${error.message}`);
   }
 
-  return data ? mapAdminShopLink(data as unknown as AdminShopLinkRow) : null;
+  return data ? mapAdminShopLink(data) : null;
 }

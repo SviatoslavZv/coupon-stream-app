@@ -95,3 +95,14 @@ export function matchesAllWords(text: string, query: string): boolean {
     .filter(Boolean)
     .every((word) => haystack.includes(word));
 }
+
+/**
+ * True when the value is one of the allowed values, and tells TypeScript so.
+ * Use it for text columns that the database limits with a CHECK constraint: the generated types only say "string".
+ */
+export function isOneOf<T extends string>(
+  allowed: readonly T[],
+  value: string,
+): value is T {
+  return allowed.some((item) => item === value);
+}
