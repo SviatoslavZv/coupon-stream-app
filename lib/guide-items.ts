@@ -2,14 +2,14 @@
 
 import "server-only";
 import { revalidatePath } from "next/cache";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { TypedSupabaseClient } from "@/lib/supabase/types";
 import { SORT_ORDER_STEP, type GuideItemSource } from "@/lib/constants/guides";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 
 export const UNIQUE_VIOLATION = "23505";
 
 export async function revalidateGuidePages(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   guideId: string,
 ) {
   const { data } = await supabase
@@ -25,7 +25,7 @@ export async function revalidateGuidePages(
 }
 
 export async function appendGuideItem(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   item: {
     guideId: string;
     source: GuideItemSource;

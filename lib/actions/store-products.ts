@@ -11,7 +11,8 @@ import {
   revalidateGuidePages,
   UNIQUE_VIOLATION,
 } from "@/lib/guide-items";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { TypedSupabaseClient } from "@/lib/supabase/types";
+import type { Tables } from "@/types/supabase";
 import { buildDeepLink } from "@/lib/network-links";
 import { fetchProductMeta, type ProductMetaResult } from "@/lib/product-meta";
 import { firstErrorMessage } from "@/lib/schemas/common";
@@ -21,17 +22,15 @@ import {
 } from "@/lib/schemas/store-products";
 import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 
-interface StoreLinkRow {
-  affiliate_link: string | null;
-  website_url: string | null;
-}
+/** Exactly the columns loadStoreLinks selects; the type follows the select text. */
+type StoreLinkRow = Pick<Tables<"stores">, "affiliate_link" | "website_url">;
 
 type StoreLinksResult =
   | { ok: true; store: StoreLinkRow }
   | { ok: false; error: string };
 
 async function loadStoreLinks(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   storeId: string,
 ): Promise<StoreLinksResult> {
   const { data, error } = await supabase
@@ -46,7 +45,7 @@ async function loadStoreLinks(
   if (!data) {
     return { ok: false, error: "Store not found." };
   }
-  return { ok: true, store: data as StoreLinkRow };
+  return { ok: true, store: data };
 }
 
 /** Reads the title and image from a product page of the chosen store. */

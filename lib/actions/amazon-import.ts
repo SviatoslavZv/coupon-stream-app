@@ -8,7 +8,7 @@ import { requireAdmin } from "@/lib/auth";
 import { firstErrorMessage } from "@/lib/schemas/common";
 import { isCouponExpired } from "@/lib/utils";
 import type { FormState } from "@/types";
-import type { SupabaseClient } from "@supabase/supabase-js";
+import type { TypedSupabaseClient } from "@/lib/supabase/types";
 import { generateAmazonLinks } from "@/lib/partnerboost";
 import { getStoreIdBySlug } from "@/lib/stores";
 import {
@@ -86,7 +86,7 @@ export async function importAmazonCoupon(
 }
 
 async function buildLinkSid(
-  supabase: SupabaseClient,
+  supabase: TypedSupabaseClient,
   guideId: string | null,
 ): Promise<string> {
   if (!guideId) return AMAZON_PICKS_SID;

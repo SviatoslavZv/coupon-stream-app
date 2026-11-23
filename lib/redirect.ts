@@ -2,15 +2,9 @@
 
 import { createClient } from "@/lib/supabase/server";
 
-interface StoreRedirectRow {
-  id: string;
-  affiliate_link: string | null;
-  website_url: string | null;
-}
-
 export async function getStoreRedirectUrl(
   slug: string,
-  couponId?: string
+  couponId?: string,
 ): Promise<{ storeId: string; url: string } | null> {
   const supabase = await createClient();
 
@@ -28,9 +22,7 @@ export async function getStoreRedirectUrl(
     return null;
   }
 
-  const row = data as StoreRedirectRow;
-
-  // Приоритет — собственная ссылка конкретного купона, если она указана
+  // A coupon's own link wins over the store link
   if (couponId) {
     const { data: couponData, error: couponError } = await supabase
       .from("coupons")
@@ -39,22 +31,27 @@ export async function getStoreRedirectUrl(
       .maybeSingle();
 
     if (couponError) {
-      console.error(`Failed to fetch coupon affiliate link: ${couponError.message}`);
+      console.error(
+        `Failed to fetch coupon affiliate link: ${couponError.message}`,
+      );
     } else if (couponData?.affiliate_link) {
-      return { storeId: row.id, url: couponData.affiliate_link };
+      return { storeId: data.id, url: couponData.affiliate_link };
     }
   }
 
-  const url = row.affiliate_link ?? row.website_url;
+  const url = data.affiliate_link ?? data.website_url;
 
   if (!url) {
     return null;
   }
 
-  return { storeId: row.id, url };
+  return { storeId: data.id, url };
 }
 
-export async function recordClick(storeId: string, couponId?: string): Promise<void> {
+export async function recordClick(
+  storeId: string,
+  couponId?: string,
+): Promise<void> {
   if (!couponId) return;
 
   const supabase = await createClient();
