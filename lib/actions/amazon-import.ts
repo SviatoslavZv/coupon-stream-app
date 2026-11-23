@@ -49,11 +49,7 @@ export async function importAmazonCoupon(
   if (lookupError) {
     return { error: "Could not check existing coupons. Please try again." };
   }
-  if (
-    (existing as ExistingCouponRow[]).some(
-      (row) => !isCouponExpired(row.expires_at),
-    )
-  ) {
+  if (existing.some((row) => !isCouponExpired(row.expires_at))) {
     return { error: "An active coupon for this product already exists." };
   }
 
@@ -96,7 +92,7 @@ async function buildLinkSid(
     .select("slug")
     .eq("id", guideId)
     .maybeSingle();
-  const slug = (data as { slug: string } | null)?.slug;
+  const slug = data?.slug;
   return slug ? guideTrackingId(slug) : AMAZON_PICKS_SID;
 }
 
@@ -131,7 +127,7 @@ export async function importAmazonProductLink(
     return { error: "Could not check the catalog. Please try again." };
   }
 
-  let shopLinkId = (existing as { id: string } | null)?.id ?? null;
+  let shopLinkId = existing?.id ?? null;
 
   if (!shopLinkId) {
     const sid = await buildLinkSid(supabase, input.guideId);
@@ -174,7 +170,7 @@ export async function importAmazonProductLink(
             : "Could not save the product link. Please try again.",
       };
     }
-    shopLinkId = (created as { id: string }).id;
+    shopLinkId = created.id;
   }
 
   if (input.guideId) {

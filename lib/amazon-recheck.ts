@@ -10,10 +10,6 @@ import {
 } from "@/lib/partnerboost";
 import { createAdminClient } from "@/lib/supabase/admin";
 
-interface StoreIdRow {
-  id: string;
-}
-
 interface LinkToCheck {
   id: string;
   asin: string;
@@ -80,7 +76,7 @@ export async function runAmazonRecheck(): Promise<RecheckReport> {
   const { data, error } = await supabase
     .from("shop_links")
     .select("id, asin")
-    .eq("store_id", (store as StoreIdRow).id)
+    .eq("store_id", store.id)
     .eq("kind", "product")
     .eq("is_active", true)
     .not("asin", "is", null);
@@ -88,7 +84,10 @@ export async function runAmazonRecheck(): Promise<RecheckReport> {
     throw new Error(`Failed to load Amazon links: ${error.message}`);
   }
 
-  const links = data as LinkToCheck[];
+  // The query already skips links without an ASIN, but the type cannot know that: keep only rows that have one
+  const links: LinkToCheck[] = data.flatMap(({ id, asin }) =>
+    asin ? [{ id, asin }] : [],
+  );
   const report: RecheckReport = {
     total: links.length,
     ok: 0,

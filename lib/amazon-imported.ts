@@ -9,15 +9,6 @@ export interface ImportedAsins {
   links: Set<string>;
 }
 
-interface CouponAsinRow {
-  asin: string;
-  expires_at: string;
-}
-
-interface LinkAsinRow {
-  asin: string;
-}
-
 export async function getImportedAsins(
   asins: string[],
 ): Promise<ImportedAsins> {
@@ -43,13 +34,14 @@ export async function getImportedAsins(
     );
   }
 
+  // asin can be null in the database; .in("asin", …) never returns those rows, flatMap tells TypeScript the same
   const coupons = new Set(
-    (couponsResult.data as CouponAsinRow[])
-      .filter((row) => !isCouponExpired(row.expires_at))
-      .map((row) => row.asin),
+    couponsResult.data.flatMap((row) =>
+      row.asin && !isCouponExpired(row.expires_at) ? [row.asin] : [],
+    ),
   );
   const links = new Set(
-    (linksResult.data as LinkAsinRow[]).map((row) => row.asin),
+    linksResult.data.flatMap((row) => (row.asin ? [row.asin] : [])),
   );
 
   return { coupons, links };

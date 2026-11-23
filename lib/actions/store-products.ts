@@ -118,7 +118,7 @@ export async function addStoreProduct(
     return { error: "Could not check the catalog. Please try again." };
   }
 
-  let shopLinkId = (existing as { id: string } | null)?.id ?? null;
+  let shopLinkId = existing?.id ?? null;
 
   if (!shopLinkId) {
     const { data: created, error: insertError } = await supabase
@@ -147,7 +147,7 @@ export async function addStoreProduct(
             : "Could not save the product. Please try again.",
       };
     }
-    shopLinkId = (created as { id: string }).id;
+    shopLinkId = created.id;
   }
 
   if (input.guideId) {
