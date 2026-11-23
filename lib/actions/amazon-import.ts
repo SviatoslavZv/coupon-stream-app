@@ -24,10 +24,6 @@ import { AMAZON_PICKS_SID, AMAZON_STORE_SLUG } from "@/lib/constants/amazon";
 import { guideTrackingId } from "@/lib/network-links";
 import { ADMIN_ROUTES, withNotice } from "@/lib/constants/admin";
 
-interface ExistingCouponRow {
-  expires_at: string;
-}
-
 export async function importAmazonCoupon(
   _prevState: FormState | null,
   formData: FormData,
