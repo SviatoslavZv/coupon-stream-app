@@ -9,7 +9,8 @@
     "lint": "eslint",
     "lint:fix": "eslint --fix",
     "typecheck": "next typegen && tsc --noEmit",
-    "check": "npm run typecheck && npm run lint && npm run build"
+    "check": "npm run typecheck && npm run lint && npm run build",
+    "db:types": "supabase gen types typescript --remote=abzxwlkxxbgdtdpxehgl --schema public > types/supabase.ts"
   },
   "dependencies": {
     "@next/third-parties": "^16.3.1",
@@ -31,6 +32,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "^16.4.6",
+    "supabase": "^3.3.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
