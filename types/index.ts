@@ -5,8 +5,6 @@ export interface Store {
   logoUrl: string;
   offerCount: number;
   bestOffer: string;
-  createdAt?: string;
-  updatedAt?: string;
   lastModified?: string;
   bannerUrl?: string | null;
   bannerLink?: string | null;

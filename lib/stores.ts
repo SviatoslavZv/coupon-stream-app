@@ -5,21 +5,18 @@ import { createClient } from "@/lib/supabase/server";
 import { buildDeepLink } from "@/lib/network-links";
 import { isCouponExpired } from "@/lib/utils";
 import type { Store } from "@/types";
+import type { Tables } from "@/types/supabase";
 
-interface StoreRow {
-  id: string;
-  slug: string;
-  name: string;
-  logo_url: string;
-  created_at?: string;
-  updated_at?: string;
-  coupons: {
-    discount_label: string;
-    expires_at?: string | null;
-    updated_at?: string;
-    created_at?: string;
-  }[];
-}
+/** One row of the getStores query: the store columns it selects plus its coupons. */
+type StoreRow = Pick<
+  Tables<"stores">,
+  "id" | "slug" | "name" | "logo_url" | "created_at" | "updated_at"
+> & {
+  coupons: Pick<
+    Tables<"coupons">,
+    "discount_label" | "expires_at" | "updated_at" | "created_at"
+  >[];
+};
 
 function mapStoreFromDb(row: StoreRow): Store {
   const storeDate = row.updated_at ?? row.created_at;
@@ -52,8 +49,6 @@ function mapStoreFromDb(row: StoreRow): Store {
     logoUrl: row.logo_url,
     offerCount: activeCoupons.length,
     bestOffer: activeCoupons[0]?.discount_label ?? "No offers yet",
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
     lastModified,
   };
 }
@@ -70,7 +65,7 @@ export async function getStores(): Promise<Store[]> {
     throw new Error(`Failed to fetch stores: ${error.message}`);
   }
 
-  return (data as StoreRow[]).map(mapStoreFromDb);
+  return data.map(mapStoreFromDb);
 }
 
 export async function getTopStores(limit: number): Promise<Store[]> {
@@ -98,7 +93,7 @@ export async function getStoreOptions(): Promise<StoreOption[]> {
     throw new Error(`Failed to fetch store options: ${error.message}`);
   }
 
-  return data as StoreOption[];
+  return data;
 }
 
 export interface AdminStoreRow {
@@ -110,17 +105,6 @@ export interface AdminStoreRow {
   websiteUrl: string | null;
   bannerUrl: string | null;
   bannerLink: string | null;
-}
-
-interface StoreByIdDbRow {
-  id: string;
-  slug: string;
-  name: string;
-  logo_url: string;
-  affiliate_link: string | null;
-  website_url: string | null;
-  banner_url: string | null;
-  banner_link: string | null;
 }
 
 export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
@@ -142,17 +126,15 @@ export async function getStoreById(id: string): Promise<AdminStoreRow | null> {
     return null;
   }
 
-  const row = data as StoreByIdDbRow;
-
   return {
-    id: row.id,
-    slug: row.slug,
-    name: row.name,
-    logoUrl: row.logo_url,
-    affiliateLink: row.affiliate_link,
-    websiteUrl: row.website_url,
-    bannerUrl: row.banner_url,
-    bannerLink: row.banner_link,
+    id: data.id,
+    slug: data.slug,
+    name: data.name,
+    logoUrl: data.logo_url,
+    affiliateLink: data.affiliate_link,
+    websiteUrl: data.website_url,
+    bannerUrl: data.banner_url,
+    bannerLink: data.banner_link,
   };
 }
 
@@ -169,14 +151,7 @@ export async function getStoreIdBySlug(slug: string): Promise<string | null> {
     throw new Error(`Failed to fetch store: ${error.message}`);
   }
 
-  return (data as { id: string } | null)?.id ?? null;
-}
-
-interface DeepLinkStoreRow {
-  id: string;
-  name: string;
-  affiliate_link: string | null;
-  website_url: string | null;
+  return data?.id ?? null;
 }
 
 export interface DeepLinkStore extends StoreOption {
@@ -197,12 +172,11 @@ export async function getDeepLinkStores(): Promise<DeepLinkStore[]> {
   }
 
   // The homepage is a page of the store too: if it works, any product page will
-  return (data as DeepLinkStoreRow[]).flatMap(
-    ({ id, name, affiliate_link, website_url }) =>
-      website_url !== null &&
-      buildDeepLink(affiliate_link, website_url, website_url).ok
-        ? [{ id, name, websiteUrl: website_url }]
-        : [],
+  return data.flatMap(({ id, name, affiliate_link, website_url }) =>
+    website_url !== null &&
+    buildDeepLink(affiliate_link, website_url, website_url).ok
+      ? [{ id, name, websiteUrl: website_url }]
+      : [],
   );
 }
 
