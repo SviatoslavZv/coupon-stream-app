@@ -1,6 +1,7 @@
 // lib/schemas/amazon-import.ts
 
 import { z } from "zod";
+import { COUPON_TYPES } from "@/lib/constants/coupons";
 import {
   AMAZON_CATEGORIES,
   AMAZON_IMPORT_SORTS,
@@ -56,7 +57,7 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 export const AmazonCouponSchema = z
   .object({
     storeId: z.uuid("Choose a store."),
-    type: z.enum(["code", "sale"]),
+    type: z.enum(COUPON_TYPES),
     discountLabel: requiredText("Discount label is required."),
     title: requiredText("Title is required."),
     code: optionalText,

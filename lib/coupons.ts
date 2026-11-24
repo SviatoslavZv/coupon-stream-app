@@ -4,34 +4,30 @@ import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
 import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
+import { toCouponType } from "@/lib/constants/coupons";
 import { isCouponExpired } from "@/lib/utils";
 import type { Store, Coupon } from "@/types";
+import type { Tables } from "@/types/supabase";
 
-interface CouponRow {
-  id: string;
-  type: string;
-  discount_label: string;
-  title: string;
-  code: string | null;
-  description: string;
-  expires_at: string;
-  last_verified_at: string | null;
-  affiliate_link: string | null;
-  image_url: string | null;
-}
-interface StoreWithCouponsRow {
-  slug: string;
-  name: string;
-  logo_url: string;
-  banner_url: string | null;
-  banner_link: string | null;
-  coupons: CouponRow[];
-}
+/** The coupon columns the store page selects. */
+type CouponRow = Pick<
+  Tables<"coupons">,
+  | "id"
+  | "type"
+  | "discount_label"
+  | "title"
+  | "code"
+  | "description"
+  | "expires_at"
+  | "last_verified_at"
+  | "affiliate_link"
+  | "image_url"
+>;
 
 function mapCoupon(row: CouponRow): Coupon {
   return {
     id: row.id,
-    type: row.type as Coupon["type"],
+    type: toCouponType(row.type),
     discountLabel: row.discount_label,
     title: row.title,
     code: row.code ?? undefined,
@@ -43,7 +39,7 @@ function mapCoupon(row: CouponRow): Coupon {
   };
 }
 
-// Оборачиваем функцию в cache
+// cache(): generateMetadata and the page ask for the same store, the database is asked once
 export const getStoreWithCoupons = cache(
   async (
     slug: string,
@@ -72,16 +68,15 @@ export const getStoreWithCoupons = cache(
       return null;
     }
 
-    const row = data as StoreWithCouponsRow;
     return {
       store: {
-        slug: row.slug,
-        name: row.name,
-        logoUrl: row.logo_url,
-        bannerUrl: row.banner_url,
-        bannerLink: row.banner_link,
+        slug: data.slug,
+        name: data.name,
+        logoUrl: data.logo_url,
+        bannerUrl: data.banner_url,
+        bannerLink: data.banner_link,
       },
-      coupons: row.coupons.map((c) => mapCoupon(c)),
+      coupons: data.coupons.map(mapCoupon),
     };
   },
 );
@@ -98,18 +93,6 @@ export interface AdminCouponRow {
   storeName: string;
 }
 
-interface AdminCouponDbRow {
-  id: string;
-  type: string;
-  discount_label: string;
-  title: string;
-  code: string | null;
-  description: string;
-  expires_at: string;
-  store_id: string;
-  stores: { name: string } | null;
-}
-
 export async function getAllCouponsForAdmin(): Promise<AdminCouponRow[]> {
   const supabase = await requireAdmin();
 
@@ -124,9 +107,9 @@ export async function getAllCouponsForAdmin(): Promise<AdminCouponRow[]> {
     throw new Error(`Failed to fetch coupons: ${error.message}`);
   }
 
-  return (data as unknown as AdminCouponDbRow[]).map((row) => ({
+  return data.map((row) => ({
     id: row.id,
-    type: row.type as Coupon["type"],
+    type: toCouponType(row.type),
     discountLabel: row.discount_label,
     title: row.title,
     code: row.code ?? undefined,
@@ -167,17 +150,6 @@ export interface CategoryCoupon {
   brandSlug: string | null;
 }
 
-interface CategoryCouponDbRow {
-  id: string;
-  discount_label: string;
-  title: string;
-  subcategory: string | null;
-  gender: string | null;
-  brand: string | null;
-  expires_at: string | null;
-  stores: { name: string; slug: string } | null;
-}
-
 export const getCouponsByCategory = cache(
   async (
     category: string,
@@ -208,7 +180,7 @@ export const getCouponsByCategory = cache(
       throw new Error(`Failed to fetch category coupons: ${error.message}`);
     }
 
-    return (data as unknown as CategoryCouponDbRow[])
+    return data
       .filter((row) => !isCouponExpired(row.expires_at))
       .map((row) => ({
         id: row.id,
@@ -275,15 +247,6 @@ export interface BrandCoupon {
   category: string | null;
 }
 
-interface BrandCouponDbRow {
-  id: string;
-  discount_label: string;
-  title: string;
-  category: string | null;
-  expires_at: string | null;
-  stores: { name: string; slug: string } | null;
-}
-
 export const getCouponsByBrand = cache(
   async (
     brand: string,
@@ -308,7 +271,7 @@ export const getCouponsByBrand = cache(
       throw new Error(`Failed to fetch brand coupons: ${error.message}`);
     }
 
-    return (data as unknown as BrandCouponDbRow[])
+    return data
       .filter((row) => !isCouponExpired(row.expires_at))
       .map((row) => ({
         id: row.id,
@@ -360,13 +323,9 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
 
   const brandMeta = new Map<string, { count: number; lastModified?: string }>();
 
-  for (const row of data as {
-    brand: string;
-    expires_at?: string | null;
-    updated_at?: string;
-    created_at?: string;
-  }[]) {
-    if (isCouponExpired(row.expires_at)) continue;
+  for (const row of data) {
+    // The query skips rows without a brand, but the type cannot know that: the check narrows it to string
+    if (!row.brand || isCouponExpired(row.expires_at)) continue;
 
     const existing = brandMeta.get(row.brand);
     const rowDate = row.updated_at || row.created_at;
@@ -416,13 +375,9 @@ export async function getCategoriesWithCoupons(): Promise<CategorySummary[]> {
     { count: number; lastModified?: string }
   >();
 
-  for (const row of data as {
-    category: string;
-    expires_at?: string | null;
-    updated_at?: string;
-    created_at?: string;
-  }[]) {
-    if (isCouponExpired(row.expires_at)) continue;
+  for (const row of data) {
+    // Same as for brands: the check tells TypeScript that category is a string here
+    if (!row.category || isCouponExpired(row.expires_at)) continue;
 
     const existing = categoryMeta.get(row.category);
     const rowDate = row.updated_at || row.created_at;

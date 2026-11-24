@@ -1,6 +1,7 @@
 // lib/schemas/coupons.ts
 
 import { z } from "zod";
+import { COUPON_TYPES } from "@/lib/constants/coupons";
 import {
   BRANDS,
   CATEGORIES,
@@ -18,7 +19,7 @@ const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/;
 
 export const CouponFieldsSchema = z.object({
   storeId: z.uuid("Choose a store."),
-  type: z.enum(["code", "sale"], "Choose a coupon type."),
+  type: z.enum(COUPON_TYPES, "Choose a coupon type."),
   discountLabel: requiredText("Discount label is required."),
   title: requiredText("Title is required."),
   code: optionalText,

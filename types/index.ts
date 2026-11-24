@@ -1,3 +1,5 @@
+import type { CouponType } from "@/lib/constants/coupons";
+
 export interface Store {
   id: string;
   slug: string;
@@ -12,7 +14,7 @@ export interface Store {
 
 export interface Coupon {
   id: string;
-  type: "code" | "sale";
+  type: CouponType;
   discountLabel: string;
   title: string;
   code?: string;
