@@ -3,7 +3,8 @@
 import { requireAdmin } from "@/lib/auth";
 import { createClient } from "@/lib/supabase/server";
 import { cache } from "react";
-import { BRANDS, CATEGORIES } from "@/lib/constants/taxonomy";
+import { CATEGORIES } from "@/lib/constants/taxonomy";
+import { getBrands } from "@/lib/brands";
 import { toCouponType } from "@/lib/constants/coupons";
 import { isCouponExpired } from "@/lib/utils";
 import type { Store, Coupon } from "@/types";
@@ -160,7 +161,7 @@ export const getCouponsByCategory = cache(
     let query = supabase
       .from("coupons")
       .select(
-        "id, discount_label, title, subcategory, gender, brand, expires_at, stores(name, slug)",
+        "id, discount_label, title, subcategory, gender, brand, expires_at, stores(name, slug), brands(slug)",
       )
       .eq("category", category.toLowerCase());
 
@@ -191,9 +192,8 @@ export const getCouponsByCategory = cache(
         subcategory: row.subcategory,
         gender: row.gender,
         brand: row.brand,
-        brandSlug: row.brand
-          ? (BRANDS.find((b) => b.label === row.brand)?.slug ?? null)
-          : null,
+        // coupons.brand points at brands.label, so the brand page address comes with the coupon
+        brandSlug: row.brands?.slug ?? null,
       }));
   },
 );
@@ -312,10 +312,13 @@ export interface BrandSummary {
 export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("coupons")
-    .select("brand, expires_at, updated_at, created_at")
-    .not("brand", "is", null);
+  const [{ data, error }, brands] = await Promise.all([
+    supabase
+      .from("coupons")
+      .select("brand, expires_at, updated_at, created_at")
+      .not("brand", "is", null),
+    getBrands(),
+  ]);
 
   if (error) {
     throw new Error(`Failed to fetch brands: ${error.message}`);
@@ -343,12 +346,14 @@ export async function getBrandsWithCoupons(): Promise<BrandSummary[]> {
     });
   }
 
-  return BRANDS.filter((b) => brandMeta.has(b.label)).map((b) => ({
-    slug: b.slug,
-    label: b.label,
-    count: brandMeta.get(b.label)?.count ?? 0,
-    lastModified: brandMeta.get(b.label)?.lastModified,
-  }));
+  return brands
+    .filter((b) => brandMeta.has(b.label))
+    .map((b) => ({
+      slug: b.slug,
+      label: b.label,
+      count: brandMeta.get(b.label)?.count ?? 0,
+      lastModified: brandMeta.get(b.label)?.lastModified,
+    }));
 }
 
 export interface CategorySummary {

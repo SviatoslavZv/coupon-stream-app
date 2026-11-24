@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { BRANDS } from "@/lib/constants/taxonomy";
+import { getBrandBySlug } from "@/lib/brands";
 import { getCouponsByBrand, extractCategoryOptions } from "@/lib/coupons";
 import Breadcrumbs from "@/components/ui/Breadcrumbs";
 import BrandStructuredData from "@/components/seo/BrandStructuredData";
@@ -13,23 +13,22 @@ export async function generateMetadata({
     params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
     const { slug } = await params;
-    const lowerSlug = slug.toLowerCase();
-    const brand = BRANDS.find((b) => b.slug === lowerSlug);
+    const brand = await getBrandBySlug(slug);
 
     if (!brand) {
         return notFoundMetadata("Brand Not Found");
     }
 
     const allCoupons = await getCouponsByBrand(brand.label, {});
-    const monthYear = new Date().toLocaleDateString("en-US", {
-        month: "long",
-        year: "numeric",
-    });
+    const now = new Date();
+    const monthYear = now.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    // Short month in the title keeps it under ~60 characters with the " | CouponCreek" suffix
+    const shortMonthYear = now.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 
     return buildPageMetadata({
-        title: `${brand.label} Coupons & Promo Codes at Department Stores — ${monthYear}`,
+        title: `${brand.label} Coupons & Deals ${shortMonthYear}`,
         description: `${allCoupons.length} active ${brand.label} deals across top department stores for ${monthYear}. Compare ${brand.label} offers in one place on CouponCreek.`,
-        path: `/brand/${lowerSlug}`,
+        path: `/brand/${brand.slug}`,
     });
 }
 
@@ -40,7 +39,7 @@ function buildFilterUrl(
 ) {
     const params = new URLSearchParams();
 
-    // Переключатель (Toggle): если фильтр уже выбран, повторный клик его сбрасывает
+    // A toggle: clicking the selected filter again clears it
     if (currentCategory !== value) {
         params.set("category", value);
     }
@@ -59,7 +58,7 @@ export default async function BrandPage({
     const { slug } = await params;
     const { category } = await searchParams;
 
-    const brand = BRANDS.find((b) => b.slug === slug.toLowerCase());
+    const brand = await getBrandBySlug(slug);
 
     if (!brand) {
         notFound();
@@ -68,7 +67,6 @@ export default async function BrandPage({
     const allBrandCoupons = await getCouponsByBrand(brand.label, {});
     const categoryOptions = extractCategoryOptions(allBrandCoupons);
 
-    // Проверяем, выбран ли фильтр категории
     const hasActiveFilters = Boolean(category);
 
     const displayedCoupons = hasActiveFilters
@@ -102,7 +100,7 @@ export default async function BrandPage({
                     </p>
                 </div>
 
-                {/* 👈 Кнопка сброса для бренда */}
+                {/* Clear the category filter */}
                 {hasActiveFilters && (
                     <Link
                         href={`/brand/${slug}`}
@@ -113,7 +111,7 @@ export default async function BrandPage({
                 )}
             </div>
 
-            {/* Панель фильтров */}
+            {/* Category filters */}
             {categoryOptions.length > 0 && (
                 <div className="mt-6 flex flex-wrap items-center gap-2">
                     <span className="text-xs font-medium uppercase text-ink/80">
