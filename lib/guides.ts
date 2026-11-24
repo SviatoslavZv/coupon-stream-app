@@ -6,8 +6,10 @@ import { createClient } from "@/lib/supabase/server";
 import {
   isHiddenByCheck,
   SHOP_LINK_COUPON_FRESH_DAYS,
-  type ShopLinkCheckStatus,
+  toShopLinkCheckStatus,
+  toShopLinkKind,
 } from "@/lib/constants/shop-links";
+import { toCouponType } from "@/lib/constants/coupons";
 import { daysSince, formatShortDate, isCouponExpired } from "@/lib/utils";
 import { amazonProductUrl } from "@/lib/constants/amazon";
 import { RELATED_GUIDES_LIMIT } from "@/lib/constants/guides";
@@ -17,8 +19,8 @@ import {
   withTrackingId,
 } from "@/lib/network-links";
 
+import type { Tables } from "@/types/supabase";
 import type {
-  Coupon,
   Guide,
   GuideItem,
   GuideLinkCoupon,
@@ -26,59 +28,57 @@ import type {
   GuideSummary,
 } from "@/types";
 
-interface StoreRef {
-  name: string;
-  slug: string;
-  logo_url: string | null;
-}
+// Row types of the public guide query, built from the generated tables so they follow the database
 
-interface ShopLinkRow {
-  id: string;
-  kind: "product" | "section";
-  title: string;
-  url: string;
-  brand: string | null;
-  asin: string | null;
-  image_url: string | null;
-  coupon_percent: number | null;
-  last_checked_at: string | null;
-  check_status: ShopLinkCheckStatus | null;
-  stores: StoreRef | null;
-}
+type StoreRef = Pick<Tables<"stores">, "name" | "slug" | "logo_url">;
 
-interface CouponRow {
-  id: string;
-  type: string;
-  discount_label: string;
-  title: string;
-  code: string | null;
-  description: string;
-  expires_at: string;
-  image_url: string | null;
-  stores: StoreRef | null;
-}
+type ShopLinkRow = Pick<
+  Tables<"shop_links">,
+  | "id"
+  | "kind"
+  | "title"
+  | "url"
+  | "brand"
+  | "asin"
+  | "image_url"
+  | "coupon_percent"
+  | "last_checked_at"
+  | "check_status"
+> & { stores: StoreRef | null };
 
-interface GuideItemRow {
-  id: string;
-  sort_order: number;
-  comment: string;
+type CouponRow = Pick<
+  Tables<"coupons">,
+  | "id"
+  | "type"
+  | "discount_label"
+  | "title"
+  | "code"
+  | "description"
+  | "expires_at"
+  | "image_url"
+> & { stores: StoreRef | null };
+
+type GuideItemRow = Pick<
+  Tables<"guide_items">,
+  "id" | "sort_order" | "comment"
+> & {
   shop_links: ShopLinkRow | null;
   coupons: CouponRow | null;
-}
+};
 
-interface GuideRow {
-  id: string;
-  slug: string;
-  title: string;
-  intro: string;
-  meta_description: string | null;
-  category: string | null;
-  gender: string | null;
-  event_slug: string | null;
-  published_at: string | null;
-  updated_at: string;
-  guide_items: GuideItemRow[];
-}
+type GuideRow = Pick<
+  Tables<"guides">,
+  | "id"
+  | "slug"
+  | "title"
+  | "intro"
+  | "meta_description"
+  | "category"
+  | "gender"
+  | "event_slug"
+  | "published_at"
+  | "updated_at"
+> & { guide_items: GuideItemRow[] };
 
 const GUIDE_SELECT = `
   id, slug, title, intro, meta_description, category, gender, event_slug,
@@ -94,7 +94,7 @@ const GUIDE_SELECT = `
        stores ( name, slug, logo_url )
     )
   )
-`;
+` as const;
 
 function mapStore(store: StoreRef): GuideStore {
   return { name: store.name, slug: store.slug, logoUrl: store.logo_url };
@@ -115,7 +115,7 @@ function mapGuideItem(row: GuideItemRow, trackingId: string): GuideItem | null {
 
   const link = row.shop_links;
   if (link?.stores) {
-    if (isHiddenByCheck(link.check_status)) {
+    if (isHiddenByCheck(toShopLinkCheckStatus(link.check_status))) {
       return null;
     }
     return {
@@ -123,7 +123,7 @@ function mapGuideItem(row: GuideItemRow, trackingId: string): GuideItem | null {
       source: "shop_link",
       link: {
         id: link.id,
-        kind: link.kind,
+        kind: toShopLinkKind(link.kind),
         title: link.title,
         url: withTrackingId(link.url, trackingId),
         brand: link.brand,
@@ -142,7 +142,7 @@ function mapGuideItem(row: GuideItemRow, trackingId: string): GuideItem | null {
       source: "coupon",
       coupon: {
         id: coupon.id,
-        type: coupon.type as Coupon["type"],
+        type: toCouponType(coupon.type),
         discountLabel: coupon.discount_label,
         title: coupon.title,
         code: coupon.code,
@@ -194,7 +194,7 @@ export const getPublishedGuide = cache(
       throw new Error(`Failed to fetch guide: ${error.message}`);
     }
 
-    return data ? mapGuide(data as unknown as GuideRow) : null;
+    return data ? mapGuide(data) : null;
   },
 );
 
@@ -205,15 +205,6 @@ export interface AdminGuideRow {
   isPublished: boolean;
   itemCount: number;
   updatedAt: string;
-}
-
-interface AdminGuideDbRow {
-  id: string;
-  slug: string;
-  title: string;
-  is_published: boolean;
-  updated_at: string;
-  guide_items: { count: number }[];
 }
 
 export async function getGuidesForAdmin(): Promise<AdminGuideRow[]> {
@@ -228,7 +219,7 @@ export async function getGuidesForAdmin(): Promise<AdminGuideRow[]> {
     throw new Error(`Failed to fetch guides: ${error.message}`);
   }
 
-  return (data as unknown as AdminGuideDbRow[]).map((row) => ({
+  return data.map((row) => ({
     id: row.id,
     slug: row.slug,
     title: row.title,
@@ -248,18 +239,6 @@ export interface GuideFormValues {
   gender: string | null;
   eventSlug: string | null;
   isPublished: boolean;
-}
-
-interface GuideFormDbRow {
-  id: string;
-  title: string;
-  slug: string;
-  intro: string;
-  meta_description: string | null;
-  category: string | null;
-  gender: string | null;
-  event_slug: string | null;
-  is_published: boolean;
 }
 
 export async function getGuideForEdit(
@@ -283,17 +262,16 @@ export async function getGuideForEdit(
     return null;
   }
 
-  const row = data as GuideFormDbRow;
   return {
-    id: row.id,
-    title: row.title,
-    slug: row.slug,
-    intro: row.intro,
-    metaDescription: row.meta_description,
-    category: row.category,
-    gender: row.gender,
-    eventSlug: row.event_slug,
-    isPublished: row.is_published,
+    id: data.id,
+    title: data.title,
+    slug: data.slug,
+    intro: data.intro,
+    metaDescription: data.meta_description,
+    category: data.category,
+    gender: data.gender,
+    eventSlug: data.event_slug,
+    isPublished: data.is_published,
   };
 }
 
@@ -322,40 +300,33 @@ export interface AdminGuideItem {
   isVisible: boolean;
 }
 
-interface AdminStoreRef {
-  name: string;
-  slug: string;
-  website_url: string | null;
-}
+// Row types of the admin guide items query
 
-interface AdminShopLinkDbRow {
-  id: string;
-  title: string;
-  url: string;
-  asin: string | null;
-  is_active: boolean;
-  check_status: ShopLinkCheckStatus | null;
-  last_checked_at: string | null;
-  stores: AdminStoreRef | null;
-}
+type AdminStoreRef = Pick<Tables<"stores">, "name" | "slug" | "website_url">;
 
-interface AdminCouponDbRow {
-  id: string;
-  title: string;
-  discount_label: string;
-  expires_at: string;
-  affiliate_link: string | null;
-  asin: string | null;
-  stores: AdminStoreRef | null;
-}
+type AdminShopLinkDbRow = Pick<
+  Tables<"shop_links">,
+  | "id"
+  | "title"
+  | "url"
+  | "asin"
+  | "is_active"
+  | "check_status"
+  | "last_checked_at"
+> & { stores: AdminStoreRef | null };
 
-interface AdminGuideItemDbRow {
-  id: string;
-  sort_order: number;
-  comment: string;
+type AdminCouponDbRow = Pick<
+  Tables<"coupons">,
+  "id" | "title" | "discount_label" | "expires_at" | "affiliate_link" | "asin"
+> & { stores: AdminStoreRef | null };
+
+type AdminGuideItemDbRow = Pick<
+  Tables<"guide_items">,
+  "id" | "sort_order" | "comment"
+> & {
   shop_links: AdminShopLinkDbRow | null;
   coupons: AdminCouponDbRow | null;
-}
+};
 
 function shopLinkDetail(
   link: AdminShopLinkDbRow,
@@ -395,7 +366,7 @@ function shopLinkDetail(
   }
 }
 
-/** Прямая ссылка для проверки — никогда не партнёрская. */
+/** A direct link for checking the product: never an affiliate one. */
 function directCheckLink(
   affiliateUrl: string | null,
   asin: string | null,
@@ -434,7 +405,9 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
       storeName,
       detail: shopLinkDetail(link, storeName),
       checkLinks: direct ? [direct] : [],
-      isVisible: link.is_active && !isHiddenByCheck(link.check_status),
+      isVisible:
+        link.is_active &&
+        !isHiddenByCheck(toShopLinkCheckStatus(link.check_status)),
     };
   }
 
@@ -472,6 +445,11 @@ function mapAdminGuideItem(row: AdminGuideItemDbRow): AdminGuideItem {
 
 const ADMIN_STORE_SELECT = "stores(name, slug, website_url)";
 
+// "as const" keeps the exact text of the select, so Supabase can read the columns from it
+const ADMIN_GUIDE_ITEMS_SELECT = `id, sort_order, comment,
+       shop_links(id, title, url, asin, is_active, check_status, last_checked_at, ${ADMIN_STORE_SELECT}),
+       coupons(id, title, discount_label, expires_at, affiliate_link, asin, ${ADMIN_STORE_SELECT})` as const;
+
 export async function getGuideItemsForAdmin(
   guideId: string,
 ): Promise<AdminGuideItem[]> {
@@ -479,11 +457,7 @@ export async function getGuideItemsForAdmin(
 
   const { data, error } = await supabase
     .from("guide_items")
-    .select(
-      `id, sort_order, comment,
-       shop_links(id, title, url, asin, is_active, check_status, last_checked_at, ${ADMIN_STORE_SELECT}),
-       coupons(id, title, discount_label, expires_at, affiliate_link, asin, ${ADMIN_STORE_SELECT})`,
-    )
+    .select(ADMIN_GUIDE_ITEMS_SELECT)
     .eq("guide_id", guideId)
     .order("sort_order");
 
@@ -491,15 +465,7 @@ export async function getGuideItemsForAdmin(
     throw new Error(`Failed to fetch guide items: ${error.message}`);
   }
 
-  return (data as unknown as AdminGuideItemDbRow[]).map(mapAdminGuideItem);
-}
-interface GuideSummaryRow {
-  slug: string;
-  title: string;
-  intro: string;
-  meta_description: string | null;
-  event_slug: string | null;
-  updated_at: string;
+  return data.map(mapAdminGuideItem);
 }
 
 export async function getPublishedGuides(): Promise<GuideSummary[]> {
@@ -515,7 +481,7 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
     throw new Error(`Failed to fetch guides: ${error.message}`);
   }
 
-  return (data as GuideSummaryRow[]).map((row) => ({
+  return data.map((row) => ({
     slug: row.slug,
     title: row.title,
     intro: row.intro,
@@ -525,7 +491,7 @@ export async function getPublishedGuides(): Promise<GuideSummary[]> {
   }));
 }
 
-/** Другие гайды: сначала того же события, затем остальные, не больше лимита. */
+/** Other guides: the same event first, then the rest, up to the limit. */
 export function pickRelatedGuides(
   guides: GuideSummary[],
   current: Pick<Guide, "slug" | "eventSlug">,

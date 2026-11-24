@@ -1,5 +1,7 @@
 // lib/constants/shop-links.ts
 
+import { isOneOf } from "@/lib/utils";
+
 export const SHOP_LINK_KINDS = ["product", "section"] as const;
 
 export type ShopLinkKind = (typeof SHOP_LINK_KINDS)[number];
@@ -37,4 +39,21 @@ export const HIDDEN_CHECK_STATUSES: readonly ShopLinkCheckStatus[] = [
 
 export function isHiddenByCheck(status: ShopLinkCheckStatus | null): boolean {
   return status !== null && HIDDEN_CHECK_STATUSES.includes(status);
+}
+
+/** shop_links.kind is plain text in the generated types; the database CHECK allows only our kinds. */
+export function toShopLinkKind(value: string): ShopLinkKind {
+  if (!isOneOf(SHOP_LINK_KINDS, value)) {
+    throw new Error(`Unknown shop link kind "${value}"`);
+  }
+  return value;
+}
+
+/** shop_links.check_status as our type; an unknown value counts as "not checked". */
+export function toShopLinkCheckStatus(
+  value: string | null,
+): ShopLinkCheckStatus | null {
+  return value !== null && isOneOf(SHOP_LINK_CHECK_STATUSES, value)
+    ? value
+    : null;
 }

@@ -2,12 +2,12 @@
 
 import { requireAdmin } from "@/lib/auth";
 import {
-  SHOP_LINK_CHECK_STATUSES,
-  SHOP_LINK_KINDS,
+  toShopLinkCheckStatus,
+  toShopLinkKind,
   type ShopLinkCheckStatus,
   type ShopLinkKind,
 } from "@/lib/constants/shop-links";
-import { isOneOf } from "@/lib/utils";
+
 import type { Tables } from "@/types/supabase";
 
 export interface AdminShopLink {
@@ -51,20 +51,11 @@ const ADMIN_SHOP_LINK_SELECT =
   "id, store_id, kind, title, url, brand, asin, image_url, network_link_id, commission_rate, is_active, check_status, last_checked_at, stores(name)";
 
 function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
-  // kind and check_status are plain text in the generated types; the database CHECK limits them to our lists
-  if (!isOneOf(SHOP_LINK_KINDS, row.kind)) {
-    throw new Error(`Unknown shop link kind "${row.kind}" in link ${row.id}`);
-  }
-  const checkStatus =
-    row.check_status !== null &&
-    isOneOf(SHOP_LINK_CHECK_STATUSES, row.check_status)
-      ? row.check_status
-      : null;
   return {
     id: row.id,
     storeId: row.store_id,
     storeName: row.stores?.name ?? "Unknown store",
-    kind: row.kind,
+    kind: toShopLinkKind(row.kind),
     title: row.title,
     url: row.url,
     brand: row.brand,
@@ -74,7 +65,7 @@ function mapAdminShopLink(row: AdminShopLinkRow): AdminShopLink {
     commissionRate:
       row.commission_rate === null ? null : Number(row.commission_rate),
     isActive: row.is_active,
-    checkStatus,
+    checkStatus: toShopLinkCheckStatus(row.check_status),
     lastCheckedAt: row.last_checked_at,
   };
 }
