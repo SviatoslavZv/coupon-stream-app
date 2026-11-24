@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
+import type { Brand } from "@/lib/brands";
 import type { FormState } from "@/types";
 
 interface GuideOption {
@@ -16,11 +16,14 @@ const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
 
 export default function AmazonLinkForm({
     action,
+    brands,
     guideOptions,
     initialValues,
     hiddenFields,
 }: {
     action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
+    /** All brands A to Z, from the database */
+    brands: Brand[];
     guideOptions: GuideOption[];
     initialValues: { title: string; brand: string | null };
     hiddenFields: Record<string, string>;
@@ -63,7 +66,7 @@ export default function AmazonLinkForm({
                 </label>
                 <select id="brand" name="brand" defaultValue={initialValues.brand ?? ""} className={FIELD_CLASS}>
                     <option value="">None</option>
-                    {BRANDS_BY_LABEL.map((brand) => (
+                    {brands.map((brand) => (
                         <option key={brand.slug} value={brand.label}>
                             {brand.label}
                         </option>

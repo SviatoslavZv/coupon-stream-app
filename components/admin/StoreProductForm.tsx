@@ -3,7 +3,7 @@
 import { useActionState, useState, useTransition, type ChangeEvent } from "react";
 import type { FormState } from "@/types";
 import { fetchStoreProductDetails } from "@/lib/actions/store-products";
-import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
+import type { Brand } from "@/lib/brands";
 import type { StoreOption } from "@/lib/stores";
 
 interface GuideOption {
@@ -42,12 +42,15 @@ const LOOKUP_TONE_CLASS: Record<LookupMessage["tone"], string> = {
 
 export default function StoreProductForm({
     action,
+    brands,
     storeOptions,
     guideOptions,
     initialValues,
     initialLookup,
 }: {
     action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
+    /** All brands A to Z, from the database */
+    brands: Brand[];
     storeOptions: StoreOption[];
     guideOptions: GuideOption[];
     /** Filled in by Quick add: store, address and, if the page allowed it, title and image. */
@@ -171,7 +174,7 @@ export default function StoreProductForm({
                 <label htmlFor="brand" className={LABEL_CLASS}>Brand</label>
                 <select id="brand" name="brand" value={values.brand} onChange={handleChange} className={FIELD_CLASS}>
                     <option value="">None</option>
-                    {BRANDS_BY_LABEL.map((brand) => (
+                    {brands.map((brand) => (
                         <option key={brand.slug} value={brand.label}>
                             {brand.label}
                         </option>

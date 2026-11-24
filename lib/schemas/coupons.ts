@@ -3,7 +3,6 @@
 import { z } from "zod";
 import { COUPON_TYPES } from "@/lib/constants/coupons";
 import {
-  BRANDS,
   CATEGORIES,
   GENDERS,
   getSubcategories,
@@ -34,10 +33,8 @@ export const CouponFieldsSchema = z.object({
     GENDERS.map((item) => item.slug),
     "Unknown gender.",
   ),
-  brand: optionalOneOf(
-    BRANDS.map((item) => item.label),
-    "Unknown brand.",
-  ),
+  // Any text here; the database accepts only names from the brands table (foreign key)
+  brand: optionalText,
   affiliateLink: optionalHttpsUrl("Affiliate link must start with https://"),
 });
 

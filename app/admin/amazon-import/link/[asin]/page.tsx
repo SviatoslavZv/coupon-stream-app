@@ -8,10 +8,8 @@ import { getImportedAsins } from "@/lib/amazon-imported";
 import { getGuidesForAdmin } from "@/lib/guides";
 import { importAmazonProductLink } from "@/lib/actions/amazon-import";
 import { ASIN_PATTERN, amazonProductUrl } from "@/lib/constants/amazon";
-import { BRANDS } from "@/lib/constants/taxonomy";
+import { getBrands } from "@/lib/brands";
 import AmazonLinkForm from "@/components/admin/AmazonLinkForm";
-
-const brandLabels = BRANDS.map((brand) => brand.label);
 
 type Preparation =
     | { ok: true; product: AmazonProduct; title: string; brand: string | null }
@@ -31,7 +29,7 @@ async function prepareLink(asin: string): Promise<Preparation> {
             return { ok: false, product, message: "This product is out of stock." };
         }
 
-        const suggestion = suggestTaxonomy(product, brandLabels);
+        const suggestion = suggestTaxonomy(product, (await getBrands()).map((brand) => brand.label));
         return {
             ok: true,
             product,
@@ -59,10 +57,11 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
     const { returnTo: rawReturnTo } = await props.searchParams;
     const returnTo = safeImportReturnTo(Array.isArray(rawReturnTo) ? rawReturnTo[0] : rawReturnTo);
 
-    const [preparation, guides, imported] = await Promise.all([
+    const [preparation, guides, imported, brands] = await Promise.all([
         prepareLink(asin),
         getGuidesForAdmin(),
         getImportedAsins([asin]),
+        getBrands()
     ]);
     const { product } = preparation;
     const inCatalog = imported.links.has(asin);
@@ -118,6 +117,7 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
             {preparation.ok ? (
                 <AmazonLinkForm
                     action={importAmazonProductLink}
+                    brands={brands}
                     guideOptions={guideOptions}
                     initialValues={{ title: preparation.title, brand: preparation.brand }}
                     hiddenFields={{

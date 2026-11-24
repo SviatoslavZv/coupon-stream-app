@@ -6,7 +6,7 @@ import { groupByModel, filterByMinReviews, sortModels, buildImportHref } from "@
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import { getImportedAsins } from "@/lib/amazon-imported";
-import { BRANDS } from "@/lib/constants/taxonomy";
+import { getBrands } from "@/lib/brands";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
 import AmazonProductTable from "@/components/admin/AmazonProductTable";
 
@@ -19,8 +19,6 @@ import {
 const FIELD_CLASS =
     "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none";
 const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
-
-const brandLabels = BRANDS.map((brand) => brand.label);
 
 type SearchResult =
     | { ok: true; page: AmazonProductPage }
@@ -52,7 +50,11 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     const result = canSearch ? await runSearch(filters) : null;
     const allModels = result?.ok ? groupByModel(result.page.products) : [];
     const models = sortModels(filterByMinReviews(allModels, filters.minReviews), filters.sort);
-    const imported = await getImportedAsins(models.flatMap((model) => model.variantAsins));
+    const [imported, brands] = await Promise.all([
+        getImportedAsins(models.flatMap((model) => model.variantAsins)),
+        getBrands(),
+    ]);
+    const brandLabels = brands.map((brand) => brand.label);
     const nextHref =
         result?.ok && result.page.nextCursor
             ? buildImportHref(filters, { cursor: result.page.nextCursor })

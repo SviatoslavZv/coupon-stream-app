@@ -20,10 +20,8 @@ import {
     ASIN_PATTERN,
     amazonProductUrl,
 } from "@/lib/constants/amazon";
-import { BRANDS } from "@/lib/constants/taxonomy";
+import { getBrands } from "@/lib/brands";
 import CouponForm from "@/components/admin/CouponForm";
-
-const brandLabels = BRANDS.map((brand) => brand.label);
 
 type Preparation =
     | { ok: true; product: AmazonProduct; draft: AmazonCouponDraft }
@@ -56,7 +54,7 @@ async function prepareCoupon(asin: string): Promise<Preparation> {
 
         const draft = buildAmazonCouponDraft({
             product,
-            suggestion: suggestTaxonomy(product, brandLabels),
+            suggestion: suggestTaxonomy(product, (await getBrands()).map((brand) => brand.label)),
             storeId,
             affiliateLink,
         });
@@ -88,9 +86,10 @@ export default async function ImportAmazonCouponPage(
     const { returnTo: rawReturnTo } = await props.searchParams;
     const returnTo = safeImportReturnTo(Array.isArray(rawReturnTo) ? rawReturnTo[0] : rawReturnTo);
 
-    const [preparation, storeOptions] = await Promise.all([
+    const [preparation, storeOptions, brands] = await Promise.all([
         prepareCoupon(asin),
         getStoreOptions(),
+        getBrands()
     ]);
     const { product } = preparation;
 
@@ -146,6 +145,7 @@ export default async function ImportAmazonCouponPage(
                     </p>
                     <CouponForm
                         action={importAmazonCoupon}
+                        brands={brands}
                         storeOptions={storeOptions}
                         initialValues={preparation.draft}
                         hiddenFields={{

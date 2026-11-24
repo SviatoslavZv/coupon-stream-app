@@ -1,7 +1,6 @@
 // lib/schemas/store-products.ts
 
 import { z } from "zod";
-import { BRANDS } from "@/lib/constants/taxonomy";
 import {
   emptyToNull,
   flattenSearchParams,
@@ -9,7 +8,6 @@ import {
   type RawSearchParams,
   httpsUrl,
   optionalHttpsUrl,
-  optionalOneOf,
   optionalText,
   requiredText,
 } from "@/lib/schemas/common";
@@ -19,10 +17,8 @@ export const StoreProductSchema = z
     storeId: z.uuid("Choose a store."),
     productUrl: httpsUrl("Product URL must start with https://"),
     title: requiredText("Title is required."),
-    brand: optionalOneOf(
-      BRANDS.map((item) => item.label),
-      "Unknown brand.",
-    ),
+    // Any text here; the database accepts only names from the brands table (foreign key)
+    brand: optionalText,
     imageUrl: optionalHttpsUrl("Image URL must start with https://"),
     guideId: z.preprocess(emptyToNull, z.uuid().nullable()),
     comment: optionalText,

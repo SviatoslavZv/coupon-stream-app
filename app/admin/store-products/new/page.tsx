@@ -2,6 +2,7 @@ import { requireAdmin } from "@/lib/auth";
 import { addStoreProduct, fetchStoreProductDetails } from "@/lib/actions/store-products";
 import { getGuidesForAdmin } from "@/lib/guides";
 import { getDeepLinkStoreOptions } from "@/lib/stores";
+import { getBrands } from "@/lib/brands";
 import { parseStoreProductPrefill } from "@/lib/schemas/store-products";
 import StoreProductForm, {
     type LookupMessage,
@@ -11,9 +12,10 @@ import StoreProductForm, {
 export default async function NewStoreProductPage(props: PageProps<"/admin/store-products/new">) {
     await requireAdmin();
 
-    const [storeOptions, guides, prefill] = await Promise.all([
+    const [storeOptions, guides, brands, prefill] = await Promise.all([
         getDeepLinkStoreOptions(),
         getGuidesForAdmin(),
+        getBrands(),
         props.searchParams.then(parseStoreProductPrefill),
     ]);
     const guideOptions = guides.map(({ id, title, isPublished }) => ({ id, title, isPublished }));
@@ -53,6 +55,7 @@ export default async function NewStoreProductPage(props: PageProps<"/admin/store
                 The affiliate deep link is built automatically.
             </p>
             <StoreProductForm
+                brands={brands}
                 action={addStoreProduct}
                 storeOptions={storeOptions}
                 guideOptions={guideOptions}

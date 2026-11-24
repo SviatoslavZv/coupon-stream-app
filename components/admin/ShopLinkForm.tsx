@@ -7,7 +7,7 @@ import {
     SHOP_LINK_KIND_LABELS,
     type ShopLinkKind,
 } from "@/lib/constants/shop-links";
-import { BRANDS_BY_LABEL } from "@/lib/constants/taxonomy";
+import type { Brand } from "@/lib/brands";
 import { extractNetworkLinkId } from "@/lib/network-links";
 import type { AdminShopLink } from "@/lib/shop-links";
 import type { StoreOption } from "@/lib/stores";
@@ -18,11 +18,14 @@ const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
 
 export default function ShopLinkForm({
     action,
+    brands,
     storeOptions,
     initialValues,
     hiddenFields,
 }: {
     action: (prevState: FormState | null, formData: FormData) => Promise<FormState>;
+    /** All brands A to Z, from the database */
+    brands: Brand[];
     storeOptions: StoreOption[];
     initialValues?: AdminShopLink;
     hiddenFields?: Record<string, string>;
@@ -145,7 +148,7 @@ export default function ShopLinkForm({
                         className={INPUT_CLASS}
                     >
                         <option value="">No brand</option>
-                        {BRANDS_BY_LABEL.map((brand) => (
+                        {brands.map((brand) => (
                             <option key={brand.slug} value={brand.label}>
                                 {brand.label}
                             </option>

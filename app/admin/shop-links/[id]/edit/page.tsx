@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getShopLinkById } from "@/lib/shop-links";
 import { getStoreOptions } from "@/lib/stores";
+import { getBrands } from "@/lib/brands";
 import { updateShopLink } from "@/lib/actions/shop-links";
 import { ADMIN_ROUTES, RETURN_TO_PARAM, safeAdminReturnTo } from "@/lib/constants/admin";
 import ShopLinkForm from "@/components/admin/ShopLinkForm";
@@ -10,7 +11,7 @@ export default async function EditShopLinkPage(props: PageProps<"/admin/shop-lin
 
     const returnTo = safeAdminReturnTo((await props.searchParams)[RETURN_TO_PARAM], ADMIN_ROUTES.shopLinks);
 
-    const [shopLink, storeOptions] = await Promise.all([getShopLinkById(id), getStoreOptions()]);
+    const [shopLink, storeOptions, brands] = await Promise.all([getShopLinkById(id), getStoreOptions(), getBrands()]);
 
     if (!shopLink) {
         notFound();
@@ -21,6 +22,7 @@ export default async function EditShopLinkPage(props: PageProps<"/admin/shop-lin
             <h1 className="mb-6 font-display text-2xl font-black text-ink">Edit Shop Link</h1>
             <ShopLinkForm
                 action={updateShopLink}
+                brands={brands}
                 storeOptions={storeOptions}
                 initialValues={shopLink}
                 hiddenFields={{ [RETURN_TO_PARAM]: returnTo }}

@@ -1,7 +1,8 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { CATEGORIES, GENDERS, BRANDS_BY_LABEL, getSubcategories } from "@/lib/constants/taxonomy";
+import { CATEGORIES, GENDERS, getSubcategories } from "@/lib/constants/taxonomy";
+import type { Brand } from "@/lib/brands";
 import type { FormState } from "@/types";
 import { DISCOUNT_LABEL_PRESETS, DESCRIPTION_PRESETS, buildTitleSuggestions } from "@/lib/constants/coupon-presets";
 
@@ -32,6 +33,7 @@ export interface CouponFormValues {
 
 export default function CouponForm({
     action,
+    brands,
     storeOptions,
     initialValues,
     hiddenFields,
@@ -40,6 +42,8 @@ export default function CouponForm({
         prevState: FormState | null,
         formData: FormData
     ) => Promise<FormState>;
+    /** All brands A to Z, from the database */
+    brands: Brand[];
     storeOptions: StoreOption[];
     initialValues?: CouponFormValues;
     hiddenFields?: Record<string, string>;
@@ -305,7 +309,7 @@ export default function CouponForm({
                             className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                         >
                             <option value="">None</option>
-                            {BRANDS_BY_LABEL.map((b) => (
+                            {brands.map((b) => (
                                 <option key={b.slug} value={b.label}>
                                     {b.label}
                                 </option>

@@ -20,7 +20,6 @@ import {
   type RawSearchParams,
 } from "@/lib/schemas/common";
 import {
-  BRANDS,
   CATEGORIES,
   GENDERS,
   getSubcategories,
@@ -72,10 +71,8 @@ export const AmazonCouponSchema = z
       GENDERS.map((item) => item.slug),
       "Unknown gender.",
     ),
-    brand: optionalOneOf(
-      BRANDS.map((item) => item.label),
-      "Unknown brand.",
-    ),
+    // Any text here; the database accepts only names from the brands table (foreign key)
+    brand: optionalText,
     affiliateLink: httpsUrl("An https affiliate link is required."),
     asin: z.string().trim().toUpperCase().regex(ASIN_PATTERN, "Invalid ASIN."),
     imageUrl: optionalHttpsUrl("Image URL must start with https://"),
@@ -101,10 +98,8 @@ export type AmazonCouponInput = z.infer<typeof AmazonCouponSchema>;
 export const AmazonLinkSchema = z
   .object({
     title: requiredText("Title is required."),
-    brand: optionalOneOf(
-      BRANDS.map((item) => item.label),
-      "Unknown brand.",
-    ),
+    // Any text here; the database accepts only names from the brands table (foreign key)
+    brand: optionalText,
     asin: z.string().trim().toUpperCase().regex(ASIN_PATTERN, "Invalid ASIN."),
     imageUrl: optionalHttpsUrl("Image URL must start with https://"),
     commissionRate: z.preprocess(

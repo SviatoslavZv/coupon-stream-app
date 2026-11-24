@@ -3,13 +3,11 @@
 import { z } from "zod";
 import { ASIN_PATTERN } from "@/lib/constants/amazon";
 import { SHOP_LINK_KINDS } from "@/lib/constants/shop-links";
-import { BRANDS } from "@/lib/constants/taxonomy";
 import {
   checkbox,
   emptyToNull,
   httpsUrl,
   optionalHttpsUrl,
-  optionalOneOf,
   optionalText,
   requiredText,
 } from "@/lib/schemas/common";
@@ -20,10 +18,8 @@ export const ShopLinkSchema = z
     kind: z.enum(SHOP_LINK_KINDS, "Choose a link type"),
     title: requiredText("Title is required"),
     url: httpsUrl("Tracking link must start with https://"),
-    brand: optionalOneOf(
-      BRANDS.map((brand) => brand.label),
-      "Choose a brand from the list",
-    ),
+    // Any text here; the database accepts only names from the brands table (foreign key)
+    brand: optionalText,
     asin: z.preprocess(
       emptyToNull,
       z
