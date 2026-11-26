@@ -3,6 +3,7 @@
 import { useActionState, useState } from "react";
 import { CATEGORIES, GENDERS, getSubcategories } from "@/lib/constants/taxonomy";
 import type { Brand } from "@/lib/brands";
+import BrandSelect from "@/components/admin/BrandSelect";
 import type { FormState } from "@/types";
 import { DISCOUNT_LABEL_PRESETS, DESCRIPTION_PRESETS, buildTitleSuggestions } from "@/lib/constants/coupon-presets";
 
@@ -302,19 +303,11 @@ export default function CouponForm({
                         <label htmlFor="brand" className="mb-1 block text-sm font-medium text-ink">
                             Brand
                         </label>
-                        <select
-                            id="brand"
-                            name="brand"
+                        <BrandSelect
+                            brands={brands}
                             defaultValue={initialValues?.brand ?? ""}
                             className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
-                        >
-                            <option value="">None</option>
-                            {brands.map((b) => (
-                                <option key={b.slug} value={b.label}>
-                                    {b.label}
-                                </option>
-                            ))}
-                        </select>
+                        />
                     </div>
                 </div>
             </div>

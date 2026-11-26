@@ -4,6 +4,7 @@ import { useActionState, useState, useTransition, type ChangeEvent } from "react
 import type { FormState } from "@/types";
 import { fetchStoreProductDetails } from "@/lib/actions/store-products";
 import type { Brand } from "@/lib/brands";
+import BrandSelect from "@/components/admin/BrandSelect";
 import type { StoreOption } from "@/lib/stores";
 
 interface GuideOption {
@@ -172,14 +173,12 @@ export default function StoreProductForm({
 
             <div>
                 <label htmlFor="brand" className={LABEL_CLASS}>Brand</label>
-                <select id="brand" name="brand" value={values.brand} onChange={handleChange} className={FIELD_CLASS}>
-                    <option value="">None</option>
-                    {brands.map((brand) => (
-                        <option key={brand.slug} value={brand.label}>
-                            {brand.label}
-                        </option>
-                    ))}
-                </select>
+                <BrandSelect
+                    brands={brands}
+                    value={values.brand}
+                    onChange={(brand) => setValues((prev) => ({ ...prev, brand }))}
+                    className={FIELD_CLASS}
+                />
             </div>
 
             <div>

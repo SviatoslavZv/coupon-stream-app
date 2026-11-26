@@ -8,6 +8,7 @@ import {
     type ShopLinkKind,
 } from "@/lib/constants/shop-links";
 import type { Brand } from "@/lib/brands";
+import BrandSelect from "@/components/admin/BrandSelect";
 import { extractNetworkLinkId } from "@/lib/network-links";
 import type { AdminShopLink } from "@/lib/shop-links";
 import type { StoreOption } from "@/lib/stores";
@@ -141,19 +142,12 @@ export default function ShopLinkForm({
             <div className={kind === "product" ? "grid grid-cols-2 gap-4" : undefined}>
                 <div>
                     <label htmlFor="brand" className={LABEL_CLASS}>Brand (optional)</label>
-                    <select
-                        id="brand"
-                        name="brand"
+                    <BrandSelect
+                        brands={brands}
                         defaultValue={initialValues?.brand ?? ""}
+                        emptyLabel="No brand"
                         className={INPUT_CLASS}
-                    >
-                        <option value="">No brand</option>
-                        {brands.map((brand) => (
-                            <option key={brand.slug} value={brand.label}>
-                                {brand.label}
-                            </option>
-                        ))}
-                    </select>
+                    />
                 </div>
 
                 {kind === "product" && (

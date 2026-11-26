@@ -2,6 +2,7 @@
 
 import { useActionState, useState } from "react";
 import type { Brand } from "@/lib/brands";
+import BrandSelect from "@/components/admin/BrandSelect";
 import type { FormState } from "@/types";
 
 interface GuideOption {
@@ -64,14 +65,10 @@ export default function AmazonLinkForm({
                 <label htmlFor="brand" className={LABEL_CLASS}>
                     Brand
                 </label>
-                <select id="brand" name="brand" defaultValue={initialValues.brand ?? ""} className={FIELD_CLASS}>
-                    <option value="">None</option>
-                    {brands.map((brand) => (
-                        <option key={brand.slug} value={brand.label}>
-                            {brand.label}
-                        </option>
-                    ))}
-                </select>
+                <BrandSelect
+                    brands={brands}
+                    defaultValue={initialValues.brand ?? ""}
+                    className={FIELD_CLASS} />
             </div>
 
             <div>
