@@ -24,9 +24,12 @@ import {
   GENDERS,
   getSubcategories,
 } from "@/lib/constants/taxonomy";
+import { parseAsinList } from "@/lib/amazon-import";
 
 const AmazonImportParamsSchema = z.object({
   category: z.enum(AMAZON_CATEGORIES).catch(AMAZON_CATEGORIES[0]),
+  // ASINs or Amazon links, any separators; turned into a clean ASIN list
+  asins: z.string().max(5000).catch("").transform(parseAsinList),
   brand: z
     .preprocess(blankToUndefined, z.coerce.number().int().positive().optional())
     .catch(undefined),

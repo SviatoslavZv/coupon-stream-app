@@ -1,7 +1,11 @@
 import Form from "next/form";
 import { requireAdmin } from "@/lib/auth";
 import { parseAmazonImportParams } from "@/lib/schemas/amazon-import";
-import { searchAmazonProducts, type AmazonProductPage } from "@/lib/partnerboost";
+import {
+    searchAmazonProducts,
+    partnerBoostPortalUrl,
+    type AmazonProductPage,
+} from "@/lib/partnerboost";
 import { groupByModel, filterByMinReviews, sortModels, buildImportHref } from "@/lib/amazon-import";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
@@ -11,6 +15,7 @@ import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
 import AmazonProductTable from "@/components/admin/AmazonProductTable";
 
 import {
+    MAX_ASINS_PER_SEARCH,
     AMAZON_CATEGORIES,
     AMAZON_IMPORT_SORTS,
     AMAZON_IMPORT_SORT_LABELS,
@@ -26,13 +31,17 @@ type SearchResult =
 
 async function runSearch(filters: AmazonImportFilters): Promise<SearchResult> {
     try {
-        const page = await searchAmazonProducts({
-            category: filters.category,
-            subcategory: filters.sub,
-            brandId: filters.brand,
-            onlyWithCoupon: filters.coupon,
-            cursor: filters.cursor,
-        });
+        // ASIN search ignores the other filters: we already know what we want
+        const page =
+            filters.asins.length > 0
+                ? await searchAmazonProducts({ asins: filters.asins })
+                : await searchAmazonProducts({
+                    category: filters.category,
+                    subcategory: filters.sub,
+                    brandId: filters.brand,
+                    onlyWithCoupon: filters.coupon,
+                    cursor: filters.cursor,
+                });
         return { ok: true, page };
     } catch (error) {
         return {
@@ -46,10 +55,15 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     await requireAdmin();
 
     const filters = parseAmazonImportParams(await props.searchParams);
-    const canSearch = filters.brand !== undefined || filters.sub !== undefined;
+    const byAsin = filters.asins.length > 0;
+    const canSearch = byAsin || filters.brand !== undefined || filters.sub !== undefined;
     const result = canSearch ? await runSearch(filters) : null;
     const allModels = result?.ok ? groupByModel(result.page.products) : [];
-    const models = sortModels(filterByMinReviews(allModels, filters.minReviews), filters.sort);
+    // An ASIN we asked for is shown even with few reviews
+    const minReviews = byAsin ? undefined : filters.minReviews;
+    const models = sortModels(filterByMinReviews(allModels, minReviews), filters.sort);
+    const foundAsins = new Set(result?.ok ? result.page.products.map((product) => product.asin) : []);
+    const missingAsins = byAsin && result?.ok ? filters.asins.filter((asin) => !foundAsins.has(asin)) : [];
     const [imported, brands] = await Promise.all([
         getImportedAsins(models.flatMap((model) => model.variantAsins)),
         getBrands(),
@@ -71,6 +85,23 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                 action={ADMIN_ROUTES.amazonImport}
                 className="grid grid-cols-2 gap-4 rounded-2xl border border-line bg-white p-4 sm:grid-cols-3"
             >
+                <div className="col-span-2 sm:col-span-3">
+                    <label htmlFor="asins" className={LABEL_CLASS}>
+                        ASIN or Amazon link
+                    </label>
+                    <input
+                        id="asins"
+                        name="asins"
+                        type="text"
+                        placeholder="B07F2V9BQ2, B0BYSPKMZ7 or https://www.amazon.com/dp/…"
+                        defaultValue={filters.asins.join(", ")}
+                        className={FIELD_CLASS}
+                    />
+                    <p className="mt-1 text-xs text-ink/60">
+                        Up to {MAX_ASINS_PER_SEARCH} at once. When filled, the other filters are ignored.
+                    </p>
+                </div>
+
                 <div>
                     <label htmlFor="category" className={LABEL_CLASS}>
                         Amazon category
@@ -107,7 +138,7 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                         name="brand"
                         type="number"
                         min={1}
-                        placeholder="137088"
+                        placeholder="Click a brand in the results"
                         defaultValue={filters.brand ?? ""}
                         className={FIELD_CLASS}
                     />
@@ -148,20 +179,28 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                     </label>
                 </div>
 
-                <div className="col-span-2 sm:col-span-3">
+                <div className="col-span-2 flex flex-wrap items-center gap-3 sm:col-span-3">
                     <button
                         type="submit"
                         className="rounded-full bg-coupon-dark px-5 py-2.5 text-sm font-bold text-white transition hover:bg-coupon"
                     >
                         Search
                     </button>
+                    <a
+                        href={partnerBoostPortalUrl()}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-full border border-line px-5 py-2.5 text-sm font-semibold text-ink transition hover:border-coupon"
+                    >
+                        Search by keyword in PartnerBoost ↗
+                    </a>
                 </div>
             </Form>
 
             {!canSearch && (
                 <p className="mt-6 text-sm text-ink/70">
-                    Enter a subcategory or a brand ID to search. Searching a whole category is slow,
-                    so at least one of them is required.
+                    Enter ASINs, a subcategory or a brand ID to search. Searching a whole category is
+                    slow, so at least one of them is required.
                 </p>
             )}
 
@@ -179,6 +218,11 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                             ` · ${allModels.length - models.length} hidden by min reviews`}
                         {result.page.skipped > 0 && ` · ${result.page.skipped} skipped (invalid data)`}
                     </p>
+                    {missingAsins.length > 0 && (
+                        <p className="mb-3 rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink/80">
+                            Not available in PartnerBoost: {missingAsins.join(", ")}
+                        </p>
+                    )}
                     {models.length > 0 ? (
                         <AmazonProductTable
                             models={models}

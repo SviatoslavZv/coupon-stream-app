@@ -9,6 +9,8 @@ import {
   AMAZON_COUPON_TTL_DAYS,
   AMAZON_TITLE_MAX_WORDS,
   AMAZON_IMPORT_PATH,
+  ASIN_PATTERN,
+  MAX_ASINS_PER_SEARCH,
 } from "@/lib/constants/amazon";
 
 export interface AmazonModel {
@@ -46,6 +48,27 @@ export function groupByModel(products: AmazonProduct[]): AmazonModel[] {
   return [...models.values()];
 }
 
+// ASIN inside an Amazon link: /dp/B07F2V9BQ2 or /gp/product/B07F2V9BQ2
+const ASIN_IN_LINK = /\/(?:dp|gp\/product)\/([A-Z0-9]{10})/gi;
+const LINK = /https?:\/\/\S+/gi;
+
+// Finds ASINs in pasted text: bare ASINs and Amazon links, any separators
+export function parseAsinList(text: string): string[] {
+  const found: string[] = [];
+
+  for (const match of text.matchAll(ASIN_IN_LINK)) {
+    found.push(match[1].toUpperCase());
+  }
+
+  // A bare ASIN must contain a digit, so 10-letter words are not taken
+  const withoutLinks = text.replace(LINK, " ").toUpperCase();
+  for (const token of withoutLinks.split(/[^A-Z0-9]+/)) {
+    if (ASIN_PATTERN.test(token) && /\d/.test(token)) found.push(token);
+  }
+
+  return [...new Set(found)].slice(0, MAX_ASINS_PER_SEARCH);
+}
+
 export function filterByMinReviews(
   models: AmazonModel[],
   minReviews: number | undefined,
@@ -81,6 +104,7 @@ export function buildImportHref(
   const params = new URLSearchParams();
 
   params.set("category", merged.category);
+  if (merged.asins.length > 0) params.set("asins", merged.asins.join(","));
   if (merged.sub) params.set("sub", merged.sub);
   if (merged.brand !== undefined) params.set("brand", String(merged.brand));
   if (merged.coupon) params.set("coupon", "1");

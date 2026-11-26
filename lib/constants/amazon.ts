@@ -39,5 +39,15 @@ export const AMAZON_IMPORT_PATH = "/admin/amazon-import";
 
 export const ASIN_PATTERN = /^[A-Z0-9]{10}$/;
 
+// PartnerBoost API accepts at most 50 ASINs in one request
+export const MAX_ASINS_PER_SEARCH = 50;
+
+// PartnerBoost portal: keyword search lives there, the API has none
+export const PARTNERBOOST_PORTAL_URL =
+  "https://cj.partnerboost.com/partner/offers";
+
+// CJ advertiser ID of "PartnerBoost - Amazon Marketplace"
+export const PARTNERBOOST_CJ_AID = "15841657";
+
 // SID для ссылок, добавленных в каталог без гайда
 export const AMAZON_PICKS_SID = "amazon-picks";

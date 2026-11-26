@@ -2,6 +2,10 @@
 
 import "server-only";
 import { z } from "zod";
+import {
+  PARTNERBOOST_CJ_AID,
+  PARTNERBOOST_PORTAL_URL,
+} from "@/lib/constants/amazon";
 
 // ── Настройки ───────────────────────────────────────────
 
@@ -268,4 +272,15 @@ export async function generateAmazonLinks(
     if (secure) result.set(asin, secure);
   }
   return result;
+}
+
+// Link to the PartnerBoost catalog, where keyword search is available
+export function partnerBoostPortalUrl(): string {
+  const config = getConfig();
+  const params = new URLSearchParams({
+    aid: PARTNERBOOST_CJ_AID,
+    pid: config.PARTNERBOOST_PID,
+    publisherId: config.PARTNERBOOST_CID,
+  });
+  return `${PARTNERBOOST_PORTAL_URL}?${params.toString()}`;
 }
