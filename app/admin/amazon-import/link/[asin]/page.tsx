@@ -54,8 +54,9 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
         notFound();
     }
 
-    const { returnTo: rawReturnTo } = await props.searchParams;
+    const { returnTo: rawReturnTo, guide: rawGuide } = await props.searchParams;
     const returnTo = safeImportReturnTo(Array.isArray(rawReturnTo) ? rawReturnTo[0] : rawReturnTo);
+    const requestedGuide = Array.isArray(rawGuide) ? rawGuide[0] : rawGuide;
 
     const [preparation, guides, imported, brands] = await Promise.all([
         prepareLink(asin),
@@ -66,6 +67,8 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
     const { product } = preparation;
     const inCatalog = imported.links.has(asin);
     const guideOptions = guides.map(({ id, title, isPublished }) => ({ id, title, isPublished }));
+    // Preselect the target guide from the import page, if it still exists
+    const targetGuideId = guideOptions.find((guide) => guide.id === requestedGuide)?.id;
 
     return (
         <div className="mx-auto max-w-xl px-4 py-10">
@@ -119,7 +122,11 @@ export default async function ImportAmazonLinkPage(props: PageProps<"/admin/amaz
                     action={importAmazonProductLink}
                     brands={brands}
                     guideOptions={guideOptions}
-                    initialValues={{ title: preparation.title, brand: preparation.brand }}
+                    initialValues={{
+                        title: preparation.title,
+                        brand: preparation.brand,
+                        guideId: targetGuideId,
+                    }}
                     hiddenFields={{
                         asin,
                         returnTo,

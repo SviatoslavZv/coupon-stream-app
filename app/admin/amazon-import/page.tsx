@@ -11,6 +11,7 @@ import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import { getImportedAsins } from "@/lib/amazon-imported";
 import { getBrands } from "@/lib/brands";
+import { getGuidesForAdmin } from "@/lib/guides";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
 import AmazonProductTable from "@/components/admin/AmazonProductTable";
 
@@ -64,9 +65,10 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     const models = sortModels(filterByMinReviews(allModels, minReviews), filters.sort);
     const foundAsins = new Set(result?.ok ? result.page.products.map((product) => product.asin) : []);
     const missingAsins = byAsin && result?.ok ? filters.asins.filter((asin) => !foundAsins.has(asin)) : [];
-    const [imported, brands] = await Promise.all([
+    const [imported, brands, guides] = await Promise.all([
         getImportedAsins(models.flatMap((model) => model.variantAsins)),
         getBrands(),
+        getGuidesForAdmin(),
     ]);
     const brandLabels = brands.map((brand) => brand.label);
     const nextHref =
@@ -177,6 +179,21 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                         <input type="checkbox" name="coupon" value="1" defaultChecked={filters.coupon} />
                         Only with coupon
                     </label>
+                </div>
+
+                <div>
+                    <label htmlFor="guide" className={LABEL_CLASS}>
+                        Target guide
+                    </label>
+                    <select id="guide" name="guide" defaultValue={filters.guide ?? ""} className={FIELD_CLASS}>
+                        <option value="">No guide (catalog only)</option>
+                        {guides.map((guide) => (
+                            <option key={guide.id} value={guide.id}>
+                                {guide.title}
+                                {guide.isPublished ? "" : " (draft)"}
+                            </option>
+                        ))}
+                    </select>
                 </div>
 
                 <div className="col-span-2 flex flex-wrap items-center gap-3 sm:col-span-3">

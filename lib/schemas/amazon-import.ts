@@ -30,6 +30,8 @@ const AmazonImportParamsSchema = z.object({
   category: z.enum(AMAZON_CATEGORIES).catch(AMAZON_CATEGORIES[0]),
   // ASINs or Amazon links, any separators; turned into a clean ASIN list
   asins: z.string().max(5000).catch("").transform(parseAsinList),
+  // Guide that new products go to by default
+  guide: z.preprocess(blankToUndefined, z.uuid().optional()).catch(undefined),
   brand: z
     .preprocess(blankToUndefined, z.coerce.number().int().positive().optional())
     .catch(undefined),

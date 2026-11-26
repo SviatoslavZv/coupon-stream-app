@@ -25,12 +25,12 @@ export default function AmazonLinkForm({
     /** All brands A to Z, from the database */
     brands: Brand[];
     guideOptions: GuideOption[];
-    initialValues: { title: string; brand: string | null };
+    initialValues: { title: string; brand: string | null; guideId?: string };
     hiddenFields: Record<string, string>;
 }) {
     const [state, formAction, isPending] = useActionState(action, null);
     const [title, setTitle] = useState(initialValues.title);
-    const [guideId, setGuideId] = useState("");
+    const [guideId, setGuideId] = useState(initialValues.guideId ?? "");
     const [comment, setComment] = useState("");
 
     return (

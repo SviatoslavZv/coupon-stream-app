@@ -105,6 +105,7 @@ export function buildImportHref(
 
   params.set("category", merged.category);
   if (merged.asins.length > 0) params.set("asins", merged.asins.join(","));
+  if (merged.guide) params.set("guide", merged.guide);
   if (merged.sub) params.set("sub", merged.sub);
   if (merged.brand !== undefined) params.set("brand", String(merged.brand));
   if (merged.coupon) params.set("coupon", "1");

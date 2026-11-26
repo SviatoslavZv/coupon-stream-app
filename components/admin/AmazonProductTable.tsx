@@ -113,8 +113,9 @@ export default function AmazonProductTable({
                         const hasCoupon = variantAsins.some((asin) => imported.coupons.has(asin));
                         const hasLink = variantAsins.some((asin) => imported.links.has(asin));
                         const returnParam = `returnTo=${encodeURIComponent(currentHref)}`;
+                        const guideParam = filters.guide ? `&guide=${filters.guide}` : "";
                         const couponHref = `${AMAZON_IMPORT_PATH}/coupon/${product.asin}?${returnParam}`;
-                        const linkHref = `${AMAZON_IMPORT_PATH}/link/${product.asin}?${returnParam}`;
+                        const linkHref = `${AMAZON_IMPORT_PATH}/link/${product.asin}?${returnParam}${guideParam}`;
 
                         return (
                             <tr
