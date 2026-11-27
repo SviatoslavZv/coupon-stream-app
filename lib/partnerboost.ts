@@ -31,7 +31,7 @@ const REQUEST_SOURCE = "cj";
 const COUNTRY_CODE = "US";
 // API не отдаёт больше 50 товаров за один запрос
 export const MAX_PAGE_SIZE = 50;
-const REQUEST_TIMEOUT_MS = 20_000;
+const REQUEST_TIMEOUT_MS = 35_000;
 
 // Флаги фильтров API: 1 — «да», 2 — «не важно»
 const FLAG_YES = 1;

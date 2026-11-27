@@ -6,7 +6,13 @@ import {
     partnerBoostPortalUrl,
     type AmazonProductPage,
 } from "@/lib/partnerboost";
-import { groupByModel, filterByMinReviews, sortModels, buildImportHref } from "@/lib/amazon-import";
+import {
+    groupByModel,
+    filterByMinReviews,
+    sortModels,
+    buildImportHref,
+    countSubcategories,
+} from "@/lib/amazon-import";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import { getImportedAsins } from "@/lib/amazon-imported";
@@ -20,11 +26,13 @@ import {
     AMAZON_CATEGORIES,
     AMAZON_IMPORT_SORTS,
     AMAZON_IMPORT_SORT_LABELS,
+    AMAZON_SUBCATEGORY_HINTS,
 } from "@/lib/constants/amazon";
 
 const FIELD_CLASS =
     "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none";
 const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
+const SUBCATEGORY_LIST_ID = "subcategory-hints";
 
 type SearchResult =
     | { ok: true; page: AmazonProductPage }
@@ -75,6 +83,14 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
         result?.ok && result.page.nextCursor
             ? buildImportHref(filters, { cursor: result.page.nextCursor })
             : null;
+    const pageSubcategories = result?.ok ? countSubcategories(result.page.products) : [];
+    // Real names from this page first, then the short starter words
+    const subcategoryOptions = [
+        ...new Set([
+            ...pageSubcategories.map((subcategory) => subcategory.name),
+            ...AMAZON_SUBCATEGORY_HINTS[filters.category],
+        ]),
+    ];
     const firstPageHref = filters.cursor ? buildImportHref(filters, { cursor: undefined }) : null;
 
     return (
@@ -125,10 +141,16 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                         id="sub"
                         name="sub"
                         type="text"
+                        list={SUBCATEGORY_LIST_ID}
                         placeholder="Boots, Sneakers…"
                         defaultValue={filters.sub ?? ""}
                         className={FIELD_CLASS}
                     />
+                    <datalist id={SUBCATEGORY_LIST_ID}>
+                        {subcategoryOptions.map((option) => (
+                            <option key={option} value={option} />
+                        ))}
+                    </datalist>
                 </div>
 
                 <div>
@@ -235,6 +257,30 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                             ` · ${allModels.length - models.length} hidden by min reviews`}
                         {result.page.skipped > 0 && ` · ${result.page.skipped} skipped (invalid data)`}
                     </p>
+                    {pageSubcategories.length > 0 && (
+                        <div className="mb-3 flex flex-wrap items-center gap-2 text-sm">
+                            <span className="text-ink/70">Subcategories on this page:</span>
+                            {pageSubcategories.map((subcategory) => (
+                                <Link
+                                    key={subcategory.name}
+                                    href={buildImportHref(filters, {
+                                        asins: [],
+                                        sub: subcategory.name,
+                                        cursor: undefined,
+                                    })}
+                                    prefetch={false}
+                                    className={
+                                        subcategory.name === filters.sub
+                                            ? "rounded-full bg-coupon-dark px-3 py-1 text-xs font-semibold text-white"
+                                            : "rounded-full border border-line px-3 py-1 text-xs text-ink transition hover:border-coupon"
+                                    }
+                                >
+                                    {subcategory.name} · {subcategory.count}
+                                </Link>
+                            ))}
+                        </div>
+                    )}
+
                     {missingAsins.length > 0 && (
                         <p className="mb-3 rounded-lg border border-line bg-paper px-3 py-2 text-sm text-ink/80">
                             Not available in PartnerBoost: {missingAsins.join(", ")}

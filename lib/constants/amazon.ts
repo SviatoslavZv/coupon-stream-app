@@ -9,6 +9,39 @@ export const AMAZON_CATEGORIES = [
 
 export type AmazonCategory = (typeof AMAZON_CATEGORIES)[number];
 
+// Short words for the Subcategory field: PartnerBoost matches part of the name,
+// so "Boots" also finds "Ankle Boots" and "Snow Boots"
+export const AMAZON_SUBCATEGORY_HINTS: Record<
+  AmazonCategory,
+  readonly string[]
+> = {
+  "Clothing, Shoes & Jewelry": [
+    "Shoes",
+    "Boots",
+    "Sneakers",
+    "Sandals",
+    "Slippers",
+    "Watches",
+    "Jewelry",
+    "Handbags",
+    "Wallets",
+    "Sunglasses",
+    "Dresses",
+    "Jackets",
+    "Sweaters",
+    "Jeans",
+    "Socks",
+  ],
+  "Beauty & Personal Care": [
+    "Makeup",
+    "Skin Care",
+    "Hair Care",
+    "Fragrance",
+    "Nail",
+  ],
+  "Home & Kitchen": ["Storage", "Bedding", "Bath"],
+};
+
 export const AMAZON_IMPORT_SORTS = ["reviews", "coupon", "commission"] as const;
 
 export type AmazonImportSort = (typeof AMAZON_IMPORT_SORTS)[number];
