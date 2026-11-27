@@ -2,9 +2,7 @@
 
 import { z } from "zod";
 import { slugify } from "@/lib/utils";
-
-// Same rule as the check on brands.slug in the database
-const SLUG_PATTERN = /^[a-z0-9]+(-[a-z0-9]+)*$/;
+import { SLUG_PATTERN } from "@/lib/schemas/common";
 
 export const NewBrandSchema = z
   .object({

@@ -147,12 +147,8 @@ export default async function ImportAmazonCouponPage(
                         action={importAmazonCoupon}
                         brands={brands}
                         storeOptions={storeOptions}
-                        initialValues={preparation.draft}
-                        hiddenFields={{
-                            asin,
-                            returnTo,
-                            ...(preparation.product.imageUrl ? { imageUrl: preparation.product.imageUrl } : {}),
-                        }}
+                        initialValues={{ ...preparation.draft, imageUrl: preparation.product.imageUrl }}
+                        hiddenFields={{ asin, returnTo }}
                     />
                 </>
             ) : (

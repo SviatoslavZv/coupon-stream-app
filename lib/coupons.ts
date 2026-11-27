@@ -127,7 +127,7 @@ export async function getCouponById(id: string) {
   const { data, error } = await supabase
     .from("coupons")
     .select(
-      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand, affiliate_link",
+      "id, store_id, type, discount_label, title, code, description, expires_at, category, subcategory, gender, brand, affiliate_link, image_url",
     )
     .eq("id", id)
     .maybeSingle();

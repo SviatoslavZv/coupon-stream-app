@@ -36,6 +36,7 @@ export const CouponFieldsSchema = z.object({
   // Any text here; the database accepts only names from the brands table (foreign key)
   brand: optionalText,
   affiliateLink: optionalHttpsUrl("Affiliate link must start with https://"),
+  imageUrl: optionalHttpsUrl("Image URL must start with https://"),
 });
 
 export const CouponSchema = CouponFieldsSchema.refine(

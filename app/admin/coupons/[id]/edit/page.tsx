@@ -44,6 +44,7 @@ export default async function EditCouponPage(props: PageProps<"/admin/coupons/[i
                     gender: coupon.gender,
                     brand: coupon.brand,
                     affiliateLink: coupon.affiliate_link,
+                    imageUrl: coupon.image_url,
                 }}
             />
         </div>

@@ -26,6 +26,7 @@ export interface CouponFormValues {
     gender?: string | null;
     brand?: string | null;
     affiliateLink?: string | null;
+    imageUrl?: string | null;
 }
 
 
@@ -58,6 +59,9 @@ export default function CouponForm({
     const [code, setCode] = useState(initialValues?.code ?? "");
 
     const [description, setDescription] = useState(initialValues?.description ?? "");
+
+    const [imageUrl, setImageUrl] = useState(initialValues?.imageUrl ?? "");
+    const showImagePreview = imageUrl.trim().startsWith("https://");
 
     const [state, formAction, isPending] = useActionState(action, null);
 
@@ -232,6 +236,30 @@ export default function CouponForm({
                         className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
                     />
                 </div>
+
+                <div className="col-span-2">
+                    <label htmlFor="imageUrl" className="mb-1 block text-sm font-medium text-ink">
+                        Image URL (optional — product photo for guides and the store page)
+                    </label>
+                    <input
+                        id="imageUrl"
+                        name="imageUrl"
+                        type="text"
+                        placeholder="https://cdn.shopify.com/…"
+                        value={imageUrl}
+                        onChange={(event) => setImageUrl(event.target.value)}
+                        className="w-full rounded-lg border border-line px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none"
+                    />
+                    {showImagePreview && (
+                        // eslint-disable-next-line @next/next/no-img-element -- any store's picture, outside next/image domains
+                        <img
+                            src={imageUrl.trim()}
+                            alt="Preview"
+                            className="mt-2 h-24 w-24 rounded-lg border border-line object-contain"
+                        />
+                    )}
+                </div>
+
             </div>
 
             <div className="border-t border-line pt-4">

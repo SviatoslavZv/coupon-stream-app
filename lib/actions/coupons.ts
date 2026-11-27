@@ -30,6 +30,7 @@ function toRow(input: CouponInput) {
     gender: input.gender,
     brand: input.brand,
     affiliate_link: input.affiliateLink,
+    image_url: input.imageUrl,
   };
 }
 
