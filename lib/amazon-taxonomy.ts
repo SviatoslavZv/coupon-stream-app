@@ -204,7 +204,7 @@ function findSubcategoryRule(
   );
 }
 
-function suggestGender(name: string): GenderSlug | null {
+export function suggestGender(name: string): GenderSlug | null {
   if (UNISEX_PATTERN.test(name)) return "unisex";
   if (KIDS_PATTERN.test(name)) return "kids";
 

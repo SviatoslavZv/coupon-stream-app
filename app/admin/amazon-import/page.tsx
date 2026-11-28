@@ -8,11 +8,16 @@ import {
 } from "@/lib/partnerboost";
 import {
     groupByModel,
-    filterByMinReviews,
+    filterModels,
     sortModels,
     buildImportHref,
     countSubcategories,
+    HIDDEN_REASONS,
+    type AmazonModel,
+    type HiddenReason,
 } from "@/lib/amazon-import";
+import { GENDERS } from "@/lib/constants/taxonomy";
+import { pluralize } from "@/lib/utils";
 import Link from "next/link";
 import { ADMIN_ROUTES } from "@/lib/constants/admin";
 import { getImportedAsins } from "@/lib/amazon-imported";
@@ -33,6 +38,14 @@ const FIELD_CLASS =
     "w-full rounded-lg border border-line bg-white px-3 py-2 text-sm text-ink focus:border-coupon focus:outline-none";
 const LABEL_CLASS = "mb-1 block text-sm font-medium text-ink";
 const SUBCATEGORY_LIST_ID = "subcategory-hints";
+
+const HIDDEN_REASON_LABELS: Record<HiddenReason, string> = {
+    reviews: "hidden by min reviews",
+    rating: "hidden by min rating",
+    gender: "hidden by gender",
+    title: "hidden by title",
+    imported: "already imported",
+};
 
 type SearchResult =
     | { ok: true; page: AmazonProductPage }
@@ -68,16 +81,34 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
     const canSearch = byAsin || filters.brand !== undefined || filters.sub !== undefined;
     const result = canSearch ? await runSearch(filters) : null;
     const allModels = result?.ok ? groupByModel(result.page.products) : [];
-    // An ASIN we asked for is shown even with few reviews
-    const minReviews = byAsin ? undefined : filters.minReviews;
-    const models = sortModels(filterByMinReviews(allModels, minReviews), filters.sort);
     const foundAsins = new Set(result?.ok ? result.page.products.map((product) => product.asin) : []);
     const missingAsins = byAsin && result?.ok ? filters.asins.filter((asin) => !foundAsins.has(asin)) : [];
+    // Imported products are checked before filtering: "Hide imported" needs them
     const [imported, brands, guides] = await Promise.all([
-        getImportedAsins(models.flatMap((model) => model.variantAsins)),
+        getImportedAsins(allModels.flatMap((model) => model.variantAsins)),
         getBrands(),
         getGuidesForAdmin(),
     ]);
+    const isImported = (model: AmazonModel) =>
+        model.variantAsins.some((asin) => imported.links.has(asin) || imported.coupons.has(asin));
+    // An ASIN search shows exactly what we asked for, so our filters are off
+    const { visible, hidden } = filterModels(
+        allModels,
+        byAsin
+            ? { minReviews: 0, minRating: 0, hideImported: false, isImported }
+            : {
+                minReviews: filters.minReviews,
+                minRating: filters.minRating,
+                gender: filters.gender,
+                titleQuery: filters.q,
+                hideImported: filters.hideImported,
+                isImported,
+            },
+    );
+    const models = sortModels(visible, filters.sort);
+    const hiddenSummary = HIDDEN_REASONS.filter((reason) => hidden[reason] > 0)
+        .map((reason) => `${hidden[reason]} ${HIDDEN_REASON_LABELS[reason]}`)
+        .join(" · ");
     const brandLabels = brands.map((brand) => brand.label);
     const nextHref =
         result?.ok && result.page.nextCursor
@@ -170,15 +201,58 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
 
                 <div>
                     <label htmlFor="minReviews" className={LABEL_CLASS}>
-                        Min reviews
+                        Min reviews <span className="font-normal text-ink/50">(0 = any)</span>
                     </label>
                     <input
                         id="minReviews"
                         name="minReviews"
                         type="number"
                         min={0}
-                        placeholder="100"
-                        defaultValue={filters.minReviews ?? ""}
+                        defaultValue={filters.minReviews}
+                        className={FIELD_CLASS}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="minRating" className={LABEL_CLASS}>
+                        Min rating <span className="font-normal text-ink/50">(0 = any)</span>
+                    </label>
+                    <input
+                        id="minRating"
+                        name="minRating"
+                        type="number"
+                        min={0}
+                        max={5}
+                        step={0.1}
+                        defaultValue={filters.minRating}
+                        className={FIELD_CLASS}
+                    />
+                </div>
+
+                <div>
+                    <label htmlFor="gender" className={LABEL_CLASS}>
+                        Gender
+                    </label>
+                    <select id="gender" name="gender" defaultValue={filters.gender ?? ""} className={FIELD_CLASS}>
+                        <option value="">Any</option>
+                        {GENDERS.map((gender) => (
+                            <option key={gender.slug} value={gender.slug}>
+                                {gender.label}
+                            </option>
+                        ))}
+                    </select>
+                </div>
+
+                <div>
+                    <label htmlFor="q" className={LABEL_CLASS}>
+                        Title contains
+                    </label>
+                    <input
+                        id="q"
+                        name="q"
+                        type="text"
+                        placeholder="leather, running…"
+                        defaultValue={filters.q ?? ""}
                         className={FIELD_CLASS}
                     />
                 </div>
@@ -200,6 +274,15 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
                     <label className="flex items-center gap-2 text-sm text-ink">
                         <input type="checkbox" name="coupon" value="1" defaultChecked={filters.coupon} />
                         Only with coupon
+                    </label>
+                    <label className="flex items-center gap-2 text-sm text-ink">
+                        <input
+                            type="checkbox"
+                            name="hideImported"
+                            value="1"
+                            defaultChecked={filters.hideImported}
+                        />
+                        Hide imported
                     </label>
                 </div>
 
@@ -252,9 +335,9 @@ export default async function AmazonImportPage(props: PageProps<"/admin/amazon-i
             {result?.ok && (
                 <div className="mt-6">
                     <p className="mb-3 text-sm text-ink/70">
-                        {models.length} models from {result.page.products.length} variants on this page
-                        {allModels.length > models.length &&
-                            ` · ${allModels.length - models.length} hidden by min reviews`}
+                        {pluralize(models.length, "model")} from{" "}
+                        {pluralize(result.page.products.length, "variant")} on this page
+                        {hiddenSummary && ` · ${hiddenSummary}`}
                         {result.page.skipped > 0 && ` · ${result.page.skipped} skipped (invalid data)`}
                     </p>
                     {pageSubcategories.length > 0 && (

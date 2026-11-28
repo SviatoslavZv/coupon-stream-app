@@ -69,6 +69,9 @@ export const AMAZON_STORE_SID = "store-amazon";
 export const AMAZON_TITLE_MAX_WORDS = 6;
 
 export const AMAZON_IMPORT_PATH = "/admin/amazon-import";
+// Default quality bar for search results; 0 in the form turns a filter off
+export const AMAZON_DEFAULT_MIN_REVIEWS = 100;
+export const AMAZON_DEFAULT_MIN_RATING = 4.3;
 
 export const ASIN_PATTERN = /^[A-Z0-9]{10}$/;
 

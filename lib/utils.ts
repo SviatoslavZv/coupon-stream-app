@@ -101,6 +101,15 @@ export function matchesAllWords(text: string, query: string): boolean {
     .every((word) => haystack.includes(word));
 }
 
+/** "1 model", "3 models": the count with the right word form. */
+export function pluralize(
+  count: number,
+  singular: string,
+  plural = `${singular}s`,
+): string {
+  return `${count} ${count === 1 ? singular : plural}`;
+}
+
 /**
  * True when the value is one of the allowed values, and tells TypeScript so.
  * Use it for text columns that the database limits with a CHECK constraint: the generated types only say "string".

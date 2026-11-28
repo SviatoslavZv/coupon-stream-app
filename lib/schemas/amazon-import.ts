@@ -7,6 +7,8 @@ import {
   AMAZON_IMPORT_SORTS,
   AMAZON_IMPORT_PATH,
   ASIN_PATTERN,
+  AMAZON_DEFAULT_MIN_REVIEWS,
+  AMAZON_DEFAULT_MIN_RATING,
 } from "@/lib/constants/amazon";
 import {
   requiredText,
@@ -26,6 +28,8 @@ import {
 } from "@/lib/constants/taxonomy";
 import { parseAsinList } from "@/lib/amazon-import";
 
+const GENDER_SLUGS = GENDERS.map((gender) => gender.slug);
+
 const AmazonImportParamsSchema = z.object({
   category: z.enum(AMAZON_CATEGORIES).catch(AMAZON_CATEGORIES[0]),
   // ASINs or Amazon links, any separators; turned into a clean ASIN list
@@ -39,9 +43,27 @@ const AmazonImportParamsSchema = z.object({
     .preprocess(blankToUndefined, z.string().trim().max(60).optional())
     .catch(undefined),
   coupon: z.preprocess((value) => value === "1", z.boolean()),
+  // Empty field → default; 0 turns the filter off
   minReviews: z
-    .preprocess(blankToUndefined, z.coerce.number().int().min(0).optional())
+    .preprocess(
+      blankToUndefined,
+      z.coerce.number().int().min(0).default(AMAZON_DEFAULT_MIN_REVIEWS),
+    )
+    .catch(AMAZON_DEFAULT_MIN_REVIEWS),
+  minRating: z
+    .preprocess(
+      blankToUndefined,
+      z.coerce.number().min(0).max(5).default(AMAZON_DEFAULT_MIN_RATING),
+    )
+    .catch(AMAZON_DEFAULT_MIN_RATING),
+  gender: z
+    .preprocess(blankToUndefined, z.enum(GENDER_SLUGS).optional())
     .catch(undefined),
+  // Words that must all appear in the product name
+  q: z
+    .preprocess(blankToUndefined, z.string().trim().max(60).optional())
+    .catch(undefined),
+  hideImported: z.preprocess((value) => value === "1", z.boolean()),
   sort: z.enum(AMAZON_IMPORT_SORTS).catch("reviews"),
   cursor: z
     .preprocess(blankToUndefined, z.string().max(500).optional())

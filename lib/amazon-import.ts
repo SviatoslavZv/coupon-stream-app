@@ -2,8 +2,9 @@
 
 import type { AmazonProduct } from "@/lib/partnerboost";
 import type { AmazonImportFilters } from "@/lib/schemas/amazon-import";
-import type { TaxonomySuggestion } from "@/lib/amazon-taxonomy";
-import { escapeRegExp, isoDateInDays } from "@/lib/utils";
+import { suggestGender, type TaxonomySuggestion } from "@/lib/amazon-taxonomy";
+import type { GenderSlug } from "@/lib/constants/taxonomy";
+import { escapeRegExp, isoDateInDays, matchesAllWords } from "@/lib/utils";
 import {
   AmazonImportSort,
   AMAZON_COUPON_TTL_DAYS,
@@ -90,12 +91,75 @@ export function parseAsinList(text: string): string[] {
   return [...new Set(found)].slice(0, MAX_ASINS_PER_SEARCH);
 }
 
-export function filterByMinReviews(
+export interface ModelFilters {
+  minReviews: number;
+  minRating: number;
+  gender?: GenderSlug;
+  titleQuery?: string;
+  hideImported: boolean;
+  isImported: (model: AmazonModel) => boolean;
+}
+
+export const HIDDEN_REASONS = [
+  "reviews",
+  "rating",
+  "gender",
+  "title",
+  "imported",
+] as const;
+
+export type HiddenReason = (typeof HIDDEN_REASONS)[number];
+
+export interface FilteredModels {
+  visible: AmazonModel[];
+  hidden: Record<HiddenReason, number>;
+}
+
+function matchesGender(name: string, wanted: GenderSlug): boolean {
+  const gender = suggestGender(name);
+  if (gender === wanted) return true;
+  // Unisex products fit both men and women
+  return gender === "unisex" && (wanted === "men" || wanted === "women");
+}
+
+// First filter the model fails, or null when it passes all of them
+function hiddenReason(
+  model: AmazonModel,
+  filters: ModelFilters,
+): HiddenReason | null {
+  const { product } = model;
+  if (product.reviews < filters.minReviews) return "reviews";
+  if (filters.minRating > 0 && (product.rating ?? 0) < filters.minRating)
+    return "rating";
+  if (filters.gender && !matchesGender(product.name, filters.gender))
+    return "gender";
+  if (filters.titleQuery && !matchesAllWords(product.name, filters.titleQuery))
+    return "title";
+  if (filters.hideImported && filters.isImported(model)) return "imported";
+  return null;
+}
+
+// Our own filters on top of the API results; counts what each filter hid
+export function filterModels(
   models: AmazonModel[],
-  minReviews: number | undefined,
-): AmazonModel[] {
-  if (minReviews === undefined) return models;
-  return models.filter((model) => model.product.reviews >= minReviews);
+  filters: ModelFilters,
+): FilteredModels {
+  const hidden: Record<HiddenReason, number> = {
+    reviews: 0,
+    rating: 0,
+    gender: 0,
+    title: 0,
+    imported: 0,
+  };
+  const visible: AmazonModel[] = [];
+
+  for (const model of models) {
+    const reason = hiddenReason(model, filters);
+    if (reason) hidden[reason] += 1;
+    else visible.push(model);
+  }
+
+  return { visible, hidden };
 }
 
 const SORT_VALUE: Record<AmazonImportSort, (product: AmazonProduct) => number> =
@@ -130,8 +194,11 @@ export function buildImportHref(
   if (merged.sub) params.set("sub", merged.sub);
   if (merged.brand !== undefined) params.set("brand", String(merged.brand));
   if (merged.coupon) params.set("coupon", "1");
-  if (merged.minReviews !== undefined)
-    params.set("minReviews", String(merged.minReviews));
+  params.set("minReviews", String(merged.minReviews));
+  params.set("minRating", String(merged.minRating));
+  if (merged.gender) params.set("gender", merged.gender);
+  if (merged.q) params.set("q", merged.q);
+  if (merged.hideImported) params.set("hideImported", "1");
   params.set("sort", merged.sort);
   if (merged.cursor) params.set("cursor", merged.cursor);
 
