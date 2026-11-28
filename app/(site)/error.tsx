@@ -7,6 +7,7 @@ export default function Error({
     error,
     reset,
 }: {
+
     error: Error & { digest?: string };
     reset: () => void;
 }) {
@@ -40,6 +41,12 @@ export default function Error({
                     Back to Homepage
                 </Link>
             </div>
+            {/* Server errors get a short ID: search it in Vercel → Logs to find the cause */}
+            {error.digest && (
+                <p className="mt-8 text-xs text-ink/50">
+                    Error ID: <span className="select-all font-mono">{error.digest}</span>
+                </p>
+            )}
         </div>
     );
 }
